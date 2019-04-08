@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>realworld.example</groupId>
+		<artifactId>realworld-v2-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>realworld-v2-user-module</artifactId>
+	
+	<name>Realworld-v2: User module</name>
+	<description>Realworld-v2: User module</description>
+
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>realworld-v2-user-jaxrs</module>
+		<module>realworld-v2-user-model</module>
+		<!--
+		<module>beyond-realworld-user-model</module>
+		<module>beyond-realworld-user-services</module>
+		<module>beyond-realworld-user-jpa</module>
+		<module>beyond-realworld-user-jaxrs</module>
+		<module>beyond-realworld-user-migrations</module>
+		<module>beyond-realworld-user-dao</module>
+		<module>beyond-realworld-user-service-interfaces</module>
+		<module>beyond-realworld-user</module>
+		<module>beyond-realworld-user-services-client</module>
+		-->
+	</modules>
+
+	<profiles>
+		<profile>
+			<id>user-h2</id>
+
+			<properties>
+				<database.user.driver>org.h2.Driver</database.user.driver>
+				<database.user.thorntail.name>h2</database.user.thorntail.name>
+				<database.user.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.user.hibernate.dialect>
+			</properties>
+
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>com.h2database</groupId>
+						<artifactId>h2</artifactId>
+						<version>${version.h2}</version>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+		</profile>
+	</profiles>
+</project>
