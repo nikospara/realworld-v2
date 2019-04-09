@@ -15,6 +15,7 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>realworld-v2-user</module>
 		<module>realworld-v2-user-jaxrs</module>
 		<module>realworld-v2-user-model</module>
 		<!--
