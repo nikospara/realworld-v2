@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd"
+>
+	<changeSet id="20181211_1" author="nikospara" context="schema">
+		<createTable tableName="RWL_USER">
+			<column name="id" type="VARCHAR(64)">
+				<constraints primaryKey="true" primaryKeyName="PK_RWL_USER" />
+			</column>
+			<column name="username" type="VARCHAR(255)">
+				<constraints unique="true" uniqueConstraintName="UQ_RWL_USER_USERNAME" />
+			</column>
+			<column name="password" type="VARCHAR(64)">
+				<constraints nullable="false" />
+			</column>
+			<column name="email" type="VARCHAR(255)">
+				<constraints unique="true" uniqueConstraintName="UQ_RWL_USER_EMAIL" />
+			</column>
+			<column name="image_url" type="VARCHAR(255)" />
+		</createTable>
+
+		<createTable tableName="RWL_USER_BIO">
+			<column name="user_id" type="VARCHAR(64)">
+				<constraints primaryKey="true" primaryKeyName="PK_RWL_USER_BIO" />
+			</column>
+			<column name="bio" type="CLOB" />
+		</createTable>
+
+		<addForeignKeyConstraint baseTableName="RWL_USER_BIO" baseColumnNames="user_id" constraintName="FK_RWL_USER_BIO_USER_ID" referencedTableName="RWL_USER" referencedColumnNames="id" />
+	</changeSet>
+</databaseChangeLog>

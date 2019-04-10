@@ -17,18 +17,10 @@
 	<modules>
 		<module>realworld-v2-user</module>
 		<module>realworld-v2-user-jaxrs</module>
+		<module>realworld-v2-user-migrations</module>
 		<module>realworld-v2-user-model</module>
-		<!--
-		<module>beyond-realworld-user-model</module>
-		<module>beyond-realworld-user-services</module>
-		<module>beyond-realworld-user-jpa</module>
-		<module>beyond-realworld-user-jaxrs</module>
-		<module>beyond-realworld-user-migrations</module>
-		<module>beyond-realworld-user-dao</module>
-		<module>beyond-realworld-user-service-interfaces</module>
-		<module>beyond-realworld-user</module>
-		<module>beyond-realworld-user-services-client</module>
-		-->
+		<module>realworld-v2-user-jpa</module>
+		<module>realworld-v2-user-dao</module>
 	</modules>
 
 	<profiles>

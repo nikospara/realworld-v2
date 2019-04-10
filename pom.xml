@@ -13,6 +13,7 @@
 	
 	<modules>
 		<module>realworld-v2-user-module</module>
+		<module>realworld-v2-common</module>
 		<!--
 		<module>beyond-realworld-common</module>
 		<module>beyond-realworld-deployments</module>
