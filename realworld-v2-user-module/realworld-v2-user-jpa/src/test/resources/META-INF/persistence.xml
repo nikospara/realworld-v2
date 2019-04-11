@@ -12,6 +12,7 @@
 			<property name="hibernate.format_sql"            value="true" />
 			<property name="hibernate.hbm2ddl.auto"          value="none" />
 			<property name="hibernate.dialect"               value="${database-test.hibernate.dialect}" />
+			<property name="hibernate.generate_statistics"   value="true" />
 		</properties>
 	</persistence-unit>
 </persistence>

@@ -6,6 +6,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -37,12 +39,22 @@ public class JpaDaoExtension implements BeforeAllCallback, AfterAllCallback, Par
 
 	@Override
 	public boolean supportsParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		return parameterContext.getParameter().getType().equals(EntityManager.class);
+		Class<?> parameterType = parameterContext.getParameter().getType();
+		return parameterType.equals(EntityManager.class) || parameterType.equals(Statistics.class);
 	}
 
 	@Override
 	public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
-		return getOrCreateWrapper(extensionContext).getEntityManager();
+		Class<?> parameterType = parameterContext.getParameter().getType();
+		if( parameterType.equals(EntityManager.class) ) {
+			return getOrCreateWrapper(extensionContext).getEntityManager();
+		}
+		else if( parameterType.equals(Statistics.class) ) {
+			return entityManagerFactory.unwrap(SessionFactory.class).getStatistics();
+		}
+		else {
+			throw new IllegalArgumentException("cannot handle parameter of type " + parameterType.getName());
+		}
 	}
 
 	private EntityManagerWrapper getOrCreateWrapper(ExtensionContext extensionContext) {

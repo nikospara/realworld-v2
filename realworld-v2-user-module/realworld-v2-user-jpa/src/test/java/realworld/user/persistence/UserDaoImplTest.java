@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import javax.persistence.EntityManager;
 
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -32,11 +33,13 @@ public class UserDaoImplTest {
 	private static final String ENCRYPTED_PASSWD = "enc_passwd";
 
 	private EntityManager em;
+	private Statistics statistics;
 	private UserDaoImpl sut;
 
 	@BeforeEach
-	void init(EntityManager em) {
+	void init(EntityManager em, Statistics statistics) {
 		this.em = em;
+		this.statistics = statistics;
 		sut = new UserDaoImpl(em);
 	}
 
@@ -56,5 +59,7 @@ public class UserDaoImplTest {
 		assertEquals(EMAIL, u.getEmail());
 		assertEquals(IMAGE_URL, u.getImageUrl());
 		assertEquals(ENCRYPTED_PASSWD, u.getPassword());
+		assertEquals(1L, statistics.getEntityInsertCount());
+		assertEquals(1L, statistics.getEntityLoadCount());
 	}
 }
