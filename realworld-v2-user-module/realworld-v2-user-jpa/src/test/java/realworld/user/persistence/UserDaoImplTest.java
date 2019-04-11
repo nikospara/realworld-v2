@@ -1,0 +1,60 @@
+package realworld.user.persistence;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import javax.persistence.EntityManager;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import realworld.test.jpa.JpaDaoExtension;
+import realworld.test.liquibase.LiquibaseExtension;
+import realworld.user.model.ImmutableUserData;
+import realworld.user.model.UserData;
+
+/**
+ * Tests for the {@link UserDaoImpl}.
+ */
+@ExtendWith({LiquibaseExtension.class, JpaDaoExtension.class})
+@EnabledIfSystemProperty(named = "database-test.active", matches = "true")
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class UserDaoImplTest {
+
+	private static final String USERNAME = "username";
+	private static final String EMAIL = "email.one@here.com";
+	private static final String IMAGE_URL = "IMAGE.URL";
+	private static final String ENCRYPTED_PASSWD = "enc_passwd";
+
+	private EntityManager em;
+	private UserDaoImpl sut;
+
+	@BeforeEach
+	void init(EntityManager em) {
+		this.em = em;
+		sut = new UserDaoImpl(em);
+	}
+
+	@Test
+	@Order(1)
+	void testCreate() {
+		em.getTransaction().begin();
+		UserData result = sut.create(ImmutableUserData.builder().username(USERNAME).email(EMAIL).imageUrl(IMAGE_URL).build(), ENCRYPTED_PASSWD);
+		em.getTransaction().commit();
+		em.clear();
+
+		assertNotNull(result.getId());
+
+		User u = em.find(User.class, result.getId());
+		assertNotNull(u);
+		assertEquals(USERNAME, u.getUsername());
+		assertEquals(EMAIL, u.getEmail());
+		assertEquals(IMAGE_URL, u.getImageUrl());
+		assertEquals(ENCRYPTED_PASSWD, u.getPassword());
+	}
+}

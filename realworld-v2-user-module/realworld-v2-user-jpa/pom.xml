@@ -32,12 +32,12 @@
 			<artifactId>beyond-realworld-common-types</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>realworld.example</groupId>
-			<artifactId>beyond-realworld-user-dao</artifactId>
+			<artifactId>realworld-v2-user-dao</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		-->
 
 		<!-- OTHER -->
 		<dependency>
