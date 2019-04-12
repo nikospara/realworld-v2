@@ -16,6 +16,11 @@
 	<packaging>pom</packaging>
 
 	<modules>
+		<module>realworld-v2-common-jpa</module>
+		<module>realworld-v2-common-services</module>
+		<module>realworld-v2-common-services-auth</module>
 		<module>realworld-v2-common-testutils</module>
+		<module>realworld-v2-common-types</module>
+		<module>realworld-v2-common-web</module>
 	</modules>
 </project>

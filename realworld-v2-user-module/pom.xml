@@ -21,6 +21,8 @@
 		<module>realworld-v2-user-model</module>
 		<module>realworld-v2-user-jpa</module>
 		<module>realworld-v2-user-dao</module>
+		<module>realworld-v2-user-service-interfaces</module>
+		<module>realworld-v2-user-services</module>
 	</modules>
 
 	<profiles>

@@ -3,61 +3,74 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
+		<artifactId>realworld-v2-common</artifactId>
 		<groupId>realworld.example</groupId>
-		<artifactId>realworld-v2-user-module</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>realworld-v2-user-jaxrs</artifactId>
 
-	<name>Realworld-v2: User JAX-RS</name>
-	<description>Realworld-v2: User module: JAX-RS</description>
+	<artifactId>realworld-v2-common-web</artifactId>
+
+	<name>Realworld-v2: Common web functionality</name>
+	<description>
+		Beyond Realworld-v2: Common web functionality
+
+		Implementation of infrastructures common to all web applications.
+	</description>
 
 	<packaging>jar</packaging>
 
 	<dependencies>
 		<!-- SPECS -->
 		<dependency>
-			<groupId>javax.annotation</groupId>
-			<artifactId>javax.annotation-api</artifactId>
+			<groupId>org.jboss.spec.javax.ws.rs</groupId>
+			<artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.spec.javax.ws.rs</groupId>
-			<artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
 		</dependency>
 
 		<!-- PROJECT -->
 		<dependency>
 			<groupId>realworld.example</groupId>
-			<artifactId>realworld-v2-user-model</artifactId>
+			<artifactId>realworld-v2-common-services</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>realworld.example</groupId>
-			<artifactId>realworld-v2-user-service-interfaces</artifactId>
+			<artifactId>realworld-v2-common-types</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-services-auth</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
-		<!--  OTHER -->
+		<!-- OTHER -->
 		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.25</version>
 		</dependency>
 
 		<!-- TEST -->
-		<dependency>
-			<groupId>realworld.example</groupId>
-			<artifactId>realworld-v2-common-testutils</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
 		<dependency>
 			<groupId>javax.json</groupId>
 			<artifactId>javax.json-api</artifactId>
@@ -65,18 +78,6 @@
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-cdi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jaxrs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jackson2-provider</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.weld</groupId>

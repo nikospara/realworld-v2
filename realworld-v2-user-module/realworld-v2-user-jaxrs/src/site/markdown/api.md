@@ -2,6 +2,8 @@
 
 All payloads have changed: the wrapper objects have been removed.
 
+Datetime format is: XXX
+
 ## Data objects
 
 These are objects accepted and returned by the APIs.

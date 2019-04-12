@@ -59,11 +59,6 @@
 		</dependency>
 		<dependency>
 			<groupId>realworld.example</groupId>
-			<artifactId>beyond-realworld-user-services</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>realworld.example</groupId>
 			<artifactId>beyond-realworld-user-jpa</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -71,6 +66,11 @@
 		<dependency>
 			<groupId>realworld.example</groupId>
 			<artifactId>realworld-v2-user-jaxrs</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-user-services</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
