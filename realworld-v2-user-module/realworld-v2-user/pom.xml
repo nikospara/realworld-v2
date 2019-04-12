@@ -46,26 +46,24 @@
 		</dependency>
 
 		<!-- PROJECT -->
-		<!--
 		<dependency>
 			<groupId>realworld.example</groupId>
-			<artifactId>beyond-realworld-common-jpa</artifactId>
+			<artifactId>realworld-v2-common-jpa</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>realworld.example</groupId>
-			<artifactId>beyond-realworld-common-web</artifactId>
+			<artifactId>realworld-v2-common-web</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>realworld.example</groupId>
-			<artifactId>beyond-realworld-user-jpa</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>realworld.example</groupId>
 			<artifactId>realworld-v2-user-jaxrs</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-user-jpa</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -76,13 +74,6 @@
 
 		<!-- TEST -->
 		<!--
-		<dependency>
-			<groupId>realworld.example</groupId>
-			<artifactId>beyond-realworld-common-testutils</artifactId>
-			<version>${project.version}</version>
-			<scope>test</scope>
-		</dependency>
-		-->
 		<dependency>
 			<groupId>javax.json</groupId>
 			<artifactId>javax.json-api</artifactId>
@@ -119,6 +110,7 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
 		</dependency>
+		-->
 	</dependencies>
 
 	<build>

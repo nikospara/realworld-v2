@@ -3,7 +3,12 @@ package realworld.user.persistence;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 import java.util.UUID;
+import java.util.function.BiFunction;
 
 import realworld.user.dao.UserDao;
 import realworld.user.model.ImmutableUserData;
@@ -44,6 +49,25 @@ class UserDaoImpl implements UserDao {
 		u.setImageUrl(user.getImageUrl());
 		em.persist(u);
 		return fromUser(u);
+	}
+
+	@Override
+	public boolean usernameExists(String username) {
+		return unique((cb, root) -> cb.equal(root.get(User_.username), username));
+	}
+
+	@Override
+	public boolean emailExists(String email) {
+		return unique((cb, root) -> cb.equal(cb.lower(root.get(User_.email)), email.toLowerCase()));
+	}
+
+	private boolean unique(BiFunction<CriteriaBuilder, Root<User>, Expression<Boolean>> callback) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> query = cb.createQuery(String.class);
+		Root<User> root = query.from(User.class);
+		query.select(root.get(User_.username));
+		query.where(callback.apply(cb, root));
+		return !em.createQuery(query).setMaxResults(1).getResultList().isEmpty();
 	}
 
 	private UserData fromUser(User u) {

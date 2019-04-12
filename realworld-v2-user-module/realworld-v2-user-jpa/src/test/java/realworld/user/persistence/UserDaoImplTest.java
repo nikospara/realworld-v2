@@ -1,7 +1,9 @@
 package realworld.user.persistence;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.persistence.EntityManager;
 
@@ -61,5 +63,19 @@ public class UserDaoImplTest {
 		assertEquals(ENCRYPTED_PASSWD, u.getPassword());
 		assertEquals(1L, statistics.getEntityInsertCount());
 		assertEquals(1L, statistics.getEntityLoadCount());
+	}
+
+	@Test
+	@Order(2)
+	void testUsernameExists() {
+		assertTrue(sut.usernameExists(USERNAME));
+		assertFalse(sut.usernameExists("I do not exist"));
+	}
+
+	@Test
+	@Order(3)
+	void testEmailExists() {
+		assertTrue(sut.emailExists(EMAIL));
+		assertFalse(sut.emailExists("I do not exist"));
 	}
 }

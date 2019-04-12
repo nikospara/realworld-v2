@@ -2,7 +2,7 @@
 
 All payloads have changed: the wrapper objects have been removed.
 
-Datetime format is: XXX
+Datetime format is: `yyyy-MM-dd'T'hh:mm:ss.SSS'Z'`
 
 ## Data objects
 

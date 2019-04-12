@@ -18,13 +18,13 @@ thorntail:
         binding-type: simple
         type: java.lang.String
         value: sub
-#  datasources:
-#    data-sources:
-#      RealworldUserDS:
-#        driver-name: ${database.user.thorntail.name}
-#        connection-url: ${database.user.url}
-#        user-name: ${database.user.username}
-#        password: ${database.user.password}
+  datasources:
+    data-sources:
+      RealworldUserDS:
+        driver-name: ${database.user.thorntail.name}
+        connection-url: ${database.user.url}
+        user-name: ${database.user.username}
+        password: ${database.user.password}
   cdi:
     require-bean-descriptor: true
   network:
