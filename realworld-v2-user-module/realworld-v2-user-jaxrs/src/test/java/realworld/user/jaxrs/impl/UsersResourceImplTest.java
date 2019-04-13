@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static realworld.user.jaxrs.impl.UserDataAssertions.assertUserData;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
@@ -28,7 +29,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import realworld.EntityDoesNotExistException;
 import realworld.jaxrs.sys.ObjectMapperProvider;
+import realworld.jaxrs.sys.exceptionmap.EntityDoesNotExistExceptionMapper;
 import realworld.test.jaxrs.CustomMockDispatcherFactory;
 import realworld.user.jaxrs.UsersResource;
 import realworld.user.model.ImmutableUserData;
@@ -69,7 +72,7 @@ public class UsersResourceImplTest {
 
 	@BeforeEach
 	void init() {
-		dispatcher = CustomMockDispatcherFactory.createDispatcher(ObjectMapperProvider.class);
+		dispatcher = CustomMockDispatcherFactory.createDispatcher(ObjectMapperProvider.class, EntityDoesNotExistExceptionMapper.class);
 		SingletonResource resourceFactory = new SingletonResource(sut, new DefaultResourceClass(UsersResource.class, null));
 		dispatcher.getRegistry().addResourceFactory(resourceFactory, APPLICATION_PATH);
 		response = new MockHttpResponse();
@@ -77,10 +80,10 @@ public class UsersResourceImplTest {
 
 	@Test
 	void testRegister() throws Exception {
-		MockHttpRequest request = MockHttpRequest.post(APPLICATION_PATH + "/users");
-		request.contentType(MediaType.APPLICATION_JSON);
-		request.accept(MediaType.APPLICATION_JSON);
-		request.content(("{\"email\":\"" + EMAIL + "\", \"password\":\"" + PASSWORD + "\", \"username\":\"" + USERNAME + "\"}").getBytes());
+		MockHttpRequest request = MockHttpRequest.post(APPLICATION_PATH + "/users")
+			.contentType(MediaType.APPLICATION_JSON)
+			.accept(MediaType.APPLICATION_JSON)
+			.content(("{\"email\":\"" + EMAIL + "\", \"password\":\"" + PASSWORD + "\", \"username\":\"" + USERNAME + "\"}").getBytes());
 
 		when(userService.register(any())).thenAnswer(a -> {
 			UserRegistrationData r = a.getArgument(0);
@@ -95,6 +98,42 @@ public class UsersResourceImplTest {
 
 		assertEquals(201, response.getStatus());
 		assertEquals(UriBuilder.fromPath(APPLICATION_PATH).segment("users", "{username}").build(USERNAME), response.getOutputHeaders().getFirst("Location"));
+	}
+
+	@Test
+	void testGetForNonExistingUser() throws Exception {
+		MockHttpRequest request = MockHttpRequest.get(APPLICATION_PATH + "/users/" + USERNAME)
+			.accept(MediaType.APPLICATION_JSON);
+
+		when(userService.findByUserName(USERNAME)).thenThrow(EntityDoesNotExistException.class);
+
+		dispatcher.invoke(request, response);
+
+		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+		verify(userService).findByUserName(captor.capture());
+		assertEquals(USERNAME, captor.getValue());
+
+		assertEquals(404, response.getStatus());
+	}
+
+	@Test
+	void testGet() throws Exception {
+		MockHttpRequest request = MockHttpRequest.get(APPLICATION_PATH + "/users/" + USERNAME)
+			.accept(MediaType.APPLICATION_JSON);
+
+		when(userService.findByUserName(USERNAME)).thenAnswer(a -> makeUser(a.getArgument(0), EMAIL, IMAGE_URL));
+
+		dispatcher.invoke(request, response);
+
+		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+		verify(userService).findByUserName(captor.capture());
+		assertEquals(USERNAME, captor.getValue());
+
+		assertUserData(response)
+				.assertId(USER_ID)
+				.assertUsername(USERNAME)
+				.assertEmail(EMAIL)
+				.assertImageUrl(IMAGE_URL);
 	}
 
 	private UserData makeUser(String username, String email, String image) {

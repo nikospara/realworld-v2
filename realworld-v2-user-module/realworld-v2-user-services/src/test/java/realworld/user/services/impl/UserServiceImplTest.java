@@ -2,6 +2,7 @@ package realworld.user.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -13,12 +14,15 @@ import static org.mockito.Mockito.when;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
+import java.util.Optional;
+
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import realworld.EntityDoesNotExistException;
 import realworld.SimpleValidationException;
 import realworld.user.dao.BiographyDao;
 import realworld.user.dao.UserDao;
@@ -100,6 +104,26 @@ public class UserServiceImplTest {
 		assertEquals(EMAIL1, result.getEmail());
 		assertEquals(IMAGE_URL1, result.getImageUrl());
 		verify(biographyDao).create(USERID1, BIO1);
+	}
+
+	@Test
+	void testFindByNameForNonExistingUser() {
+		when(userDao.findByUserName(USERNAME1)).thenReturn(Optional.empty());
+		try {
+			sut.findByUserName(USERNAME1);
+			fail("should throw for non-existing user");
+		}
+		catch( EntityDoesNotExistException e ) {
+			// expected
+		}
+	}
+
+	@Test
+	void testFindByName() {
+		UserData userData = mock(UserData.class);
+		when(userDao.findByUserName(USERNAME1)).thenReturn(Optional.of(userData));
+		UserData result = sut.findByUserName(USERNAME1);
+		assertSame(userData, result);
 	}
 
 	private void assertDuplicateUsername(Runnable f) {

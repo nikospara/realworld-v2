@@ -30,7 +30,7 @@ public class UsersResourceImpl implements UsersResource {
 	}
 
 	@Override
-	public Response get(String username) {
-		return null;
+	public UserData get(String username) {
+		return userService.findByUserName(username);
 	}
 }

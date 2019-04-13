@@ -11,9 +11,9 @@ These are objects accepted and returned by the APIs.
 ### User
 
 	{
+		"id": "cc46556c-8e04-4b90-9a13-a3eaeb6e2c81",
 		"username": "Jacob",
 		"email": "jake@jake.jake",
-		"password": "jakejake",
 		"imageUrl": "https://i.stack.imgur.com/xHWG8.jpg"
 	}
 

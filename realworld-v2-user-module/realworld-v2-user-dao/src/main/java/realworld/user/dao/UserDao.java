@@ -1,5 +1,7 @@
 package realworld.user.dao;
 
+import java.util.Optional;
+
 import realworld.user.model.UserData;
 
 /**
@@ -31,4 +33,12 @@ public interface UserDao {
 	 * @return Whether the email exists
 	 */
 	boolean emailExists(String email);
+
+	/**
+	 * Find user by user name.
+	 *
+	 * @param username The user name
+	 * @return The user with the given user name
+	 */
+	Optional<UserData> findByUserName(String username);
 }

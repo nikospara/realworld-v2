@@ -9,6 +9,11 @@ import realworld.authorization.NotAuthorizedException;
 public interface Authorization {
 
 	/**
+	 * Replacement value for strings that are should not be visible to the user.
+	 */
+	String REDUCTED = "***";
+
+	/**
 	 * Require a logged-in user.
 	 * 
 	 * @throws NotAuthenticatedException If the requirement is not met

@@ -2,6 +2,7 @@ package realworld.user.services;
 
 import javax.validation.Valid;
 
+import realworld.EntityDoesNotExistException;
 import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
 
@@ -17,4 +18,13 @@ public interface UserService {
 	 * @return The full user profile - never {@code null}
 	 */
 	UserData register(@Valid UserRegistrationData registrationData);
+
+	/**
+	 * Find by user name.
+	 *
+	 * @param username The user name
+	 * @return The user
+	 * @throws EntityDoesNotExistException If not found
+	 */
+	UserData findByUserName(String username);
 }

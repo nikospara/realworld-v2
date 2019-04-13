@@ -14,13 +14,15 @@ public class CustomMockDispatcherFactory {
 	/**
 	 * Factory method for the RestEasy {@code Dispatcher} required for running it in the tests.
 	 *
-	 * @param provider The {@code ObjectMapperProvider} to register
+	 * @param providers Providers to register
 	 * @return The dispatcher
 	 */
-	public static Dispatcher createDispatcher(Class<?> provider) {
+	public static Dispatcher createDispatcher(Class<?>... providers) {
 		ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
 		providerFactory.setInjectorFactory(new CdiInjectorFactory());
-		providerFactory.registerProvider(provider);
+		for( Class<?> provider : providers ) {
+			providerFactory.registerProvider(provider);
+		}
 		Dispatcher dispatcher = new SynchronousDispatcher(providerFactory);
 		ResteasyProviderFactory.setInstance(providerFactory);
 		RegisterBuiltin.register(providerFactory);

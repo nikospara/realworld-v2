@@ -7,6 +7,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
@@ -59,6 +60,17 @@ class UserDaoImpl implements UserDao {
 	@Override
 	public boolean emailExists(String email) {
 		return unique((cb, root) -> cb.equal(cb.lower(root.get(User_.email)), email.toLowerCase()));
+	}
+
+	@Override
+	public Optional<UserData> findByUserName(String username) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> query = cb.createQuery(User.class);
+		Root<User> root = query.from(User.class);
+		query.where(cb.equal(root.get(User_.username), username));
+		return em.createQuery(query).setMaxResults(1).getResultStream()
+				.findFirst()
+				.map(this::fromUser);
 	}
 
 	private boolean unique(BiFunction<CriteriaBuilder, Root<User>, Expression<Boolean>> callback) {

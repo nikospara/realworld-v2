@@ -78,4 +78,13 @@ public class UserDaoImplTest {
 		assertTrue(sut.emailExists(EMAIL));
 		assertFalse(sut.emailExists("I do not exist"));
 	}
+
+	@Test
+	@Order(5)
+	void testFindByUsername() {
+		UserData result = sut.findByUserName(USERNAME).get();
+		assertEquals(EMAIL, result.getEmail());
+		assertEquals(IMAGE_URL, result.getImageUrl());
+		assertTrue(sut.findByUserName("username_that_doesnt_exist").isEmpty());
+	}
 }

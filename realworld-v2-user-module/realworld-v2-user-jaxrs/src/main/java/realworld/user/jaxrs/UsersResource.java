@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
 
 /**
@@ -24,7 +25,7 @@ public interface UsersResource {
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(value="Register user.", tags=TAG)
+	@ApiOperation(value="Register user.", tags=TAG, code=201)
 	Response register(
 			@ApiParam(value = "Information required to register.", required = true)
 			UserRegistrationData registerParam
@@ -34,7 +35,7 @@ public interface UsersResource {
 	@Path("/{username}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value="Returns the profile of the given user.", tags=TAG)
-	Response get(
+	UserData get(
 			@ApiParam(value = "The user name to apply this operation to.", required = true)
 			@PathParam("username")
 			String username

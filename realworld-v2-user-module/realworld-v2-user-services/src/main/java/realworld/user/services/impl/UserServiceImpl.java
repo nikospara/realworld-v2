@@ -78,4 +78,9 @@ class UserServiceImpl implements UserService {
 
 		return createdUserData;
 	}
+
+	@Override
+	public UserData findByUserName(String username) {
+		return userDao.findByUserName(username).orElseThrow(EntityDoesNotExistException::new);
+	}
 }
