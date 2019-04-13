@@ -11,6 +11,7 @@ import java.util.List;
 import realworld.EntityDoesNotExistException;
 import realworld.SimpleConstraintViolation;
 import realworld.SimpleValidationException;
+import realworld.user.dao.BiographyDao;
 import realworld.user.dao.UserDao;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
@@ -26,6 +27,8 @@ class UserServiceImpl implements UserService {
 
 	private UserDao userDao;
 
+	private BiographyDao biographyDao;
+
 	private PasswordEncrypter encrypter;
 
 	/**
@@ -38,12 +41,14 @@ class UserServiceImpl implements UserService {
 	/**
 	 * Full constructor for dependency injection.
 	 *
-	 * @param userDao The user DAO
-	 * @param encrypter The password encrypter
+	 * @param userDao       The user DAO
+	 * @param biographyDao  The biography DAO
+	 * @param encrypter     The password encrypter
 	 */
 	@Inject
-	public UserServiceImpl(UserDao userDao, PasswordEncrypter encrypter) {
+	public UserServiceImpl(UserDao userDao, BiographyDao biographyDao, PasswordEncrypter encrypter) {
 		this.userDao = userDao;
+		this.biographyDao = biographyDao;
 		this.encrypter = encrypter;
 	}
 
@@ -68,6 +73,9 @@ class UserServiceImpl implements UserService {
 				.imageUrl(registrationData.getImageUrl())
 				.build();
 
-		return userDao.create(userData, encrypter.apply(registrationData.getPassword()));
+		UserData createdUserData = userDao.create(userData, encrypter.apply(registrationData.getPassword()));
+		biographyDao.create(createdUserData.getId(), registrationData.getBio());
+
+		return createdUserData;
 	}
 }

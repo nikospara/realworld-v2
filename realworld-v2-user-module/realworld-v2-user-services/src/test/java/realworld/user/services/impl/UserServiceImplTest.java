@@ -20,7 +20,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.SimpleValidationException;
+import realworld.user.dao.BiographyDao;
 import realworld.user.dao.UserDao;
+import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
 
@@ -39,12 +41,17 @@ public class UserServiceImplTest {
 	private static final String EMAIL2 = "email.two@here.com";
 	private static final String PASSWORD1 = "PASSWORD1";
 	private static final String PASSWORD2 = "PASSWORD2";
+	private static final String BIO1 = "BIO1";
 	private static final String BIO2 = "BIO2";
-	private static final String IMAGE2 = "IMAGE2";
+	private static final String IMAGE_URL1 = "IMAGE1";
+	private static final String IMAGE_URL2 = "IMAGE2";
 	private static final String ENCRYPTED_PASSWORD = "ENCRYPTED_PASSWORD";
 
 	@Produces @Mock
 	private UserDao userDao;
+
+	@Produces @Mock
+	private BiographyDao biographyDao;
 
 	@Produces @Mock(lenient = true)
 	private PasswordEncrypter encrypter;
@@ -81,7 +88,9 @@ public class UserServiceImplTest {
 		when(registrationData.getUsername()).thenReturn(USERNAME1);
 		when(registrationData.getEmail()).thenReturn(EMAIL1);
 		when(registrationData.getPassword()).thenReturn(PASSWORD1);
-		when(userDao.create(any(UserData.class), anyString())).then(x -> x.getArgument(0));
+		when(registrationData.getImageUrl()).thenReturn(IMAGE_URL1);
+		when(registrationData.getBio()).thenReturn(BIO1);
+		when(userDao.create(any(UserData.class), anyString())).then(x -> ImmutableUserData.builder().from(x.getArgument(0)).id(USERID1).build());
 		when(encrypter.apply(PASSWORD1)).thenReturn(ENCRYPTED_PASSWORD);
 
 		UserData result = sut.register(registrationData);
@@ -89,6 +98,8 @@ public class UserServiceImplTest {
 		verify(userDao).create(any(UserData.class), eq(ENCRYPTED_PASSWORD));
 		assertEquals(USERNAME1, result.getUsername());
 		assertEquals(EMAIL1, result.getEmail());
+		assertEquals(IMAGE_URL1, result.getImageUrl());
+		verify(biographyDao).create(USERID1, BIO1);
 	}
 
 	private void assertDuplicateUsername(Runnable f) {

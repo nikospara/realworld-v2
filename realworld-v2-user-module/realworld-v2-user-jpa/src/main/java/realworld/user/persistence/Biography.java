@@ -13,6 +13,10 @@ import javax.persistence.Table;
 
 /**
  * The user biography entity.
+ *
+ * <p>Its purpose is to keep the, potentially long, biography
+ * field separated from the main {@link User} entity and loaded on demand for better
+ * performance.</p>
  */
 @Entity
 @Table(name = "RWL_USER_BIO")
