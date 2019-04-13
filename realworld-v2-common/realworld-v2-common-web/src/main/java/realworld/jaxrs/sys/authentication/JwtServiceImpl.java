@@ -66,13 +66,13 @@ public class JwtServiceImpl implements JwtService {
 	}
 
 	@Override
-	public String toToken(String userName, String uniqueId) {
+	public String toToken(String uniqueId, String userName) {
 		SignedJWT signedJWT = makeSignedJWT(userName, uniqueId, new Date(dateTimeService.currentTimeMillis() + tokenAuthenticationConfig.getJwtSessionTime() * 1000));
 		return signedJWT.serialize();
 	}
 
 	@Override
-	public String updateUser(String userName, String uniqueId, String currentToken) {
+	public String updateUser(String uniqueId, String userName, String currentToken) {
 		try {
 			SignedJWT oldJwt = SignedJWT.parse(currentToken);
 			SignedJWT newJwt = makeSignedJWT(userName, uniqueId, oldJwt.getJWTClaimsSet().getExpirationTime());

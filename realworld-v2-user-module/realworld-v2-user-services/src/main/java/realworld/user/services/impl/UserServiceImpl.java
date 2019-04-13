@@ -83,4 +83,9 @@ class UserServiceImpl implements UserService {
 	public UserData findByUserName(String username) {
 		return userDao.findByUserName(username).orElseThrow(EntityDoesNotExistException::new);
 	}
+
+	@Override
+	public UserData findByEmailAndPassword(String email, String password) {
+		return userDao.findByEmailAndPassword(email, encrypter.apply(password)).orElseThrow(EntityDoesNotExistException::new);
+	}
 }

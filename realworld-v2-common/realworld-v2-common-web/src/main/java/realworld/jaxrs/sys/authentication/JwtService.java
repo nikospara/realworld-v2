@@ -11,22 +11,22 @@ public interface JwtService {
 	/**
 	 * Create a JWT from the given user object.
 	 *
-	 * @param userName The user name
 	 * @param uniqueId The user unique id
+	 * @param userName The user name
 	 * @return The token
 	 */
-	String toToken(String userName, String uniqueId);
+	String toToken(String uniqueId, String userName);
 
 	/**
 	 * Create a signed JWT that reflects the changes to the current user data,
 	 * but has the same expiration time as the current token.
 	 *
-	 * @param userName The user name
 	 * @param uniqueId The user unique id
+	 * @param userName The user name
 	 * @param currentToken The current token
 	 * @return The updated token
 	 */
-	String updateUser(String userName, String uniqueId, String currentToken);
+	String updateUser(String uniqueId, String userName, String currentToken);
 
 	/**
 	 * Verify the given JWT.

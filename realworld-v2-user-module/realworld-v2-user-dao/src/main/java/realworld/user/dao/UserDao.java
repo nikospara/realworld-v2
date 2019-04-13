@@ -35,6 +35,15 @@ public interface UserDao {
 	boolean emailExists(String email);
 
 	/**
+	 * Find a user by email (case-insensitive comparison) and password.
+	 *
+	 * @param email    The email
+	 * @param password The encrypted password
+	 * @return The user object
+	 */
+	Optional<UserData> findByEmailAndPassword(String email, String password);
+
+	/**
 	 * Find user by user name.
 	 *
 	 * @param username The user name

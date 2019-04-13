@@ -58,7 +58,7 @@ public class JwtServiceImplTest {
 
 	@Test
 	void testToTokenAndVerify() throws Exception {
-		String token = sut.toToken(USERNAME, USER_ID);
+		String token = sut.toToken(USER_ID, USERNAME);
 		assertNotNull(token);
 		Matcher m = TOKEN_RE.matcher(token);
 		assertTrue(m.matches());
@@ -73,12 +73,12 @@ public class JwtServiceImplTest {
 
 	@Test
 	void testUpdateUser() throws Exception {
-		String token = sut.toToken(USERNAME, USER_ID);
+		String token = sut.toToken(USER_ID, USERNAME);
 		Matcher m1 = TOKEN_RE.matcher(token);
 		assertTrue(m1.matches());
 		MatchResult mr1 = m1.toMatchResult();
 		JsonObject tokenBody1 = readBase64AsJson(mr1.group(2));
-		String token2 = sut.updateUser(USERNAME2, USER_ID2, token);
+		String token2 = sut.updateUser(USER_ID2, USERNAME2, token);
 		Matcher m2 = TOKEN_RE.matcher(token2);
 		assertTrue(m2.matches());
 		MatchResult mr2 = m2.toMatchResult();

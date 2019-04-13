@@ -54,4 +54,9 @@ public class UserServiceAuthorizer implements UserService {
 		}
 		return userData;
 	}
+
+	@Override
+	public UserData findByEmailAndPassword(String email, String password) {
+		return delegate.findByEmailAndPassword(email, password);
+	}
 }

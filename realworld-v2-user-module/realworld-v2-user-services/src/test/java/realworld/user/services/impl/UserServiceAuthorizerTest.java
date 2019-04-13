@@ -38,21 +38,12 @@ public class UserServiceAuthorizerTest {
 
 	private static final UserRegistrationData USER_REG_DATA = mock(UserRegistrationData.class);
 	private static final String USERNAME_TO_FIND = "USERNAME_TO_FIND";
-//	private static final UserData FROM_GET_CURENT_USER = mock(UserData.class, "FROM_GET_CURENT_USER");
-//	private static final UserData FROM_UPDATE = mock(UserData.class, "FROM_UPDATE");
+	private static final String EMAIL_FOR_FIND_BY_EMAIL_PASSWORD = "EMAIL_FOR_FIND_BY_EMAIL_PASSWORD";
+	private static final String PASSWD_FOR_FIND_BY_EMAIL_PASSWORD = "PASSWD_FOR_FIND_BY_EMAIL_PASSWORD";
+
 	private static final UserData FROM_REGISTER = mock(UserData.class, "FROM_REGISTER");
 	private static final UserData FROM_FIND_BY_USER_NAME = ImmutableUserData.builder().id("FROM_FIND_BY_USER_NAME").username(USERNAME_TO_FIND).email("EMAIL_FROM_FIND_BY_USER_NAME").imageUrl("IMAGE_FROM_FIND_BY_USER_NAME").build();
-//	private static final UserData FROM_LOGIN = mock(UserData.class, "FROM_LOGIN");
-//	private static final ProfileData FROM_FOLLOW = mock(ProfileData.class, "FROM_FOLLOW");
-//	private static final ProfileData FROM_UNFOLLOW = mock(ProfileData.class, "FROM_UNFOLLOW");
-//	private static final ProfileData FROM_FIND_PROFILE = mock(ProfileData.class, "FROM_FIND_PROFILE");
-//	private static final UserUpdateData USER_UPDATE_DATA = mock(UserUpdateData.class);
-//	private static final UserLoginData USER_LOGIN_DATA = mock(UserLoginData.class);
-//	private static final String USER_TO_FOLLOW = "USER_TO_FOLLOW";
-//	private static final String USER_TO_UNFOLLOW = "USER_TO_UNFOLLOW";
-//	private static final String USER_TO_FIND_PROFILE = "USER_TO_FIND_PROFILE";
-//	private static final String USER_TO_FIND_FOLLOWED = "USER_TO_FIND_FOLLOWED";
-//	private static final List<String> FROM_FIND_FOLLOWED_USER_IDS = new ArrayList<>();
+	private static final UserData FROM_FIND_BY_EMAIL_PASSWORD = ImmutableUserData.builder().id("FROM_FIND_BY_EMAIL_PASSWORD").username(USERNAME_TO_FIND).email(EMAIL_FOR_FIND_BY_EMAIL_PASSWORD).imageUrl("IMAGE_FROM_FIND_BY_EMAIL_PASSWORD").build();
 
 	@Produces @Mock
 	private Authorization authorization;
@@ -100,6 +91,12 @@ public class UserServiceAuthorizerTest {
 		assertEquals("IMAGE_FROM_FIND_BY_USER_NAME", result.getImageUrl());
 	}
 
+	@Test
+	void testFindByEmailAndPassword() {
+		Object result = dummy.findByEmailAndPassword(EMAIL_FOR_FIND_BY_EMAIL_PASSWORD, PASSWD_FOR_FIND_BY_EMAIL_PASSWORD);
+		assertSame(FROM_FIND_BY_EMAIL_PASSWORD, result);
+	}
+
 	@ApplicationScoped
 	static class DummyUserService implements UserService {
 		@Override
@@ -116,6 +113,14 @@ public class UserServiceAuthorizerTest {
 				throw new IllegalArgumentException();
 			}
 			return FROM_FIND_BY_USER_NAME;
+		}
+
+		@Override
+		public UserData findByEmailAndPassword(String email, String password) {
+			if( email != EMAIL_FOR_FIND_BY_EMAIL_PASSWORD || password != PASSWD_FOR_FIND_BY_EMAIL_PASSWORD ) {
+				throw new IllegalArgumentException();
+			}
+			return FROM_FIND_BY_EMAIL_PASSWORD;
 		}
 	}
 }

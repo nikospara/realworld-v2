@@ -126,6 +126,26 @@ public class UserServiceImplTest {
 		assertSame(userData, result);
 	}
 
+	@Test
+	void testFindByEmailAndPasswordForNonExistingUser() {
+		when(userDao.findByEmailAndPassword(EMAIL1, "ENC:" + PASSWORD1)).thenReturn(Optional.empty());
+		try {
+			sut.findByEmailAndPassword(EMAIL1, PASSWORD1);
+			fail("should throw for non-existing user");
+		}
+		catch( EntityDoesNotExistException e ) {
+			// expected
+		}
+	}
+
+	@Test
+	void testFindByEmailAndPassword() {
+		UserData userData = mock(UserData.class);
+		when(userDao.findByEmailAndPassword(EMAIL1, "ENC:" + PASSWORD1)).thenReturn(Optional.of(userData));
+		UserData result = sut.findByEmailAndPassword(EMAIL1, PASSWORD1);
+		assertSame(userData, result);
+	}
+
 	private void assertDuplicateUsername(Runnable f) {
 		try {
 			f.run();

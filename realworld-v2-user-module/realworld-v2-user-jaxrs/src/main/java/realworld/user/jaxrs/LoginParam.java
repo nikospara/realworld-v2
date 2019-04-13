@@ -2,12 +2,10 @@ package realworld.user.jaxrs;
 
 import java.io.Serializable;
 
-import realworld.user.model.UserLoginData;
-
 /**
  * Information required to log in.
  */
-public class LoginParam implements UserLoginData, Serializable {
+public class LoginParam implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -15,7 +13,6 @@ public class LoginParam implements UserLoginData, Serializable {
 	private String password;
 
 	/** Get the user email. */
-	@Override
 	public String getEmail() {
 		return email;
 	}
@@ -26,7 +23,6 @@ public class LoginParam implements UserLoginData, Serializable {
 	}
 
 	/** Get the password. */
-	@Override
 	public String getPassword() {
 		return password;
 	}

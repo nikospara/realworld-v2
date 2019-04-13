@@ -80,6 +80,19 @@ public class UserDaoImplTest {
 	}
 
 	@Test
+	@Order(4)
+	void testFindByEmailAndPassword() {
+		UserData result1 = sut.findByEmailAndPassword(EMAIL, ENCRYPTED_PASSWD).get();
+		assertEquals(USERNAME, result1.getUsername());
+		assertEquals(IMAGE_URL, result1.getImageUrl());
+		UserData result2 = sut.findByEmailAndPassword(EMAIL.toUpperCase(), ENCRYPTED_PASSWD).get();
+		assertEquals(USERNAME, result2.getUsername());
+		assertEquals(IMAGE_URL, result2.getImageUrl());
+		assertTrue(sut.findByEmailAndPassword("xxx", ENCRYPTED_PASSWD).isEmpty());
+		assertTrue(sut.findByEmailAndPassword(EMAIL, "xxx").isEmpty());
+	}
+
+	@Test
 	@Order(5)
 	void testFindByUsername() {
 		UserData result = sut.findByUserName(USERNAME).get();

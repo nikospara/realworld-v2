@@ -63,6 +63,20 @@ class UserDaoImpl implements UserDao {
 	}
 
 	@Override
+	public Optional<UserData> findByEmailAndPassword(String email, String password) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> query = cb.createQuery(User.class);
+		Root<User> root = query.from(User.class);
+		query.where(cb.and(
+				cb.equal(cb.lower(root.get(User_.email)), email.toLowerCase()),
+				cb.equal(root.get(User_.password), password)
+		));
+		return em.createQuery(query).setMaxResults(1).getResultStream()
+				.findFirst()
+				.map(this::fromUser);
+	}
+
+	@Override
 	public Optional<UserData> findByUserName(String username) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> query = cb.createQuery(User.class);
