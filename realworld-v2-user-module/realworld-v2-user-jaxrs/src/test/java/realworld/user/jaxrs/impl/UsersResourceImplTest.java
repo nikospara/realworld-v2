@@ -36,6 +36,7 @@ import realworld.user.jaxrs.UsersResource;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
+import realworld.user.model.UserUpdateData;
 import realworld.user.services.UserService;
 
 /**
@@ -81,8 +82,7 @@ public class UsersResourceImplTest {
 	void testRegister() throws Exception {
 		MockHttpRequest request = MockHttpRequest.post(APPLICATION_PATH + "/users")
 			.contentType(MediaType.APPLICATION_JSON)
-			.accept(MediaType.APPLICATION_JSON)
-			.content(("{\"email\":\"" + EMAIL + "\", \"password\":\"" + PASSWORD + "\", \"username\":\"" + USERNAME + "\"}").getBytes());
+			.content(("{\"email\":\"" + EMAIL + "\", \"password\":\"" + PASSWORD + "\", \"username\":\"" + USERNAME + "\", \"imageUrl\":\"" + IMAGE_URL + "\"}").getBytes());
 
 		when(userService.register(any())).thenAnswer(a -> {
 			UserRegistrationData r = a.getArgument(0);
@@ -108,11 +108,10 @@ public class UsersResourceImplTest {
 
 		dispatcher.invoke(request, response);
 
+		assertEquals(404, response.getStatus());
 		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 		verify(userService).findByUserName(captor.capture());
 		assertEquals(USERNAME, captor.getValue());
-
-		assertEquals(404, response.getStatus());
 	}
 
 	@Test
@@ -133,6 +132,24 @@ public class UsersResourceImplTest {
 				.assertUsername(USERNAME)
 				.assertEmail(EMAIL)
 				.assertImageUrl(IMAGE_URL);
+	}
+
+	@Test
+	void testUpdate() throws Exception {
+		MockHttpRequest request = MockHttpRequest.put(APPLICATION_PATH + "/users/" + USERNAME)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(("{\"email\":\"" + EMAIL + "\", \"password\":\"" + PASSWORD + "\", \"username\":\"" + USERNAME + "\", \"imageUrl\":\"" + IMAGE_URL + "\"}").getBytes());
+
+		dispatcher.invoke(request, response);
+
+		assertEquals(204, response.getStatus());
+		ArgumentCaptor<UserUpdateData> captor = ArgumentCaptor.forClass(UserUpdateData.class);
+		verify(userService).update(captor.capture());
+		UserUpdateData data = captor.getValue();
+		assertEquals(USERNAME, data.getUsername());
+		assertEquals(EMAIL, data.getEmail());
+		assertEquals(IMAGE_URL, data.getImageUrl());
+		assertEquals(PASSWORD, data.getPassword());
 	}
 
 	private UserData makeUser(String username, String email, String image) {

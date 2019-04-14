@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 
 import realworld.user.dao.UserDao;
+import realworld.user.dao.UserUpdateOperation;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
 
@@ -85,6 +86,11 @@ class UserDaoImpl implements UserDao {
 		return em.createQuery(query).setMaxResults(1).getResultStream()
 				.findFirst()
 				.map(this::fromUser);
+	}
+
+	@Override
+	public UserUpdateOperation createUpdate() {
+		return new UserUpdateOperationImpl(em);
 	}
 
 	private boolean unique(BiFunction<CriteriaBuilder, Root<User>, Expression<Boolean>> callback) {

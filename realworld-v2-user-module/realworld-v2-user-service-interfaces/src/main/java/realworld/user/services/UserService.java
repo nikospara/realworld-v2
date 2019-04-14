@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 import realworld.EntityDoesNotExistException;
 import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
+import realworld.user.model.UserUpdateData;
 
 /**
  * User service.
@@ -49,4 +50,11 @@ public interface UserService {
 			@Size(min=5)
 			String password
 	);
+
+	/**
+	 * Update the current user.
+	 *
+	 * @param userUpdateData User update data
+	 */
+	void update(@Valid UserUpdateData userUpdateData);
 }

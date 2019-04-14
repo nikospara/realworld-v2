@@ -54,7 +54,7 @@ Deprecated. Use the token to extract the user name and then call the "Get Profil
 
 Example request body: same as for registration.
 
-Authentication required, returns a User.
+Authentication required, returns 204 "No Content".
 
 All fields are optional.
 

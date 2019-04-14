@@ -3,6 +3,9 @@ package realworld.user.persistence;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Root;
 
 import realworld.user.dao.BiographyDao;
 
@@ -37,5 +40,14 @@ public class BiographyDaoImpl implements BiographyDao {
 		b.setUser(em.getReference(User.class, userId));
 		b.setBio(content);
 		em.persist(b);
+	}
+
+	@Override
+	public void update(String userId, String content) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Biography> updateQuery = cb.createCriteriaUpdate(Biography.class);
+		Root<Biography> biographyRoot = updateQuery.from(Biography.class);
+		updateQuery.set(Biography_.bio, content).where(cb.equal(biographyRoot.get(Biography_.userId), userId));
+		em.createQuery(updateQuery).executeUpdate();
 	}
 }

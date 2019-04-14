@@ -50,4 +50,11 @@ public interface UserDao {
 	 * @return The user with the given user name
 	 */
 	Optional<UserData> findByUserName(String username);
+
+	/**
+	 * Create a User update operation. This operation is bound to the current transaction.
+	 *
+	 * @return The User update operation
+	 */
+	UserUpdateOperation createUpdate();
 }

@@ -2,6 +2,9 @@ package realworld.user.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static realworld.authorization.service.Authorization.REDUCTED;
@@ -21,10 +24,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.EntityDoesNotExistException;
 import realworld.authentication.AuthenticationContext;
 import realworld.authentication.User;
+import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.service.Authorization;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
+import realworld.user.model.UserUpdateData;
 import realworld.user.services.UserService;
 
 /**
@@ -40,6 +45,7 @@ public class UserServiceAuthorizerTest {
 	private static final String USERNAME_TO_FIND = "USERNAME_TO_FIND";
 	private static final String EMAIL_FOR_FIND_BY_EMAIL_PASSWORD = "EMAIL_FOR_FIND_BY_EMAIL_PASSWORD";
 	private static final String PASSWD_FOR_FIND_BY_EMAIL_PASSWORD = "PASSWD_FOR_FIND_BY_EMAIL_PASSWORD";
+	private static final UserUpdateData USER_UPDATE_DATA = mock(UserUpdateData.class);
 
 	private static final UserData FROM_REGISTER = mock(UserData.class, "FROM_REGISTER");
 	private static final UserData FROM_FIND_BY_USER_NAME = ImmutableUserData.builder().id("FROM_FIND_BY_USER_NAME").username(USERNAME_TO_FIND).email("EMAIL_FROM_FIND_BY_USER_NAME").imageUrl("IMAGE_FROM_FIND_BY_USER_NAME").build();
@@ -97,6 +103,28 @@ public class UserServiceAuthorizerTest {
 		assertSame(FROM_FIND_BY_EMAIL_PASSWORD, result);
 	}
 
+	@Test
+	void testUpdateWithoutLogin() {
+		doThrow(NotAuthenticatedException.class).when(authorization).requireLogin();
+		expectNotAuthenticatedException(() -> dummy.update(USER_UPDATE_DATA));
+	}
+
+	@Test
+	void testUpdate() {
+		doNothing().when(authorization).requireLogin();
+		dummy.update(USER_UPDATE_DATA);
+	}
+
+	private void expectNotAuthenticatedException(Runnable f) {
+		try {
+			f.run();
+			fail("expected NotAuthenticatedException");
+		}
+		catch( NotAuthenticatedException expected ) {
+			// expected
+		}
+	}
+
 	@ApplicationScoped
 	static class DummyUserService implements UserService {
 		@Override
@@ -121,6 +149,13 @@ public class UserServiceAuthorizerTest {
 				throw new IllegalArgumentException();
 			}
 			return FROM_FIND_BY_EMAIL_PASSWORD;
+		}
+
+		@Override
+		public void update(@Valid UserUpdateData userUpdateData) {
+			if( userUpdateData != USER_UPDATE_DATA ) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 }

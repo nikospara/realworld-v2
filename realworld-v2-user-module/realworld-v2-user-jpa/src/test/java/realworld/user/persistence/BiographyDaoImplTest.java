@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import java.util.UUID;
 
 import org.hibernate.stat.Statistics;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -31,6 +32,7 @@ public class BiographyDaoImplTest {
 	private static final String EMAIL = "bio_test@here.com";
 	private static final String PASSWORD = "pwd";
 	private static final String BIO = "Biography of bio_test";
+	private static final String BIO2 = "Updated biography of bio_test";
 
 	private EntityManager em;
 	private Statistics statistics;
@@ -41,6 +43,11 @@ public class BiographyDaoImplTest {
 		this.em = em;
 		this.statistics = statistics;
 		sut = new BiographyDaoImpl(em);
+	}
+
+	@AfterEach
+	void afterEach() {
+		statistics.clear();
 	}
 
 	@Test
@@ -67,5 +74,20 @@ public class BiographyDaoImplTest {
 		Biography b = em.find(Biography.class, USER_ID);
 		assertNotNull(b);
 		assertEquals(BIO, b.getBio());
+	}
+
+	@Test
+	@Order(2)
+	void testUpdate() {
+		em.getTransaction().begin();
+		sut.update(USER_ID, BIO2);
+		em.getTransaction().commit();
+
+		assertEquals(0, statistics.getEntityLoadCount());
+
+		em.clear();
+		Biography b = em.find(Biography.class, USER_ID);
+		assertNotNull(b);
+		assertEquals(BIO2, b.getBio());
 	}
 }

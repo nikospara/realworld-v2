@@ -7,12 +7,14 @@ import javax.annotation.Priority;
 import javax.decorator.Decorator;
 import javax.decorator.Delegate;
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import realworld.authentication.AuthenticationContext;
 import realworld.authorization.service.Authorization;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
+import realworld.user.model.UserUpdateData;
 import realworld.user.services.UserService;
 
 /**
@@ -58,5 +60,11 @@ public class UserServiceAuthorizer implements UserService {
 	@Override
 	public UserData findByEmailAndPassword(String email, String password) {
 		return delegate.findByEmailAndPassword(email, password);
+	}
+
+	@Override
+	public void update(@Valid UserUpdateData userUpdateData) {
+		authorization.requireLogin();
+		delegate.update(userUpdateData);
 	}
 }

@@ -9,6 +9,7 @@ import javax.ws.rs.core.UriInfo;
 import realworld.user.jaxrs.UsersResource;
 import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
+import realworld.user.model.UserUpdateData;
 import realworld.user.services.UserService;
 
 /**
@@ -32,5 +33,11 @@ public class UsersResourceImpl implements UsersResource {
 	@Override
 	public UserData get(String username) {
 		return userService.findByUserName(username);
+	}
+
+	@Override
+	public Response update(UserUpdateData updateParam) {
+		userService.update(updateParam);
+		return Response.noContent().build();
 	}
 }
