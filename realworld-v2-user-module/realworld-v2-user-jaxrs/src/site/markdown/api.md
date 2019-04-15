@@ -1,8 +1,10 @@
 # User module API design
 
-All payloads have changed: the wrapper objects have been removed.
+## Changes from v1
 
-Datetime format is: `yyyy-MM-dd'T'hh:mm:ss.SSS'Z'`
+1. All payloads have changed: the wrapper objects have been removed
+2. Datetime format is: `yyyy-MM-dd'T'hh:mm:ss.SSS'Z'`
+3. Embedded objects replaced by references
 
 ## Data objects
 
@@ -62,7 +64,7 @@ All fields are optional.
 
 Changed. Will return the User object for the current user and reducted data for other users. In any case the shape of the returned object is the same.
 
-Reducted objects contain a single asterisk in the confidential fields, currently the `email`.
+Reducted objects contain three asterisks (`"***"`) in the confidential fields, currently the `id` and the `email`.
 
 ### Get biography (GET /users/{username}/bio)
 
