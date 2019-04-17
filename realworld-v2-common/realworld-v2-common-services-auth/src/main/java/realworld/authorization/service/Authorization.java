@@ -27,4 +27,12 @@ public interface Authorization {
 	 * @throws NotAuthorizedException If the requirement is not met
 	 */
 	void requireUsername(String username);
+
+	/**
+	 * Require that the logged-in user has the given id.
+	 *
+	 * @param userId The user id
+	 * @throws NotAuthorizedException If the requirement is not met
+	 */
+	void requireUserId(String userId);
 }

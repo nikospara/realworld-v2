@@ -121,7 +121,7 @@ class UserServiceImpl implements UserService {
 				.executeForId(u.getId());
 
 		if( userUpdateData.isExplicitlySet(BIO) ) {
-			biographyDao.update(u.getId(), userUpdateData.getBio());
+			biographyDao.updateById(u.getId(), userUpdateData.getBio());
 		}
 	}
 }

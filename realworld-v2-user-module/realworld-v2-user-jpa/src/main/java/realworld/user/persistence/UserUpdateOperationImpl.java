@@ -22,7 +22,7 @@ class UserUpdateOperationImpl implements UserUpdateOperation {
 	private boolean hasAnyChange = false;
 
 	/**
-	 * Create a User update operation with this {@code EntityManager}.
+	 * Create a User updateById operation with this {@code EntityManager}.
 	 *
 	 * @param em The {@code EntityManager}
 	 */

@@ -183,7 +183,7 @@ public class UserServiceImplTest {
 		sut.update(userUpdateData);
 
 		verify(updateOp).executeForId(USERID1);
-		verify(biographyDao, never()).update(any(), any());
+		verify(biographyDao, never()).updateById(any(), any());
 	}
 
 	@Test
@@ -215,7 +215,7 @@ public class UserServiceImplTest {
 		sut.update(userUpdateData);
 
 		verify(updateOp).executeForId(USERID1);
-		verify(biographyDao, never()).update(any(), any());
+		verify(biographyDao, never()).updateById(any(), any());
 	}
 
 	@Test
@@ -240,7 +240,7 @@ public class UserServiceImplTest {
 		verify(updateOp).setImageUrl(true, IMAGE_URL2);
 		verify(updateOp).setPassword(true, "ENC:" + PASSWORD2);
 		verify(updateOp).executeForId(USERID1);
-		verify(biographyDao).update(USERID1, BIO2);
+		verify(biographyDao).updateById(USERID1, BIO2);
 	}
 
 	private void assertDuplicateUsername(Runnable f) {

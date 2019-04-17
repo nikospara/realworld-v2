@@ -52,9 +52,9 @@ public interface UserDao {
 	Optional<UserData> findByUserName(String username);
 
 	/**
-	 * Create a User update operation. This operation is bound to the current transaction.
+	 * Create a User updateById operation. This operation is bound to the current transaction.
 	 *
-	 * @return The User update operation
+	 * @return The User updateById operation
 	 */
 	UserUpdateOperation createUpdate();
 }

@@ -3,7 +3,7 @@ package realworld.user.dao;
 import realworld.EntityDoesNotExistException;
 
 /**
- * Encapsulate an update on the User entity.
+ * Encapsulate an updateById on the User entity.
  */
 public interface UserUpdateOperation {
 	/**
@@ -45,7 +45,7 @@ public interface UserUpdateOperation {
 	/**
 	 * Update the entity with the given id.
 	 *
-	 * @param id The id of the entity to update
+	 * @param id The id of the entity to updateById
 	 * @throws EntityDoesNotExistException If no entry is actually updated (thus, the id is not found)
 	 */
 	void executeForId(String id);

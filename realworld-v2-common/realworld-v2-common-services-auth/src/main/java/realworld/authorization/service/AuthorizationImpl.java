@@ -48,4 +48,14 @@ class AuthorizationImpl implements Authorization {
 			throw new NotAuthorizedException();
 		}
 	}
+
+	@Override
+	public void requireUserId(String userId) {
+		if( authenticationContext.getUserPrincipal() == null ) {
+			throw new NotAuthenticatedException();
+		}
+		if( !authenticationContext.getUserPrincipal().getUniqueId().equals(userId) ) {
+			throw new NotAuthorizedException();
+		}
+	}
 }

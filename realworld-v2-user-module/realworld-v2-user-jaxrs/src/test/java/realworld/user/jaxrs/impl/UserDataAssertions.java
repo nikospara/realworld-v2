@@ -14,7 +14,7 @@ import org.jboss.resteasy.mock.MockHttpResponse;
 /**
  * Assertions helper for the {@code UserData} object.
  */
-public class UserDataAssertions {
+class UserDataAssertions {
 	private JsonObject userData;
 
 	static UserDataAssertions assertUserData(MockHttpResponse response) throws UnsupportedEncodingException {
