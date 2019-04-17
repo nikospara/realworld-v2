@@ -20,6 +20,7 @@ import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
 import realworld.user.model.UserUpdateData;
+import realworld.user.services.BiographyService;
 import realworld.user.services.UserService;
 
 /**
@@ -31,7 +32,7 @@ class UserServiceImpl implements UserService {
 
 	private UserDao userDao;
 
-	private BiographyDao biographyDao;
+	private BiographyService biographyService;
 
 	private PasswordEncrypter encrypter;
 
@@ -47,14 +48,14 @@ class UserServiceImpl implements UserService {
 	/**
 	 * Full constructor for dependency injection.
 	 *
-	 * @param userDao       The user DAO
-	 * @param biographyDao  The biography DAO
-	 * @param encrypter     The password encrypter
+	 * @param userDao          The user DAO
+	 * @param biographyService The biography DAO
+	 * @param encrypter        The password encrypter
 	 */
 	@Inject
-	public UserServiceImpl(UserDao userDao, BiographyDao biographyDao, PasswordEncrypter encrypter, AuthenticationContext authenticationContext) {
+	public UserServiceImpl(UserDao userDao, BiographyService biographyService, PasswordEncrypter encrypter, AuthenticationContext authenticationContext) {
 		this.userDao = userDao;
-		this.biographyDao = biographyDao;
+		this.biographyService = biographyService;
 		this.encrypter = encrypter;
 		this.authenticationContext = authenticationContext;
 	}
@@ -81,7 +82,7 @@ class UserServiceImpl implements UserService {
 				.build();
 
 		UserData createdUserData = userDao.create(userData, encrypter.apply(registrationData.getPassword()));
-		biographyDao.create(createdUserData.getId(), registrationData.getBio());
+		biographyService.create(createdUserData.getId(), registrationData.getBio());
 
 		return createdUserData;
 	}
@@ -121,7 +122,7 @@ class UserServiceImpl implements UserService {
 				.executeForId(u.getId());
 
 		if( userUpdateData.isExplicitlySet(BIO) ) {
-			biographyDao.updateById(u.getId(), userUpdateData.getBio());
+			biographyService.updateById(u.getId(), userUpdateData.getBio());
 		}
 	}
 }

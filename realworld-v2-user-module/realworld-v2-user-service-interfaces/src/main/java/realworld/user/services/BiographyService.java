@@ -8,6 +8,14 @@ import realworld.EntityDoesNotExistException;
 public interface BiographyService {
 
 	/**
+	 * Create the biography entry for the user with the given id.
+	 *
+	 * @param userId  The user id
+	 * @param content The biography content
+	 */
+	void create(String userId, String content);
+
+	/**
 	 * Find the biography of the user with the given user name.
 	 *
 	 * @param username The user name

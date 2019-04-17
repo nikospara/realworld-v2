@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-
 import java.util.Optional;
 
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -28,7 +27,6 @@ import realworld.EntityDoesNotExistException;
 import realworld.SimpleValidationException;
 import realworld.authentication.AuthenticationContext;
 import realworld.authentication.User;
-import realworld.user.dao.BiographyDao;
 import realworld.user.dao.UserDao;
 import realworld.user.dao.UserUpdateOperation;
 import realworld.user.model.ImmutableUserData;
@@ -36,6 +34,7 @@ import realworld.user.model.UserData;
 import realworld.user.model.UserRegistrationData;
 import realworld.user.model.UserUpdateData;
 import realworld.user.model.UserUpdateData.PropName;
+import realworld.user.services.BiographyService;
 
 /**
  * Tests for the {@link UserServiceImpl}.
@@ -62,7 +61,7 @@ public class UserServiceImplTest {
 	private UserDao userDao;
 
 	@Produces @Mock
-	private BiographyDao biographyDao;
+	private BiographyService biographyService;
 
 	@Produces @Mock(lenient = true)
 	private PasswordEncrypter encrypter;
@@ -113,7 +112,7 @@ public class UserServiceImplTest {
 		assertEquals(USERNAME1, result.getUsername());
 		assertEquals(EMAIL1, result.getEmail());
 		assertEquals(IMAGE_URL1, result.getImageUrl());
-		verify(biographyDao).create(USERID1, BIO1);
+		verify(biographyService).create(USERID1, BIO1);
 	}
 
 	@Test
@@ -183,7 +182,7 @@ public class UserServiceImplTest {
 		sut.update(userUpdateData);
 
 		verify(updateOp).executeForId(USERID1);
-		verify(biographyDao, never()).updateById(any(), any());
+		verify(biographyService, never()).updateById(any(), any());
 	}
 
 	@Test
@@ -215,7 +214,7 @@ public class UserServiceImplTest {
 		sut.update(userUpdateData);
 
 		verify(updateOp).executeForId(USERID1);
-		verify(biographyDao, never()).updateById(any(), any());
+		verify(biographyService, never()).updateById(any(), any());
 	}
 
 	@Test
@@ -240,7 +239,7 @@ public class UserServiceImplTest {
 		verify(updateOp).setImageUrl(true, IMAGE_URL2);
 		verify(updateOp).setPassword(true, "ENC:" + PASSWORD2);
 		verify(updateOp).executeForId(USERID1);
-		verify(biographyDao).updateById(USERID1, BIO2);
+		verify(biographyService).updateById(USERID1, BIO2);
 	}
 
 	private void assertDuplicateUsername(Runnable f) {

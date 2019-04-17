@@ -34,6 +34,11 @@ public class BiographyServiceAuthorizer implements BiographyService {
 	}
 
 	@Override
+	public void create(String userId, String content) {
+		delegate.create(userId, content);
+	}
+
+	@Override
 	public String findByUserName(String username) {
 		return delegate.findByUserName(username);
 	}

@@ -33,6 +33,11 @@ public class BiographyServiceImpl implements BiographyService {
 	}
 
 	@Override
+	public void create(String userId, String content) {
+		biographyDao.create(userId, content);
+	}
+
+	@Override
 	public String findByUserName(String username) {
 		return biographyDao.findByUserName(username).orElseThrow(EntityDoesNotExistException::new);
 	}

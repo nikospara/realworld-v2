@@ -36,6 +36,12 @@ public class BiographyServiceImplTest {
 	private BiographyServiceImpl sut;
 
 	@Test
+	void testCreate() {
+		sut.create(USER_ID, BIO);
+		verify(biographyDao).create(USER_ID, BIO);
+	}
+
+	@Test
 	void testFindByUserNameThrowsIfNotFound() {
 		when(biographyDao.findByUserName(USERNAME)).thenReturn(Optional.empty());
 		try {

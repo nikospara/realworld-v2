@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
@@ -30,17 +29,26 @@ import realworld.user.services.BiographyService;
 @ExtendWith(MockitoExtension.class)
 public class BiographyServiceAuthorizerTest {
 
+	private static final String USER_ID_TO_CREATE = "USER_ID_TO_CREATE";
 	private static final String USERNAME_TO_FIND = "USERNAME_TO_FIND";
 	private static final String USERNAME_TO_UPDATE = "USERNAME_TO_UPDATE";
 	private static final String USER_ID_TO_UPDATE = "USER_ID_TO_UPDATE";
 	private static final String CONTENT = "Content";
 	private static final String FROM_FIND_BY_USER_NAME = "FROM_FIND_BY_USER_NAME";
+	private static final Object FROM_CREATE = new Object();
 
 	@Produces @Mock
 	private Authorization authorization;
 
 	@Inject
 	private DummyBiographyService dummy;
+
+	@Test
+	void testCreate() {
+		dummy.setLastOperation(null);
+		dummy.create(USER_ID_TO_CREATE, CONTENT);
+		assertSame(FROM_CREATE, dummy.getLastOperation());
+	}
 
 	@Test
 	void testFindByUserName() {
@@ -86,6 +94,25 @@ public class BiographyServiceAuthorizerTest {
 
 	@ApplicationScoped
 	static class DummyBiographyService implements BiographyService {
+
+		private Object lastOperation;
+
+		public Object getLastOperation() {
+			return lastOperation;
+		}
+
+		public void setLastOperation(Object lastOperation) {
+			this.lastOperation = lastOperation;
+		}
+
+		@Override
+		public void create(String userId, String content) {
+			if( userId != USER_ID_TO_CREATE ) {
+				throw new IllegalArgumentException();
+			}
+			this.lastOperation = FROM_CREATE;
+		}
+
 		@Override
 		public String findByUserName(String username) {
 			if( username != USERNAME_TO_FIND ) {
