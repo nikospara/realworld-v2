@@ -123,7 +123,7 @@ public class UserServiceImplTest {
 			fail("should throw for non-existing user");
 		}
 		catch( EntityDoesNotExistException e ) {
-			// expected
+			assertEquals(USERNAME1, e.getMessage());
 		}
 	}
 

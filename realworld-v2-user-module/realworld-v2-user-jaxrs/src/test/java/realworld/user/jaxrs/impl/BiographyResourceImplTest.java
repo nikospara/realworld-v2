@@ -46,8 +46,7 @@ public class BiographyResourceImplTest {
 	private static final String USERNAME = "username";
 	private static final String BIO = "BIO";
 
-	@Produces
-	@Mock
+	@Produces @Mock
 	private BiographyService biographyService;
 
 	@Inject

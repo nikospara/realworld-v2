@@ -30,7 +30,7 @@ public interface UserService {
 	 *
 	 * @param username The user name
 	 * @return The user
-	 * @throws EntityDoesNotExistException If not found
+	 * @throws EntityDoesNotExistException If not found, the exception message is the user name
 	 */
 	UserData findByUserName(String username);
 

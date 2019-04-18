@@ -74,10 +74,33 @@ NEW. Returns a string, the user's biography.
 
 NEW. Post body is a string, returns 204 "No Content".
 
-### Follow user (POST /users/{username}/follow)
+### Get a list of all the users followed by a user (GET /users/{username}/follows/all)
 
-Changed. Returns 204 "No Content".
+NEW. Login required.
 
-### Unfollow user (DELETE /users/{username}/follow)
+### Get which users from a list are followed by a user (GET /users/{username}/follows)
 
-Changed. Returns 204 "No Content".
+NEW. Login required. The first user can only be the current, but the service is kept flexible for future improvements (e.g. admin interface).
+Returns object like:
+
+	{
+		"username1": true,
+		"username2": true,
+		...
+	}
+
+Accepts optional request parameter test, which is a comma-separated list of user names to test if they are being followed,
+e.g. `?test=username1,username2`.
+
+### Test if a user follows another (GET /users/{username}/follows/{followedUsername})
+
+NEW. Login required. Returns the string `true` if user `username` follows the user with `followedUsername`, `false` otherwise.
+The first user can only be the current, but the service is kept flexible for future improvements.
+
+### Follow user (POST /users/{username}/follows/{followedUsername})
+
+Changed. Login required. Returns 204 "No Content".
+
+### Unfollow user (DELETE /users/{username}/follows/{followedUsername})
+
+Changed. Login required. Returns 204 "No Content".
