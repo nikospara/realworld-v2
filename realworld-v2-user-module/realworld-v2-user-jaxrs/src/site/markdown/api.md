@@ -3,8 +3,9 @@
 ## Changes from v1
 
 1. All payloads have changed: the wrapper objects have been removed
-2. Datetime format is: `yyyy-MM-dd'T'hh:mm:ss.SSS'Z'`
+2. Datetime format is: `yyyy-MM-dd'T'hh:mm:ss.SSS'Z'`, `updatedAt` is nullable
 3. Embedded objects replaced by references
+4. The version is in the URL
 
 ## Data objects
 
@@ -44,7 +45,7 @@ Example request body:
 		"imageUrl": "https://i.stack.imgur.com/xHWG8.jpg"
 	}
 
-No authentication required, returns 201 "Created" on success and a `Location` header to the new resource.
+No authentication required, returns 201 "Created" on success and a `Location` header pointing to the new resource.
 
 Fields `bio`, `imageUrl` are optional.
 
@@ -62,9 +63,9 @@ All fields are optional.
 
 ### Get Profile (GET /users/{username})
 
-Changed. Will return the User object for the current user and reducted data for other users. In any case the shape of the returned object is the same.
+Changed. Will return the User object for the current user and redacted data for other users. In any case the shape of the returned object is the same.
 
-Reducted objects contain three asterisks (`"***"`) in the confidential fields, currently the `id` and the `email`.
+Redacted objects contain three asterisks (`"***"`) in the confidential fields, currently the `id` and the `email`.
 
 ### Get biography (GET /users/{username}/bio)
 

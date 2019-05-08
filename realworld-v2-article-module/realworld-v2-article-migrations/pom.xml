@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>realworld.example</groupId>
+		<artifactId>realworld-v2-article-module</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>realworld-v2-article-migrations</artifactId>
+
+	<name>Realworld-v2: Article migrations</name>
+	<description>Realworld-v2: Article module db migration scripts</description>
+
+	<packaging>jar</packaging>
+
+	<profiles>
+		<profile>
+			<id>article-dbupdate</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.liquibase</groupId>
+						<artifactId>liquibase-maven-plugin</artifactId>
+						<version>${version.liquibase}</version>
+						<configuration>
+							<changeLogFile>src/main/resources/db.changelog.xml</changeLogFile>
+							<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+							<driver>${database.article.driver}</driver>
+							<url>${database.article.url}</url>
+							<username>${database.article.username}</username>
+							<password>${database.article.password}</password>
+						</configuration>
+						<executions>
+							<execution>
+								<id>liquibase-update</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>update</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>article-h2</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+</project>

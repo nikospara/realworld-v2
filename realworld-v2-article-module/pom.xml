@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>realworld.example</groupId>
+		<artifactId>realworld-v2-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>realworld-v2-article-module</artifactId>
+
+	<name>Realworld-v2: Article module</name>
+	<description>Realworld-v2: Article module</description>
+
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>realworld-v2-article-dao</module>
+		<module>realworld-v2-article-jaxrs</module>
+		<module>realworld-v2-article-jpa</module>
+		<module>realworld-v2-article-migrations</module>
+		<module>realworld-v2-article-model</module>
+		<module>realworld-v2-article-service-interfaces</module>
+		<module>realworld-v2-article-services</module>
+	</modules>
+
+	<profiles>
+		<profile>
+			<id>article-h2</id>
+
+			<properties>
+				<database.article.driver>org.h2.Driver</database.article.driver>
+				<database.article.thorntail.name>h2</database.article.thorntail.name>
+				<database.article.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.article.hibernate.dialect>
+			</properties>
+
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>com.h2database</groupId>
+						<artifactId>h2</artifactId>
+						<version>${version.h2}</version>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+		</profile>
+	</profiles>
+</project>

@@ -12,14 +12,9 @@
 	<packaging>pom</packaging>
 	
 	<modules>
-		<module>realworld-v2-user-module</module>
+		<module>realworld-v2-article-module</module>
 		<module>realworld-v2-common</module>
-		<!--
-		<module>beyond-realworld-common</module>
-		<module>beyond-realworld-deployments</module>
-		<module>beyond-realworld-article-module</module>
-		<module>beyond-realworld-comments-module</module>
-		-->
+		<module>realworld-v2-user-module</module>
 	</modules>
 	
 	<properties>
@@ -364,27 +359,6 @@
 					</plugin>
 				</plugins>
 			</build>
-		</profile>
-
-		<profile>
-			<!-- DEPRECATED, to be removed when all modules become microservices -->
-			<id>h2</id>
-
-			<properties>
-				<database.driver>org.h2.Driver</database.driver>
-				<database.thorntail.name>h2</database.thorntail.name>
-				<database.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.hibernate.dialect>
-			</properties>
-
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>com.h2database</groupId>
-						<artifactId>h2</artifactId>
-						<version>${version.h2}</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
 		</profile>
 
 		<profile>
