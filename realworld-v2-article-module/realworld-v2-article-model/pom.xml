@@ -15,6 +15,13 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
+		<!-- PROJECT -->
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-types</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 		<!--  OTHER -->
 		<dependency>
 			<groupId>org.immutables</groupId>

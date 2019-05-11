@@ -9,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import realworld.article.model.ArticleCombinedFullData;
 
 /**
  * Article operations.
@@ -23,9 +24,9 @@ public interface ArticlesResource {
 	@Path("/{slug}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value="Returns the profile of the given user.", tags=TAG)
-	void /*ArticleData */get(
+	ArticleCombinedFullData get(
 			@ApiParam(value = "The slug of the article to get.", required = true)
 			@PathParam("slug")
-			String username
+			String slug
 	);
 }

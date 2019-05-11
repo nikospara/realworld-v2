@@ -2,9 +2,12 @@ package realworld.article.model;
 
 import java.time.LocalDateTime;
 
+import org.immutables.value.Value;
+
 /**
  * Base article, containing only its own fields, not related entities.
  */
+@Value.Immutable
 public interface ArticleBase {
 
 	/**

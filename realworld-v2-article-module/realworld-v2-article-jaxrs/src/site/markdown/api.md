@@ -22,8 +22,7 @@
 		"favorited": false,
 		"favoritesCount": 0,
 		"author": {
-			"username": "jake",
-			"image": "https://i.stack.imgur.com/xHWG8.jpg",
+			"name": "jake",
 			"href": "https://user-server/...."
 		}
 	}
@@ -42,8 +41,7 @@
 				"favorited": false,
 				"favoritesCount": 0,
 				"author": {
-					"username": "jake",
-					"image": "https://i.stack.imgur.com/xHWG8.jpg",
+					"name": "jake",
 					"href": "https://user-server/...."
 				},
 				"href": "https://article-server/...."

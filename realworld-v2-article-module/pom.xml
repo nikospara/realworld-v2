@@ -22,6 +22,7 @@
 		<module>realworld-v2-article-model</module>
 		<module>realworld-v2-article-service-interfaces</module>
 		<module>realworld-v2-article-services</module>
+		<module>realworld-v2-article</module>
 	</modules>
 
 	<profiles>
