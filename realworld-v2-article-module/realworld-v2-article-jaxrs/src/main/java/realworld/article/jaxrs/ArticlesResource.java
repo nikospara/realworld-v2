@@ -24,7 +24,7 @@ public interface ArticlesResource {
 	@Path("/{slug}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value="Returns the profile of the given user.", tags=TAG)
-	ArticleCombinedFullData get(
+	ArticleCombinedFullDataDto get(
 			@ApiParam(value = "The slug of the article to get.", required = true)
 			@PathParam("slug")
 			String slug

@@ -56,8 +56,7 @@ public class UsersResourceImplTest {
 	private static final String EMAIL = "userid@here.com";
 	private static final String IMAGE_URL = "http://pictures.com/image1";
 
-	@Produces
-	@Mock
+	@Produces @Mock
 	private UserService userService;
 
 	@Inject

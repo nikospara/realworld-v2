@@ -10,7 +10,6 @@
 
 	<packaging>jar</packaging>
 
-
 	<dependencies>
 		<!-- SPECS -->
 		<dependency>
@@ -29,7 +28,17 @@
 		<!-- PROJECT -->
 		<dependency>
 			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-web</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
 			<artifactId>realworld-v2-article-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-article-service-interfaces</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -46,6 +55,50 @@
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-annotations</artifactId>
+		</dependency>
+
+		<!-- TEST -->
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-testutils</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.json</groupId>
+			<artifactId>javax.json-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.json</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-cdi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jaxrs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-jackson2-provider</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.weld</groupId>
+			<artifactId>weld-junit5</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
 		</dependency>
 	</dependencies>
 </project>

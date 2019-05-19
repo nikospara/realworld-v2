@@ -15,6 +15,6 @@ import realworld.jaxrs.sys.ObjectMapperProvider;
 public class ObjectMapperProviderSpecializer extends ObjectMapperProvider {
 	@PostConstruct
 	void init() {
-		objectMapper.addMixIn(ArticleCombinedFullData.class, ArticleCombinedFullDataMixin.class);
+//		objectMapper.addMixIn(ArticleCombinedFullData.class, ArticleCombinedFullDataMixin.class);
 	}
 }

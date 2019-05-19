@@ -1,4 +1,4 @@
-package realworld.article.jpa;
+package realworld.article.persistence;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

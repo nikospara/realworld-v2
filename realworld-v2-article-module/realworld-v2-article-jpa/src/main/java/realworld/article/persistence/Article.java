@@ -1,4 +1,4 @@
-package realworld.article.jpa;
+package realworld.article.persistence;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;

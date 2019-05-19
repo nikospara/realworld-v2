@@ -1,14 +1,17 @@
-package realworld.article.model;
+package realworld.article.jaxrs;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import realworld.ResourceLink;
+import realworld.article.model.ArticleBase;
 
 /**
  * Article full data.
  */
-public class ArticleCombinedFullData {
+public class ArticleCombinedFullDataDto {
 
+	@JsonUnwrapped
 	private ArticleBase article;
 
 	private String body;
@@ -19,7 +22,7 @@ public class ArticleCombinedFullData {
 
 	private int favoritesCount;
 
-	private String authorId;
+	private ResourceLink author;
 
 	public ArticleBase getArticle() {
 		return article;
@@ -61,11 +64,11 @@ public class ArticleCombinedFullData {
 		this.favoritesCount = favoritesCount;
 	}
 
-	public String getAuthorId() {
-		return authorId;
+	public ResourceLink getAuthor() {
+		return author;
 	}
 
-	public void setAuthorId(String authorId) {
-		this.authorId = authorId;
+	public void setAuthor(ResourceLink author) {
+		this.author = author;
 	}
 }
