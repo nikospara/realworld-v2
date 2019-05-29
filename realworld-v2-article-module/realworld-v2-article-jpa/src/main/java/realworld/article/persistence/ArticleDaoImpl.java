@@ -10,10 +10,14 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 import realworld.EntityDoesNotExistException;
 import realworld.article.dao.ArticleDao;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
+import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ImmutableArticleBase;
 
 /**
@@ -39,6 +43,36 @@ public class ArticleDaoImpl implements ArticleDao {
 	@Inject
 	public ArticleDaoImpl(EntityManager em) {
 		this.em = em;
+	}
+
+	@Override
+	public boolean slugExists(String slug) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> query = cb.createQuery(String.class);
+		Root<Article> root = query.from(Article.class);
+		query.select(root.get(Article_.slug));
+		query.where(cb.equal(root.get(Article_.slug), slug));
+		return !em.createQuery(query).setMaxResults(1).getResultList().isEmpty();
+	}
+
+	@Override
+	public String create(ArticleCreationData creationData, String slug, LocalDateTime creationDate) {
+		Article a = new Article();
+		a.setId(UUID.randomUUID().toString());
+		a.setTitle(creationData.getTitle());
+		a.setSlug(slug);
+		a.setDescription(creationData.getDescription());
+		a.setCreatedAt(creationDate);
+//		a.setUpdatedAt(creationDate);
+		a.setAuthorId(creationData.getAuthorId());
+		em.persist(a);
+		if( creationData.getBody() != null ) {
+			ArticleBody body = new ArticleBody();
+			body.setBody(creationData.getBody());
+			body.setArticle(a);
+			em.persist(body);
+		}
+		return a.getId();
 	}
 
 	@Override
@@ -79,7 +113,7 @@ public class ArticleDaoImpl implements ArticleDao {
 		subquery
 				.select(articleBody.get(ArticleBody_.body))
 				.where(cb.equal(articleBody.get(ArticleBody_.articleId), article.get(Article_.id)));
-		return subquery;
+		return cb.trim(subquery);
 	}
 
 	/**

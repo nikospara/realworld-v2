@@ -46,8 +46,19 @@
 		</dependency>
 		<dependency>
 			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-services</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
 			<artifactId>realworld-v2-common-services-auth</artifactId>
 			<version>${project.version}</version>
+		</dependency>
+
+		<!-- OTHER -->
+		<dependency>
+			<groupId>com.github.slugify</groupId>
+			<artifactId>slugify</artifactId>
 		</dependency>
 
 		<!-- TEST -->

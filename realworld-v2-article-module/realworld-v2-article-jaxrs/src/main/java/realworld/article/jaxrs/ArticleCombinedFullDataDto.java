@@ -24,6 +24,11 @@ public class ArticleCombinedFullDataDto {
 
 	private ResourceLink author;
 
+	/**
+	 * Get the main article data.
+	 *
+	 * @return The main article data
+	 */
 	public ArticleBase getArticle() {
 		return article;
 	}
@@ -32,6 +37,11 @@ public class ArticleCombinedFullDataDto {
 		this.article = article;
 	}
 
+	/**
+	 * Get the article body.
+	 *
+	 * @return The article body
+	 */
 	public String getBody() {
 		return body;
 	}
@@ -40,6 +50,11 @@ public class ArticleCombinedFullDataDto {
 		this.body = body;
 	}
 
+	/**
+	 * Get the tags for this article.
+	 *
+	 * @return The tags for this article
+	 */
 	public List<String> getTagList() {
 		return tagList;
 	}

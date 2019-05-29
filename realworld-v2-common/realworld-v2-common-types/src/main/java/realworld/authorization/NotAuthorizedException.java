@@ -7,4 +7,19 @@ package realworld.authorization;
  */
 public class NotAuthorizedException extends AppSecurityException {
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Default constructor.
+	 */
+	public NotAuthorizedException() {
+	}
+
+	/**
+	 * Create the exception based on a message.
+	 *
+	 * @param message The message
+	 */
+	public NotAuthorizedException(String message) {
+		super(message);
+	}
 }

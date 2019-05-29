@@ -2,8 +2,6 @@ package realworld.article.model;
 
 import java.util.List;
 
-import realworld.ResourceLink;
-
 /**
  * Article full data.
  */
@@ -21,6 +19,11 @@ public class ArticleCombinedFullData {
 
 	private String authorId;
 
+	/**
+	 * Get the main article data.
+	 *
+	 * @return The main article data
+	 */
 	public ArticleBase getArticle() {
 		return article;
 	}
@@ -29,6 +32,11 @@ public class ArticleCombinedFullData {
 		this.article = article;
 	}
 
+	/**
+	 * Get the article body.
+	 *
+	 * @return The article body
+	 */
 	public String getBody() {
 		return body;
 	}
@@ -37,6 +45,11 @@ public class ArticleCombinedFullData {
 		this.body = body;
 	}
 
+	/**
+	 * Get the tags for this article.
+	 *
+	 * @return The tags for this article
+	 */
 	public List<String> getTagList() {
 		return tagList;
 	}
@@ -61,6 +74,11 @@ public class ArticleCombinedFullData {
 		this.favoritesCount = favoritesCount;
 	}
 
+	/**
+	 * Get the author id.
+	 *
+	 * @return The author id
+	 */
 	public String getAuthorId() {
 		return authorId;
 	}

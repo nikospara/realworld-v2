@@ -37,13 +37,6 @@ public interface ArticleBase {
 	 * @return The description
 	 */
 	String getDescription();
-//
-//	/**
-//	 * The body.
-//	 *
-//	 * @return The body
-//	 */
-//	String getBody();
 
 	/**
 	 * The creation date.
@@ -57,19 +50,6 @@ public interface ArticleBase {
 	 *
 	 * @return The last modification date
 	 */
+	@Nullable
 	LocalDateTime getUpdatedAt();
-//
-//	/**
-//	 * Whether the current user has favorited this article.
-//	 *
-//	 * @return {@code true} if favorited by the current user
-//	 */
-//	boolean isFavorited();
-//
-//	/**
-//	 * The favorites count.
-//	 *
-//	 * @return The favorites count
-//	 */
-//	int getFavoritesCount();
 }

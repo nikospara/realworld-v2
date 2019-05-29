@@ -112,6 +112,20 @@ public class AuthorizationImplTest {
 	}
 
 	@Test
+	void testRequireUserIdWithNullInput() {
+		User user = mock(User.class);
+		when(user.getUniqueId()).thenReturn("otherid");
+		when(authenticationContext.getUserPrincipal()).thenReturn(user);
+		try {
+			sut.requireUserId(null);
+			fail("should have thrown");
+		}
+		catch( NotAuthorizedException expected ) {
+			// expected
+		}
+	}
+
+	@Test
 	void testRequireUserId() {
 		User user = mock(User.class);
 		when(user.getUniqueId()).thenReturn(USER_ID);
