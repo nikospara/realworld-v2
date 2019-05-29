@@ -6,6 +6,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import realworld.ResourceLink;
 import realworld.article.jaxrs.ArticleCombinedFullDataDto;
 import realworld.article.jaxrs.ArticleCreationParam;
 import realworld.article.jaxrs.ArticlesResource;
@@ -36,10 +37,11 @@ public class ArticlesResourceImpl implements ArticlesResource {
 		ArticleCombinedFullData data = articleService.findFullDataBySlug(slug);
 		ArticleCombinedFullDataDto result = new ArticleCombinedFullDataDto();
 		result.setArticle(data.getArticle());
-		// TODO Set the author link
+		result.setAuthor(new ResourceLink("TODO", "TODO"));
 		result.setBody(data.getBody());
 		result.setFavorited(data.isFavorited());
 		result.setFavoritesCount(data.getFavoritesCount());
+		result.setTagList(data.getTagList());
 		return result;
 	}
 }

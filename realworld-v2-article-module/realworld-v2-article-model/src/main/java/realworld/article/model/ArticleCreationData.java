@@ -2,7 +2,7 @@ package realworld.article.model;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Article creation data.
@@ -37,7 +37,7 @@ public interface ArticleCreationData {
 	 *
 	 * @return The tags for this article
 	 */
-	List<String> getTagList();
+	Set<String> getTagList();
 
 	/**
 	 * Get the author id.

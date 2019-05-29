@@ -1,6 +1,7 @@
 package realworld.article.dao;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import realworld.EntityDoesNotExistException;
 import realworld.article.model.ArticleCombinedFullData;
@@ -38,4 +39,22 @@ public interface ArticleDao {
 	 * @throws EntityDoesNotExistException If an article with the given slug does not exist
 	 */
 	ArticleCombinedFullData findFullDataBySlug(String userId, String slug);
+
+	/**
+	 * Find the tags of the given article.
+	 *
+	 * @param articleId The article id
+	 * @return The set of tags
+	 * @throws EntityDoesNotExistException If the article does not exist
+	 */
+	Set<String> findTags(String articleId);
+
+	/**
+	 * Find an article id by slug.
+	 *
+	 * @param slug The slug to search
+	 * @return The article id
+	 * @throws EntityDoesNotExistException If the article does not exist
+	 */
+	String findArticleIdBySlug(String slug);
 }

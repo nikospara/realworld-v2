@@ -11,6 +11,9 @@ import static org.mockito.Mockito.when;
 import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.stat.Statistics;
@@ -64,11 +67,14 @@ public class ArticleDaoImplTest {
 	@Order(1)
 	void testCreate() {
 		em.getTransaction().begin();
+		Tag tag1 = new Tag("tag1");
+		em.persist(tag1);
+		em.flush();
 		ArticleCreationData creationData = mock(ArticleCreationData.class);
 		when(creationData.getAuthorId()).thenReturn(AUTHOR_ID);
 		when(creationData.getBody()).thenReturn(BODY);
 		when(creationData.getDescription()).thenReturn(DESCRIPTION);
-//		when(creationData.getTagList())
+		when(creationData.getTagList()).thenReturn(new HashSet<>(Arrays.asList("tag1", "tag2")));
 		when(creationData.getTitle()).thenReturn(TITLE);
 		String id = sut.create(creationData, SLUG, CREATED_AT);
 		em.getTransaction().commit();
@@ -122,5 +128,13 @@ public class ArticleDaoImplTest {
 		assertEquals(TITLE, res.getArticle().getTitle());
 //		assertEquals(UPDATED_AT, res.getArticle().getUpdatedAt());
 		assertEquals(BODY, res.getBody());
+	}
+
+	@Test
+	@Order(6)
+	void testFindTagsThrowsForNonExistingArticle() {
+		String articleId = sut.findArticleIdBySlug(SLUG);
+		Set<String> tags = sut.findTags(articleId);
+		assertEquals(new HashSet<>(Arrays.asList("tag1", "tag2")), tags);
 	}
 }

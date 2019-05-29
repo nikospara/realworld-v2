@@ -1,6 +1,6 @@
 package realworld.article.jaxrs;
 
-import java.util.List;
+import java.util.Set;
 
 import realworld.article.model.ArticleCreationData;
 
@@ -15,7 +15,7 @@ public class ArticleCreationParam implements ArticleCreationData {
 
 	private String body;
 
-	private List<String> tagList;
+	private Set<String> tagList;
 
 	private String authorId;
 
@@ -62,7 +62,7 @@ public class ArticleCreationParam implements ArticleCreationData {
 	}
 
 	@Override
-	public List<String> getTagList() {
+	public Set<String> getTagList() {
 		return tagList;
 	}
 
@@ -71,7 +71,7 @@ public class ArticleCreationParam implements ArticleCreationData {
 	 *
 	 * @param tagList The tags for this article
 	 */
-	public void setTagList(List<String> tagList) {
+	public void setTagList(Set<String> tagList) {
 		this.tagList = tagList;
 	}
 

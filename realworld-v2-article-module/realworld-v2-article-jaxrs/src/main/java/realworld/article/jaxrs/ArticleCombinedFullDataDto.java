@@ -1,6 +1,7 @@
 package realworld.article.jaxrs;
 
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import realworld.ResourceLink;
@@ -16,7 +17,7 @@ public class ArticleCombinedFullDataDto {
 
 	private String body;
 
-	private List<String> tagList;
+	private Set<String> tagList;
 
 	private boolean favorited;
 
@@ -55,11 +56,11 @@ public class ArticleCombinedFullDataDto {
 	 *
 	 * @return The tags for this article
 	 */
-	public List<String> getTagList() {
+	public Set<String> getTagList() {
 		return tagList;
 	}
 
-	public void setTagList(List<String> tagList) {
+	public void setTagList(Set<String> tagList) {
 		this.tagList = tagList;
 	}
 

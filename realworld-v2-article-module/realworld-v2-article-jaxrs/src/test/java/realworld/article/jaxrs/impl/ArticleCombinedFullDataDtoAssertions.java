@@ -1,12 +1,17 @@
 package realworld.article.jaxrs.impl;
 
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonString;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.jboss.resteasy.mock.MockHttpResponse;
 import realworld.article.jaxrs.ArticleCombinedFullDataDto;
@@ -51,6 +56,12 @@ class ArticleCombinedFullDataDtoAssertions {
 
 	ArticleCombinedFullDataDtoAssertions assertCreatedAt(String expected) {
 		assertEquals(expected, data.getString("createdAt"));
+		return this;
+	}
+
+	ArticleCombinedFullDataDtoAssertions assertTagList(String... tags) {
+		JsonArray jsonTagList = data.getJsonArray("tagList");
+		assertEquals(new HashSet<>(Arrays.asList(tags)), jsonTagList.getValuesAs(JsonString.class).stream().map(JsonString::getString).collect(toSet()));
 		return this;
 	}
 }

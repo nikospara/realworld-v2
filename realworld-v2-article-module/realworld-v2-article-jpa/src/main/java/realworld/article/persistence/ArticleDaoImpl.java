@@ -11,7 +11,10 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import realworld.EntityDoesNotExistException;
 import realworld.article.dao.ArticleDao;
@@ -65,6 +68,7 @@ public class ArticleDaoImpl implements ArticleDao {
 		a.setCreatedAt(creationDate);
 //		a.setUpdatedAt(creationDate);
 		a.setAuthorId(creationData.getAuthorId());
+		handleTags(a, creationData.getTagList());
 		em.persist(a);
 		if( creationData.getBody() != null ) {
 			ArticleBody body = new ArticleBody();
@@ -87,6 +91,26 @@ public class ArticleDaoImpl implements ArticleDao {
 			result.setFavoritesCount(((Long) res[2]).intValue());
 			result.setBody((String) res[3]);
 			return result;
+		}
+		catch( NoResultException e ) {
+			throw new EntityDoesNotExistException();
+		}
+	}
+
+	@Override
+	public Set<String> findTags(String articleId) {
+		Article article = Optional.ofNullable(em.find(Article.class, articleId)).orElseThrow(EntityDoesNotExistException::new);
+		return article.getTags().stream().map(Tag::getName).collect(Collectors.toSet());
+	}
+
+	@Override
+	public String findArticleIdBySlug(String slug) {
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> query = cb.createQuery(String.class);
+			Root<Article> article = query.from(Article.class);
+			query.select(article.get(Article_.id)).where(cb.equal(article.get(Article_.slug), slug));
+			return em.createQuery(query).getSingleResult();
 		}
 		catch( NoResultException e ) {
 			throw new EntityDoesNotExistException();
@@ -154,5 +178,12 @@ public class ArticleDaoImpl implements ArticleDao {
 				.createdAt(a.getCreatedAt())
 				.updatedAt(a.getUpdatedAt())
 				.build();
+	}
+
+	private void handleTags(Article article, Set<String> tags) {
+		if( tags != null ) {
+			Set<Tag> dbtags = tags.stream().map(tag -> Optional.ofNullable(em.find(Tag.class, tag)).orElseGet(() -> new Tag(tag))).collect(Collectors.toSet());
+			article.setTags(dbtags);
+		}
 	}
 }

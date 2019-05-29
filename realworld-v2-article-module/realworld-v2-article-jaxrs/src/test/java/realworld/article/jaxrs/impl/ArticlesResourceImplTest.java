@@ -14,7 +14,10 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
@@ -64,6 +67,7 @@ public class ArticlesResourceImplTest {
 	private static final LocalDateTime UPDATED_AT = LocalDateTime.of(2019, Month.MARCH, 12, 16, 45, 55);
 	private static final String BODY = "Body";
 	private static final int FAV_COUNT = 11;
+	private static final Set<String> TAG_LIST = new HashSet<>(Arrays.asList("tag1", "tag2"));
 
 	@Produces
 	@Mock
@@ -145,7 +149,7 @@ public class ArticlesResourceImplTest {
 		fullData.setFavorited(FALSE);
 		fullData.setBody(BODY);
 		fullData.setAuthorId(AUTHOR_ID);
-		fullData.setTagList(Collections.emptyList());
+		fullData.setTagList(TAG_LIST);
 		when(articleService.findFullDataBySlug(SLUG)).thenReturn(fullData);
 
 		dispatcher.invoke(request, response);
@@ -159,6 +163,7 @@ public class ArticlesResourceImplTest {
 				.assertTitle(TITLE)
 				.assertSlug(SLUG)
 				.assertDescription(DESCRIPTION)
-				.assertCreatedAt("2019-03-11T16:45:55.000Z");
+				.assertCreatedAt("2019-03-11T16:45:55.000Z")
+				.assertTagList("tag1", "tag2");
 	}
 }

@@ -70,7 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
 	@Override
 	public ArticleCombinedFullData findFullDataBySlug(String slug) {
 		ArticleCombinedFullData result = articleDao.findFullDataBySlug(authenticationContext.getUserPrincipal() != null ? authenticationContext.getUserPrincipal().getUniqueId() : null, slug);
-		// TODO fill-in missing details: tagList
+		result.setTagList(articleDao.findTags(result.getArticle().getId()));
 		return result;
 	}
 }
