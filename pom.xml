@@ -15,6 +15,7 @@
 		<module>realworld-v2-article-module</module>
 		<module>realworld-v2-common</module>
 		<module>realworld-v2-user-module</module>
+		<module>realworld-v2-keycloak</module>
 	</modules>
 	
 	<properties>
