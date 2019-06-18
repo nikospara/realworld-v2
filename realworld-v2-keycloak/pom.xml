@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<modules>
-		<module>realworld-v2-keycloak-theme</module>
-	</modules>
 	<parent>
 		<artifactId>realworld-v2-parent</artifactId>
 		<groupId>realworld.example</groupId>
@@ -16,4 +13,36 @@
 	<description>Realworld-v2: Keycloak functionalities module</description>
 
 	<packaging>pom</packaging>
+
+	<modules>
+		<module>realworld-v2-keycloak-theme</module>
+		<module>realworld-v2-keycloak-event-listener</module>
+	</modules>
+
+	<properties>
+		<version.keycloak>6.0.1</version.keycloak>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-core</artifactId>
+				<version>${version.keycloak}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-server-spi</artifactId>
+				<version>${version.keycloak}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-server-spi-private</artifactId>
+				<version>${version.keycloak}</version>
+				<scope>provided</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

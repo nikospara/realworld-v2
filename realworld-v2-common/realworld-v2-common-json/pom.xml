@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>realworld.example</groupId>
+		<artifactId>realworld-v2-common</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>realworld-v2-common-json</artifactId>
+
+	<name>Realworld-v2: JSON serialization functionality</name>
+	<description>
+		Beyond Realworld-v2: JSON serialization functionality
+
+		JSON serialization infrastructure, based on Jackson.
+	</description>
+
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<!-- OTHER -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+		</dependency>
+
+		<!-- TEST -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+		</dependency>
+	</dependencies>
+</project>

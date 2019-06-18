@@ -21,6 +21,13 @@
 			<artifactId>validation-api</artifactId>
 		</dependency>
 
+		<!-- PROJECT -->
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-json</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
 		<!--  OTHER -->
 		<dependency>
 			<groupId>org.immutables</groupId>
@@ -34,6 +41,12 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
+		<!-- TEST -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
 		</dependency>
 	</dependencies>
 </project>

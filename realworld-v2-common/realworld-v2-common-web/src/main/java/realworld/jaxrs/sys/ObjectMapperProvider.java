@@ -4,14 +4,9 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import realworld.json.ObjectMapperUtils;
 
 /**
  * Provide the Jackson {@code ObjectMapper} to JAX-RS,
@@ -29,14 +24,8 @@ public class ObjectMapperProvider implements ContextResolver<ObjectMapper> {
 
 	@PostConstruct
 	void init() {
-		objectMapper = new ObjectMapper();
-		objectMapper.setAnnotationIntrospector(new JacksonAnnotationIntrospector());
-		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-		objectMapper.registerModule(new JavaTimeModule());
-		objectMapper.registerModule(new CustomJavaTimeModule());
-//		SimpleDateFormat traditional8601 = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss.SSS'Z'"); // NOTE: This is cloned, so it is thread safe
-//		traditional8601.setTimeZone(TimeZone.getTimeZone("UTC"));
-//		objectMapper.setDateFormat(traditional8601);
+		objectMapper = ObjectMapperUtils.createObjectMapper();
+		ObjectMapperUtils.customize(objectMapper);
 	}
 
 	@Override

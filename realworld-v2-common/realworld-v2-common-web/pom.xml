@@ -41,6 +41,11 @@
 		<!-- PROJECT -->
 		<dependency>
 			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-json</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
 			<artifactId>realworld-v2-common-services</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -74,10 +79,12 @@
 		<dependency>
 			<groupId>javax.json</groupId>
 			<artifactId>javax.json-api</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.json</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.weld</groupId>

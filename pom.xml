@@ -29,7 +29,7 @@
 		<version.h2>1.4.197</version.h2>
 		<version.hibernate>5.4.1.Final</version.hibernate>
 		<version.jackson>2.9.8</version.jackson>
-		<version.javax.json-test>1.1.2</version.javax.json-test>
+		<version.javax.json>1.1.2</version.javax.json>
 		<version.jaxb.api>2.3.1</version.jaxb.api>
 		<version.jaxb.impl>2.3.0.1</version.jaxb.impl>
 		<version.junit.jupiter>5.4.1</version.junit.jupiter>
@@ -157,6 +157,11 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-clients</artifactId>
+				<version>2.2.0</version>
+			</dependency>
+			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
 				<version>${version.hibernate}</version>
@@ -183,14 +188,12 @@
 			<dependency>
 				<groupId>javax.json</groupId>
 				<artifactId>javax.json-api</artifactId>
-				<version>${version.javax.json-test}</version>
-				<scope>test</scope>
+				<version>${version.javax.json}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish</groupId>
 				<artifactId>javax.json</artifactId>
-				<version>${version.javax.json-test}</version>
-				<scope>test</scope>
+				<version>${version.javax.json}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jboss.resteasy</groupId>
@@ -295,7 +298,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.1.2</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>

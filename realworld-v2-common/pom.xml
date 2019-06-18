@@ -22,5 +22,6 @@
 		<module>realworld-v2-common-testutils</module>
 		<module>realworld-v2-common-types</module>
 		<module>realworld-v2-common-web</module>
+		<module>realworld-v2-common-json</module>
 	</modules>
 </project>
