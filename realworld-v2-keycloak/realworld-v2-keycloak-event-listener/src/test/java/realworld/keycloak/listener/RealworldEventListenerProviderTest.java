@@ -6,10 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.keycloak.events.admin.ResourceType.USER;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 import static realworld.user.model.events.UserModificationEventType.CREATE;
 import static realworld.user.model.events.UserModificationEventType.UPDATE;
 
@@ -18,17 +21,25 @@ import java.util.concurrent.Future;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.keycloak.events.Event;
+import org.keycloak.events.EventType;
 import org.keycloak.events.admin.AdminEvent;
 import org.keycloak.events.admin.AuthDetails;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakTransactionManager;
+import org.keycloak.models.RealmModel;
+import org.keycloak.models.RealmProvider;
+import org.keycloak.models.UserModel;
+import org.keycloak.models.UserProvider;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import realworld.json.ObjectMapperUtils;
 import realworld.user.model.UserUpdateData;
 import realworld.user.model.events.UserModificationEvent;
 
@@ -40,15 +51,18 @@ public class RealworldEventListenerProviderTest {
 
 	private static final String TOPIC_NAME = "TOPIC_NAME";
 	private static final String ADMIN_USER_ID = UUID.randomUUID().toString();
+	private static final String USER_ID = "5ec92c22-212c-493f-8efe-dc5d54dca6aa";
+	private static final String USERNAME = "the_username";
+	private static final String EMAIL = "the_email";
+	private static final String BIO = "The biography";
+	private static final String IMAGE_URL = "image_url";
+	private static final String REALM_ID = "realm_id";
 
 	@Mock
 	private KeycloakSession session;
 
 	@Mock
 	private Producer<String, String> producer;
-
-	@Mock
-	private ObjectMapper om;
 
 	@Mock
 	private KeycloakTransactionManager kcTxManager;
@@ -58,10 +72,78 @@ public class RealworldEventListenerProviderTest {
 	@BeforeEach
 	@SuppressWarnings("unchecked")
 	void beforeEach() {
-		sut = new RealworldEventListenerProvider(session, producer, om, TOPIC_NAME);
-//		when(session.realms()).thenReturn(mock(RealmProvider.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS)));
+		sut = new RealworldEventListenerProvider(session, producer, TOPIC_NAME);
 		lenient().when(session.getTransactionManager()).thenReturn(kcTxManager);
 		when(producer.send(any())).thenReturn(mock(Future.class));
+	}
+
+	@Test
+	void testOnEvent() throws Exception {
+		Event event = setupOnEvent(BIO, IMAGE_URL);
+
+		sut.onEvent(event);
+
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<ProducerRecord<String,String>> jsonCaptor = ArgumentCaptor.forClass(ProducerRecord.class);
+		verify(producer).send(jsonCaptor.capture());
+
+		String jsonString = jsonCaptor.getValue().value();
+		ObjectMapper om = ObjectMapperUtils.createObjectMapper();
+		UserModificationEvent result = om.readValue(jsonString, UserModificationEvent.class);
+		assertNotNull(result);
+		assertEquals(USER_ID, result.getInitiatingUserId());
+		assertEquals(CREATE, result.getType());
+		UserUpdateData uud = result.getPayload();
+		assertEquals(USER_ID, uud.getId());
+		assertEquals(USERNAME, uud.getUsername());
+		assertEquals(EMAIL, uud.getEmail());
+		assertEquals(IMAGE_URL, uud.getImageUrl());
+		assertEquals(BIO, uud.getBio());
+	}
+
+	@Test
+	void testOnEventWithoutAttributes() throws Exception {
+		Event event = setupOnEvent(null, null);
+
+		sut.onEvent(event);
+
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<ProducerRecord<String,String>> jsonCaptor = ArgumentCaptor.forClass(ProducerRecord.class);
+		verify(producer).send(jsonCaptor.capture());
+
+		String jsonString = jsonCaptor.getValue().value();
+		ObjectMapper om = ObjectMapperUtils.createObjectMapper();
+		UserModificationEvent result = om.readValue(jsonString, UserModificationEvent.class);
+		assertNotNull(result);
+		assertEquals(USER_ID, result.getInitiatingUserId());
+		assertEquals(CREATE, result.getType());
+		UserUpdateData uud = result.getPayload();
+		assertEquals(USER_ID, uud.getId());
+		assertEquals(USERNAME, uud.getUsername());
+		assertEquals(EMAIL, uud.getEmail());
+		assertNull(uud.getImageUrl());
+		assertFalse(uud.isExplicitlySet(UserUpdateData.PropName.IMAGE_URL));
+		assertNull(uud.getBio());
+		assertFalse(uud.isExplicitlySet(UserUpdateData.PropName.BIO));
+	}
+
+	private Event setupOnEvent(String bio, String imageUrl) {
+		UserModel user = mock(UserModel.class);
+		when(user.getId()).thenReturn(USER_ID);
+		when(user.getUsername()).thenReturn(USERNAME);
+		when(user.getEmail()).thenReturn(EMAIL);
+		when(user.getFirstAttribute("bio")).thenReturn(bio);
+		when(user.getFirstAttribute("imageUrl")).thenReturn(imageUrl);
+		Event event = new Event();
+		event.setType(EventType.REGISTER);
+		event.setRealmId(REALM_ID);
+		event.setUserId(USER_ID);
+		when(session.realms()).thenReturn(mock(RealmProvider.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS)));
+		when(session.users()).thenReturn(mock(UserProvider.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS)));
+		RealmModel realm = mock(RealmModel.class);
+		when(session.realms().getRealm(REALM_ID)).thenReturn(realm);
+		when(session.users().getUserById(USER_ID, realm)).thenReturn(user);
+		return event;
 	}
 
 	@Test
@@ -85,10 +167,13 @@ public class RealworldEventListenerProviderTest {
 
 		sut.onEvent(event, true);
 
-		ArgumentCaptor<UserModificationEvent> modEventCaptor = ArgumentCaptor.forClass(UserModificationEvent.class);
-		verify(om).writeValueAsString(modEventCaptor.capture());
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<ProducerRecord<String,String>> jsonCaptor = ArgumentCaptor.forClass(ProducerRecord.class);
+		verify(producer).send(jsonCaptor.capture());
 
-		UserModificationEvent result = modEventCaptor.getValue();
+		String jsonString = jsonCaptor.getValue().value();
+		ObjectMapper om = ObjectMapperUtils.createObjectMapper();
+		UserModificationEvent result = om.readValue(jsonString, UserModificationEvent.class);
 		assertNotNull(result);
 		assertEquals(ADMIN_USER_ID, result.getInitiatingUserId());
 		assertEquals(UPDATE, result.getType());
@@ -121,10 +206,13 @@ public class RealworldEventListenerProviderTest {
 
 		sut.onEvent(event, true);
 
-		ArgumentCaptor<UserModificationEvent> modEventCaptor = ArgumentCaptor.forClass(UserModificationEvent.class);
-		verify(om).writeValueAsString(modEventCaptor.capture());
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<ProducerRecord<String,String>> jsonCaptor = ArgumentCaptor.forClass(ProducerRecord.class);
+		verify(producer).send(jsonCaptor.capture());
 
-		UserModificationEvent result = modEventCaptor.getValue();
+		String jsonString = jsonCaptor.getValue().value();
+		ObjectMapper om = ObjectMapperUtils.createObjectMapper();
+		UserModificationEvent result = om.readValue(jsonString, UserModificationEvent.class);
 		assertNotNull(result);
 		assertEquals(ADMIN_USER_ID, result.getInitiatingUserId());
 		assertEquals(CREATE, result.getType());
@@ -157,10 +245,13 @@ public class RealworldEventListenerProviderTest {
 
 		sut.onEvent(event, true);
 
-		ArgumentCaptor<UserModificationEvent> modEventCaptor = ArgumentCaptor.forClass(UserModificationEvent.class);
-		verify(om).writeValueAsString(modEventCaptor.capture());
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<ProducerRecord<String,String>> jsonCaptor = ArgumentCaptor.forClass(ProducerRecord.class);
+		verify(producer).send(jsonCaptor.capture());
 
-		UserModificationEvent result = modEventCaptor.getValue();
+		String jsonString = jsonCaptor.getValue().value();
+		ObjectMapper om = ObjectMapperUtils.createObjectMapper();
+		UserModificationEvent result = om.readValue(jsonString, UserModificationEvent.class);
 		assertNotNull(result);
 		assertEquals(ADMIN_USER_ID, result.getInitiatingUserId());
 		assertEquals(CREATE, result.getType());

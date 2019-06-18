@@ -1,12 +1,14 @@
 package realworld.keycloak.listener;
 
-import static org.keycloak.events.EventType.*;
+import static org.keycloak.events.EventType.REGISTER;
+import static org.keycloak.events.EventType.UPDATE_EMAIL;
+import static org.keycloak.events.EventType.UPDATE_PROFILE;
 import static org.keycloak.events.admin.ResourceType.USER;
-import static realworld.user.model.events.UserModificationEventType.*;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.JsonString;
 import javax.json.JsonValue;
@@ -16,8 +18,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.keycloak.events.Event;
@@ -27,8 +27,6 @@ import org.keycloak.events.admin.AdminEvent;
 import org.keycloak.events.admin.OperationType;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.UserModel;
-import realworld.user.model.UserUpdateData;
-import realworld.user.model.events.UserModificationEvent;
 
 /**
  * The Keycloak event handler that actually forwards the event to Kafka.
@@ -44,13 +42,11 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 
 	private KeycloakSession session;
 	private Producer<String, String> producer;
-	private ObjectMapper om;
 	private String topicName;
 
-	RealworldEventListenerProvider(KeycloakSession session, Producer<String, String> producer, ObjectMapper om, String topicName) {
+	RealworldEventListenerProvider(KeycloakSession session, Producer<String, String> producer, String topicName) {
 		this.session = session;
 		this.producer = producer;
-		this.om = om;
 		this.topicName = topicName;
 	}
 
@@ -60,26 +56,23 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 			boolean success = false;
 			try {
 				UserModel user = session.users().getUserById(event.getUserId(), session.realms().getRealm(event.getRealmId()));
-				UserUpdateData uud = new UserUpdateData();
-				uud.setId(user.getId());
+				JsonObjectBuilder userUpdateDataBuilder = Json.createObjectBuilder();
+				userUpdateDataBuilder.add("id", user.getId());
 				if( event.getType() == REGISTER || event.getType() == UPDATE_PROFILE ) {
-					copyGeneralProperties(user, uud);
+					copyGeneralProperties(user, userUpdateDataBuilder);
 				}
 				if( event.getType() == REGISTER || event.getType() == UPDATE_EMAIL ) {
-					copyEmail(user, uud);
+					copyEmail(user, userUpdateDataBuilder);
 				}
 
-				UserModificationEvent userModificationEvent = new UserModificationEvent();
-				userModificationEvent.setInitiatingUserId(user.getId());
-				userModificationEvent.setTimestamp(System.currentTimeMillis());
-				userModificationEvent.setType(event.getType() == REGISTER ? CREATE : UPDATE);
-				userModificationEvent.setPayload(uud);
+				JsonObjectBuilder userModificationEventBuilder = Json.createObjectBuilder();
+				userModificationEventBuilder.add("initiatingUserId", user.getId());
+				userModificationEventBuilder.add("timestamp", event.getTime());
+				userModificationEventBuilder.add("type", event.getType() == REGISTER ? "CREATE" : "UPDATE");
+				userModificationEventBuilder.add("payload", userUpdateDataBuilder);
 
-				producer.send(new ProducerRecord<>(topicName, user.getId(), om.writeValueAsString(userModificationEvent))).get();
+				producer.send(new ProducerRecord<>(topicName, user.getId(), userModificationEventBuilder.build().toString())).get();
 				success = true;
-			}
-			catch( JsonProcessingException e ) {
-				throw new IllegalArgumentException(e);
 			}
 			catch( InterruptedException e ) {
 				throw new IllegalStateException(e);
@@ -95,15 +88,15 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 		}
 	}
 
-	private void copyGeneralProperties(UserModel um, UserUpdateData uud) {
-		uud.setUsername(um.getUsername());
+	private void copyGeneralProperties(UserModel um, JsonObjectBuilder userUpdateDataBuilder) {
 		// TODO Maybe we should include first/last name and ignore them at the application level! This means having a different UserUpdateData object!
-		uud.setBio(um.getFirstAttribute("bio"));
-		uud.setImageUrl(um.getFirstAttribute("imageUrl"));
+		userUpdateDataBuilder.add("username", um.getUsername());
+		Optional.ofNullable(um.getFirstAttribute("bio")).ifPresent(bio -> userUpdateDataBuilder.add("bio", bio));
+		Optional.ofNullable(um.getFirstAttribute("imageUrl")).ifPresent(imageUrl -> userUpdateDataBuilder.add("imageUrl", imageUrl));
 	}
 
-	private void copyEmail(UserModel um, UserUpdateData uud) {
-		uud.setEmail(um.getEmail());
+	private void copyEmail(UserModel um, JsonObjectBuilder userUpdateDataBuilder) {
+		userUpdateDataBuilder.add("email", um.getEmail());
 	}
 
 	@Override
@@ -121,34 +114,32 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 				JsonReader jsonReader = Json.createReader(new StringReader(event.getRepresentation()));
 				JsonObject jobj = jsonReader.readObject();
 
-				UserModificationEvent userModificationEvent = new UserModificationEvent();
-				userModificationEvent.setInitiatingUserId(event.getAuthDetails().getUserId());
-				userModificationEvent.setTimestamp(event.getTime());
+				JsonObjectBuilder userModificationEventBuilder = Json.createObjectBuilder();
+				userModificationEventBuilder.add("initiatingUserId", event.getAuthDetails().getUserId());
+				userModificationEventBuilder.add("timestamp", event.getTime());
 
-				UserUpdateData uud = new UserUpdateData();
-				uud.setId(jobj.getString("id"));
-				uud.setUsername(jobj.getString("username"));
+				JsonObjectBuilder userUpdateDataBuilder = Json.createObjectBuilder();
+				String userId = jobj.getString("id");
+				userUpdateDataBuilder.add("id", userId);
+				userUpdateDataBuilder.add("username", jobj.getString("username"));
 
 				if( event.getOperationType() == OperationType.DELETE ) {
-					userModificationEvent.setType(DELETE);
+					userModificationEventBuilder.add("type", "DELETE");
 				}
 				else {
-					userModificationEvent.setType(event.getOperationType() == OperationType.CREATE ? CREATE : UPDATE);
-					uud.setEmail(jobj.getString("email"));
+					userModificationEventBuilder.add("type", event.getOperationType().name());
+					userUpdateDataBuilder.add("email", jobj.getString("email"));
 					getJsonValue(jobj, "attributes").ifPresent(jval -> {
 						JsonObject jattributes = jval.asJsonObject();
-						getJsonValue(jattributes, "imageUrl").map(JsonValue::asJsonArray).flatMap(this::first).map(jv -> ((JsonString) jv).getString()).ifPresent(uud::setImageUrl);
-						getJsonValue(jattributes, "bio").map(JsonValue::asJsonArray).flatMap(this::first).map(jv -> ((JsonString) jv).getString()).ifPresent(uud::setBio);
+						getJsonValue(jattributes, "imageUrl").map(JsonValue::asJsonArray).flatMap(this::first).map(jv -> ((JsonString) jv).getString()).ifPresent(imageUrl -> userUpdateDataBuilder.add("imageUrl", imageUrl));
+						getJsonValue(jattributes, "bio").map(JsonValue::asJsonArray).flatMap(this::first).map(jv -> ((JsonString) jv).getString()).ifPresent(bio -> userUpdateDataBuilder.add("bio", bio));
 					});
 				}
 
-				userModificationEvent.setPayload(uud);
+				userModificationEventBuilder.add("payload", userUpdateDataBuilder);
 
-				producer.send(new ProducerRecord<>(topicName, uud.getId(), om.writeValueAsString(userModificationEvent))).get();
+				producer.send(new ProducerRecord<>(topicName, userId, userModificationEventBuilder.build().toString())).get();
 				success = true;
-			}
-			catch( JsonProcessingException e ) {
-				throw new IllegalArgumentException(e);
 			}
 			catch( InterruptedException e ) {
 				throw new IllegalStateException(e);

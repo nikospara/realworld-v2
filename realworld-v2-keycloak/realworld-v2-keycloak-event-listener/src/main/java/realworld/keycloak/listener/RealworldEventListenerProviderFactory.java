@@ -7,7 +7,6 @@ import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_
 
 import java.util.Properties;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.keycloak.Config;
@@ -15,7 +14,6 @@ import org.keycloak.events.EventListenerProvider;
 import org.keycloak.events.EventListenerProviderFactory;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
-import realworld.json.ObjectMapperUtils;
 
 /**
  * Set up the hook to Keycloak's events to notify Kafka about user events.
@@ -26,7 +24,6 @@ public class RealworldEventListenerProviderFactory implements EventListenerProvi
 
 	private String topicName;
 	private Producer<String, String> producer;
-	private ObjectMapper om;
 
 	@Override
 	public String getId() {
@@ -44,9 +41,6 @@ public class RealworldEventListenerProviderFactory implements EventListenerProvi
 		props.put(KEY_SERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringSerializer.class);
 		props.put(VALUE_SERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringSerializer.class);
 		producer = new KafkaProducer<>(props);
-
-		om = ObjectMapperUtils.createObjectMapper();
-		ObjectMapperUtils.customize(om);
 	}
 
 	@Override
@@ -56,7 +50,7 @@ public class RealworldEventListenerProviderFactory implements EventListenerProvi
 
 	@Override
 	public EventListenerProvider create(KeycloakSession session) {
-		return new RealworldEventListenerProvider(session, producer, om, topicName);
+		return new RealworldEventListenerProvider(session, producer, topicName);
 	}
 
 	@Override
