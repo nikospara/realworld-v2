@@ -63,7 +63,7 @@ public interface FollowsResource {
 	@ApiResponses(
 			@ApiResponse(code=200, message="Success")
 	)
-	String follows(
+	boolean follows(
 			@ApiParam(value = "The user name of the user to follow.", required = true)
 			@PathParam("username")
 			String username,

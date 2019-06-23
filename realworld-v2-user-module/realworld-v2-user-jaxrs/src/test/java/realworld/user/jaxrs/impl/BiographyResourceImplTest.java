@@ -94,20 +94,4 @@ public class BiographyResourceImplTest {
 		assertEquals(USERNAME, captor.getValue());
 		assertEquals(BIO, response.getContentAsString());
 	}
-
-	@Test
-	void testUpdate() throws Exception {
-		MockHttpRequest request = MockHttpRequest.put(APPLICATION_PATH + "/users/" + USERNAME + "/bio")
-				.contentType(MediaType.TEXT_PLAIN)
-				.content(BIO.getBytes());
-
-		dispatcher.invoke(request, response);
-
-		assertEquals(204, response.getStatus());
-		ArgumentCaptor<String> usernameCaptor = ArgumentCaptor.forClass(String.class);
-		ArgumentCaptor<String> contentCaptor = ArgumentCaptor.forClass(String.class);
-		verify(biographyService).updateByUserName(usernameCaptor.capture(), contentCaptor.capture());
-		assertEquals(USERNAME, usernameCaptor.getValue());
-		assertEquals(BIO, contentCaptor.getValue());
-	}
 }

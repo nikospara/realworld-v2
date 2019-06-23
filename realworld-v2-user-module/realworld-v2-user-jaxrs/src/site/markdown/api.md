@@ -24,30 +24,11 @@ These are objects accepted and returned by the APIs.
 
 ### Authentication (POST /login)
 
-Changed. Example request body:
-
-	{
-		"email": "jake@jake.jake",
-		"password": "jakejake"
-	}
-
-Returns a token (plain string).
+Removed. Authenticate through the IDM.
 
 ### Registration (POST /users)
 
-Example request body:
-
-	{
-		"username": "Jacob",
-		"email": "jake@jake.jake",
-		"password": "jakejake",
-		"bio": "I like to skateboard",
-		"imageUrl": "https://i.stack.imgur.com/xHWG8.jpg"
-	}
-
-No authentication required, returns 201 "Created" on success and a `Location` header pointing to the new resource.
-
-Fields `bio`, `imageUrl` are optional.
+Removed. Register through the IDM.
 
 ### Get Current User (-)
 
@@ -55,11 +36,7 @@ Deprecated. Use the token to extract the user name and then call the "Get Profil
 
 ### Update User (PUT /users/{username})
 
-Example request body: same as for registration.
-
-Authentication required, returns 204 "No Content".
-
-All fields are optional.
+Removed. Update user data through the IDM.
 
 ### Get Profile (GET /users/{username})
 
@@ -69,11 +46,7 @@ Redacted objects contain three asterisks (`"***"`) in the confidential fields, c
 
 ### Get biography (GET /users/{username}/bio)
 
-NEW. Returns a string, the user's biography.
-
-### Update biography (PUT /users/{username}/bio)
-
-NEW. Post body is a string, returns 204 "No Content".
+NEW. Returns a string, the user's biography. Update the biography through the IDM.
 
 ### Get a list of all the users followed by a user (GET /users/{username}/follows/all)
 

@@ -1,7 +1,6 @@
 package realworld.user.jaxrs.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static realworld.user.jaxrs.impl.UserDataAssertions.assertUserData;
@@ -10,7 +9,6 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.jboss.resteasy.core.Dispatcher;
@@ -35,8 +33,6 @@ import realworld.test.jaxrs.CustomMockDispatcherFactory;
 import realworld.user.jaxrs.UsersResource;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
-import realworld.user.model.UserRegistrationData;
-import realworld.user.model.UserUpdateData;
 import realworld.user.services.UserService;
 
 /**
@@ -52,7 +48,6 @@ public class UsersResourceImplTest {
 	private static final String APPLICATION_PATH = "/api/current";
 	private static final String USER_ID = "userid";
 	private static final String USERNAME = "username";
-	private static final String PASSWORD = "P@ssword";
 	private static final String EMAIL = "userid@here.com";
 	private static final String IMAGE_URL = "http://pictures.com/image1";
 
@@ -78,27 +73,6 @@ public class UsersResourceImplTest {
 	}
 
 	@Test
-	void testRegister() throws Exception {
-		MockHttpRequest request = MockHttpRequest.post(APPLICATION_PATH + "/users")
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(("{\"email\":\"" + EMAIL + "\", \"password\":\"" + PASSWORD + "\", \"username\":\"" + USERNAME + "\", \"imageUrl\":\"" + IMAGE_URL + "\"}").getBytes());
-
-		when(userService.register(any())).thenAnswer(a -> {
-			UserRegistrationData r = a.getArgument(0);
-			return makeUser(r.getUsername(), r.getEmail(), null);
-		});
-
-		dispatcher.invoke(request, response);
-
-		ArgumentCaptor<UserRegistrationData> captor = ArgumentCaptor.forClass(UserRegistrationData.class);
-		verify(userService).register(captor.capture());
-		assertEquals(PASSWORD, captor.getValue().getPassword());
-
-		assertEquals(201, response.getStatus());
-		assertEquals(UriBuilder.fromPath(APPLICATION_PATH).segment("users", "{username}").build(USERNAME), response.getOutputHeaders().getFirst("Location"));
-	}
-
-	@Test
 	void testGetForNonExistingUser() throws Exception {
 		MockHttpRequest request = MockHttpRequest.get(APPLICATION_PATH + "/users/" + USERNAME)
 			.accept(MediaType.APPLICATION_JSON);
@@ -118,7 +92,7 @@ public class UsersResourceImplTest {
 		MockHttpRequest request = MockHttpRequest.get(APPLICATION_PATH + "/users/" + USERNAME)
 			.accept(MediaType.APPLICATION_JSON);
 
-		when(userService.findByUserName(USERNAME)).thenAnswer(a -> makeUser(a.getArgument(0), EMAIL, IMAGE_URL));
+		when(userService.findByUserName(USERNAME)).thenAnswer(a -> makeUser(a.getArgument(0)));
 
 		dispatcher.invoke(request, response);
 
@@ -133,30 +107,12 @@ public class UsersResourceImplTest {
 				.assertImageUrl(IMAGE_URL);
 	}
 
-	@Test
-	void testUpdate() throws Exception {
-		MockHttpRequest request = MockHttpRequest.put(APPLICATION_PATH + "/users/" + USERNAME)
-			.contentType(MediaType.APPLICATION_JSON)
-			.content(("{\"email\":\"" + EMAIL + "\", \"password\":\"" + PASSWORD + "\", \"username\":\"" + USERNAME + "\", \"imageUrl\":\"" + IMAGE_URL + "\"}").getBytes());
-
-		dispatcher.invoke(request, response);
-
-		assertEquals(204, response.getStatus());
-		ArgumentCaptor<UserUpdateData> captor = ArgumentCaptor.forClass(UserUpdateData.class);
-		verify(userService).update(captor.capture());
-		UserUpdateData data = captor.getValue();
-		assertEquals(USERNAME, data.getUsername());
-		assertEquals(EMAIL, data.getEmail());
-		assertEquals(IMAGE_URL, data.getImageUrl());
-		assertEquals(PASSWORD, data.getPassword());
-	}
-
-	private UserData makeUser(String username, String email, String image) {
+	private UserData makeUser(String username) {
 		return ImmutableUserData.builder()
 				.id(USER_ID)
 				.username(username)
-				.email(email)
-				.imageUrl(image)
+				.email(EMAIL)
+				.imageUrl(IMAGE_URL)
 				.build();
 	}
 }

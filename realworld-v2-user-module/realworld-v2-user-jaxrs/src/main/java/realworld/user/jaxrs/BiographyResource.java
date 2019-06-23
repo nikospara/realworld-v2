@@ -1,12 +1,10 @@
 package realworld.user.jaxrs;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,19 +32,5 @@ public interface BiographyResource {
 			@ApiParam(value = "The user name to apply this operation to.", required = true)
 			@PathParam("username")
 			String username
-	);
-
-	@PUT
-	@ApiOperation(value="Update biography.", tags=TAG)
-	@ApiResponses({
-			@ApiResponse(code = 204, message = "Success"),
-			@ApiResponse(code = 404, message = "User not found")
-	})
-	Response update(
-			@ApiParam(value = "The user name to apply this operation to.", required = true)
-			@PathParam("username")
-			String username,
-			@ApiParam(value = "New biography content.", required = true)
-			String bio
 	);
 }

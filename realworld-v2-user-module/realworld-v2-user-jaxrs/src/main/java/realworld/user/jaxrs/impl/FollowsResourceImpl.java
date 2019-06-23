@@ -30,8 +30,8 @@ public class FollowsResourceImpl implements FollowsResource {
 	}
 
 	@Override
-	public String follows(String username, String followedUsername) {
-		return Boolean.toString(followService.follows(username, followedUsername));
+	public boolean follows(String username, String followedUsername) {
+		return followService.follows(username, followedUsername);
 	}
 
 	@Override
