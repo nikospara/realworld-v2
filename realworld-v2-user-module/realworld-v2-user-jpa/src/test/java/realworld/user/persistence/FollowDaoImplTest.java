@@ -36,11 +36,9 @@ public class FollowDaoImplTest {
 	private static final String USER_ID1 = UUID.randomUUID().toString();
 	private static final String USERNAME1 = "test1";
 	private static final String EMAIL1 = "test1@here.com";
-	private static final String PASSWORD1 = "pwd1";
 	private static final String USER_ID2 = UUID.randomUUID().toString();
 	private static final String USERNAME2 = "test2";
 	private static final String EMAIL2 = "test2@here.com";
-	private static final String PASSWORD2 = "pwd2";
 
 	private EntityManager em;
 	private Statistics statistics;
@@ -66,13 +64,11 @@ public class FollowDaoImplTest {
 		u1.setId(USER_ID1);
 		u1.setUsername(USERNAME1);
 		u1.setEmail(EMAIL1);
-		u1.setPassword(PASSWORD1);
 		em.persist(u1);
 		User u2 = new User();
 		u2.setId(USER_ID2);
 		u2.setUsername(USERNAME2);
 		u2.setEmail(EMAIL2);
-		u2.setPassword(PASSWORD2);
 		em.persist(u2);
 		em.getTransaction().commit();
 		em.clear();

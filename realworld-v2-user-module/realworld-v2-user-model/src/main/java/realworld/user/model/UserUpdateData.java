@@ -32,7 +32,6 @@ public class UserUpdateData implements Serializable {
 		ID(String.class),
 		USERNAME(String.class),
 		EMAIL(String.class),
-		PASSWORD(String.class),
 		IMAGE_URL(String.class),
 		BIO(String.class);
 
@@ -91,17 +90,6 @@ public class UserUpdateData implements Serializable {
 	/** Set the email. */
 	public void setEmail(String email) {
 		props.put(PropName.EMAIL, email);
-	}
-
-	/** Get the password. */
-	@Size(min=5)
-	public String getPassword() {
-		return (String) props.get(PropName.PASSWORD);
-	}
-
-	/** Set the password. */
-	public void setPassword(String password) {
-		props.put(PropName.PASSWORD, password);
 	}
 
 	/** Get the image URL. */

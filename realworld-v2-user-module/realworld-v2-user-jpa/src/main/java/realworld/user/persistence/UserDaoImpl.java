@@ -42,11 +42,10 @@ class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public UserData create(UserData user, String password) {
+	public UserData create(UserData user) {
 		User u = new User();
 		u.setId(UUID.randomUUID().toString());
 		u.setUsername(user.getUsername());
-		u.setPassword(password);
 		u.setEmail(user.getEmail());
 		u.setImageUrl(user.getImageUrl());
 		em.persist(u);
@@ -61,20 +60,6 @@ class UserDaoImpl implements UserDao {
 	@Override
 	public boolean emailExists(String email) {
 		return unique((cb, root) -> cb.equal(cb.lower(root.get(User_.email)), email.toLowerCase()));
-	}
-
-	@Override
-	public Optional<UserData> findByEmailAndPassword(String email, String password) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<User> query = cb.createQuery(User.class);
-		Root<User> root = query.from(User.class);
-		query.where(cb.and(
-				cb.equal(cb.lower(root.get(User_.email)), email.toLowerCase()),
-				cb.equal(root.get(User_.password), password)
-		));
-		return em.createQuery(query).setMaxResults(1).getResultStream()
-				.findFirst()
-				.map(this::fromUser);
 	}
 
 	@Override

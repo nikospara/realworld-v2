@@ -13,10 +13,9 @@ public interface UserDao {
 	 * Create a user.
 	 *
 	 * @param user     The user data
-	 * @param password The initial password
 	 * @return A user object, could be the same as the input
 	 */
-	UserData create(UserData user, String password);
+	UserData create(UserData user);
 
 	/**
 	 * Check if the given user name exists in the DB.
@@ -33,15 +32,6 @@ public interface UserDao {
 	 * @return Whether the email exists
 	 */
 	boolean emailExists(String email);
-
-	/**
-	 * Find a user by email (case-insensitive comparison) and password.
-	 *
-	 * @param email    The email
-	 * @param password The encrypted password
-	 * @return The user object
-	 */
-	Optional<UserData> findByEmailAndPassword(String email, String password);
 
 	/**
 	 * Find user by user name.

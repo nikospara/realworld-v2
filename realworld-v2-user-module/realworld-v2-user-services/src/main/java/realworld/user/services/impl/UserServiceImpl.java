@@ -6,7 +6,6 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import realworld.EntityDoesNotExistException;
 import realworld.SimpleConstraintViolation;
 import realworld.SimpleValidationException;
 import realworld.authentication.AuthenticationContext;
-import realworld.user.dao.BiographyDao;
 import realworld.user.dao.UserDao;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
@@ -34,8 +32,6 @@ class UserServiceImpl implements UserService {
 
 	private BiographyService biographyService;
 
-	private PasswordEncrypter encrypter;
-
 	private AuthenticationContext authenticationContext;
 
 	/**
@@ -50,13 +46,12 @@ class UserServiceImpl implements UserService {
 	 *
 	 * @param userDao          The user DAO
 	 * @param biographyService The biography DAO
-	 * @param encrypter        The password encrypter
+	 * @param authenticationContext   The authentication context
 	 */
 	@Inject
-	public UserServiceImpl(UserDao userDao, BiographyService biographyService, PasswordEncrypter encrypter, AuthenticationContext authenticationContext) {
+	public UserServiceImpl(UserDao userDao, BiographyService biographyService, AuthenticationContext authenticationContext) {
 		this.userDao = userDao;
 		this.biographyService = biographyService;
-		this.encrypter = encrypter;
 		this.authenticationContext = authenticationContext;
 	}
 
@@ -81,20 +76,14 @@ class UserServiceImpl implements UserService {
 				.imageUrl(registrationData.getImageUrl())
 				.build();
 
-		UserData createdUserData = userDao.create(userData, encrypter.apply(registrationData.getPassword()));
+		UserData createdUserData = userDao.create(userData);
 		biographyService.create(createdUserData.getId(), registrationData.getBio());
 
 		return createdUserData;
 	}
-
 	@Override
 	public UserData findByUserName(String username) {
 		return userDao.findByUserName(username).orElseThrow(() -> new EntityDoesNotExistException(username));
-	}
-
-	@Override
-	public UserData findByEmailAndPassword(String email, String password) {
-		return userDao.findByEmailAndPassword(email, encrypter.apply(password)).orElseThrow(EntityDoesNotExistException::new);
 	}
 
 	@Override
@@ -118,7 +107,6 @@ class UserServiceImpl implements UserService {
 				.setUsername(userUpdateData.isExplicitlySet(USERNAME), userUpdateData.getUsername())
 				.setEmail(userUpdateData.isExplicitlySet(EMAIL), userUpdateData.getEmail())
 				.setImageUrl(userUpdateData.isExplicitlySet(IMAGE_URL), userUpdateData.getImageUrl())
-				.setPassword(userUpdateData.isExplicitlySet(PASSWORD), userUpdateData.isExplicitlySet(PASSWORD) ? encrypter.apply(userUpdateData.getPassword()) : null)
 				.executeForId(u.getId());
 
 		if( userUpdateData.isExplicitlySet(BIO) ) {

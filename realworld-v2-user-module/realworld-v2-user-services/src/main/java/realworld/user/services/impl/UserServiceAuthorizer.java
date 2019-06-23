@@ -35,6 +35,7 @@ public class UserServiceAuthorizer implements UserService {
 	 *
 	 * @param delegate      The delegate of this decorator
 	 * @param authorization The authorization utilities
+	 * @param authenticationContext The authentication context
 	 */
 	@Inject
 	public UserServiceAuthorizer(@Delegate UserService delegate, Authorization authorization, AuthenticationContext authenticationContext) {
@@ -55,11 +56,6 @@ public class UserServiceAuthorizer implements UserService {
 			userData = ImmutableUserData.builder().from(userData).id(REDUCTED).email(REDUCTED).build();
 		}
 		return userData;
-	}
-
-	@Override
-	public UserData findByEmailAndPassword(String email, String password) {
-		return delegate.findByEmailAndPassword(email, password);
 	}
 
 	@Override

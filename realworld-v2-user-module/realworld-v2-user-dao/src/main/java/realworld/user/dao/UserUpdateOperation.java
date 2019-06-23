@@ -34,15 +34,6 @@ public interface UserUpdateOperation {
 	UserUpdateOperation setImageUrl(boolean reallySet, String newValue);
 
 	/**
-	 * Update the password.
-	 *
-	 * @param reallySet If false, this field will not be updated
-	 * @param newValue  The new value
-	 * @return This operation for chaining
-	 */
-	UserUpdateOperation setPassword(boolean reallySet, String newValue);
-
-	/**
 	 * Update the entity with the given id.
 	 *
 	 * @param id The id of the entity to updateById

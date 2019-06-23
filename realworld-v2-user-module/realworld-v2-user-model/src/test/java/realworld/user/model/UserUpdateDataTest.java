@@ -29,7 +29,6 @@ public class UserUpdateDataTest {
 		assertEquals("myuser", x.getUsername());
 		assertFalse(x.isExplicitlySet(UserUpdateData.PropName.ID));
 		assertFalse(x.isExplicitlySet(UserUpdateData.PropName.EMAIL));
-		assertFalse(x.isExplicitlySet(UserUpdateData.PropName.PASSWORD));
 		assertFalse(x.isExplicitlySet(UserUpdateData.PropName.BIO));
 	}
 }

@@ -12,9 +12,6 @@
 			<column name="username" type="VARCHAR(255)">
 				<constraints unique="true" uniqueConstraintName="UQ_RWL_USER_USERNAME" />
 			</column>
-			<column name="password" type="VARCHAR(64)">
-				<constraints nullable="false" />
-			</column>
 			<column name="email" type="VARCHAR(255)">
 				<constraints unique="true" uniqueConstraintName="UQ_RWL_USER_EMAIL" />
 			</column>

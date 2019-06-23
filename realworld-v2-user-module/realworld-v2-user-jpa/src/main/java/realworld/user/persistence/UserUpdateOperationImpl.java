@@ -61,15 +61,6 @@ class UserUpdateOperationImpl implements UserUpdateOperation {
 	}
 
 	@Override
-	public UserUpdateOperation setPassword(boolean reallySet, String newValue) {
-		if( reallySet ) {
-			updateQuery.set(User_.password, newValue);
-			hasAnyChange = true;
-		}
-		return this;
-	}
-
-	@Override
 	public void executeForId(String id) {
 		if( hasAnyChange ) {
 			updateQuery.where(cb.equal(userRoot.get(User_.id), id));

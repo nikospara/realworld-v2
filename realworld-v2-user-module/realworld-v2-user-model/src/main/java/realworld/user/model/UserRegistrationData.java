@@ -27,11 +27,6 @@ public interface UserRegistrationData {
 	@Pattern(regexp="^.+@.+\\.[a-z]+$", flags=CASE_INSENSITIVE)
 	String getEmail();
 
-	/** Get the password. */
-	@NotNull
-	@Size(min=5)
-	String getPassword();
-
 	/** Get the link to the user image. */
 	@Nullable
 	String getImageUrl();

@@ -60,7 +60,6 @@ public class BiographyDaoImplTest {
 		u.setId(USER_ID);
 		u.setUsername(USERNAME);
 		u.setEmail(EMAIL);
-		u.setPassword(PASSWORD);
 		em.persist(u);
 		em.getTransaction().commit();
 		em.clear();

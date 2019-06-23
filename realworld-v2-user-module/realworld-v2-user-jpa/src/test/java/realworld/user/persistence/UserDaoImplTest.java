@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import realworld.EntityDoesNotExistException;
 import realworld.test.jpa.JpaDaoExtension;
 import realworld.test.liquibase.LiquibaseExtension;
@@ -35,11 +34,9 @@ public class UserDaoImplTest {
 	private static final String USERNAME = "username";
 	private static final String EMAIL = "email.one@here.com";
 	private static final String IMAGE_URL = "IMAGE.URL";
-	private static final String ENCRYPTED_PASSWD = "enc_passwd";
 	private static final String UPDATED_USERNAME = "updated_username";
 	private static final String UPDATED_EMAIL = "updated_email.one@here.com";
 	private static final String UPDATED_IMAGE_URL = "updated_IMAGE.URL";
-	private static final String UPDATED_ENCRYPTED_PASSWD = "updated_enc_passwd";
 
 	private EntityManager em;
 	private Statistics statistics;
@@ -61,7 +58,7 @@ public class UserDaoImplTest {
 	@Order(1)
 	void testCreate() {
 		em.getTransaction().begin();
-		UserData result = sut.create(ImmutableUserData.builder().username(USERNAME).email(EMAIL).imageUrl(IMAGE_URL).build(), ENCRYPTED_PASSWD);
+		UserData result = sut.create(ImmutableUserData.builder().username(USERNAME).email(EMAIL).imageUrl(IMAGE_URL).build());
 		em.getTransaction().commit();
 		em.clear();
 
@@ -72,7 +69,6 @@ public class UserDaoImplTest {
 		assertEquals(USERNAME, u.getUsername());
 		assertEquals(EMAIL, u.getEmail());
 		assertEquals(IMAGE_URL, u.getImageUrl());
-		assertEquals(ENCRYPTED_PASSWD, u.getPassword());
 		assertEquals(1L, statistics.getEntityInsertCount());
 		assertEquals(1L, statistics.getEntityLoadCount());
 	}
@@ -93,19 +89,6 @@ public class UserDaoImplTest {
 
 	@Test
 	@Order(4)
-	void testFindByEmailAndPassword() {
-		UserData result1 = sut.findByEmailAndPassword(EMAIL, ENCRYPTED_PASSWD).get();
-		assertEquals(USERNAME, result1.getUsername());
-		assertEquals(IMAGE_URL, result1.getImageUrl());
-		UserData result2 = sut.findByEmailAndPassword(EMAIL.toUpperCase(), ENCRYPTED_PASSWD).get();
-		assertEquals(USERNAME, result2.getUsername());
-		assertEquals(IMAGE_URL, result2.getImageUrl());
-		assertTrue(sut.findByEmailAndPassword("xxx", ENCRYPTED_PASSWD).isEmpty());
-		assertTrue(sut.findByEmailAndPassword(EMAIL, "xxx").isEmpty());
-	}
-
-	@Test
-	@Order(5)
 	void testFindByUsername() {
 		UserData result = sut.findByUserName(USERNAME).get();
 		assertEquals(EMAIL, result.getEmail());
@@ -114,7 +97,7 @@ public class UserDaoImplTest {
 	}
 
 	@Test
-	@Order(6)
+	@Order(5)
 	void testUpdateNonExistingUser() {
 		em.getTransaction().begin();
 		try {
@@ -128,7 +111,7 @@ public class UserDaoImplTest {
 	}
 
 	@Test
-	@Order(7)
+	@Order(6)
 	void testUpdateWithNoRealUpdate() {
 		String userid = sut.findByUserName(USERNAME).get().getId();
 		em.clear();
@@ -138,7 +121,6 @@ public class UserDaoImplTest {
 				.setUsername(false, UPDATED_USERNAME)
 				.setEmail(false, UPDATED_EMAIL)
 				.setImageUrl(false, UPDATED_IMAGE_URL)
-				.setPassword(false, UPDATED_ENCRYPTED_PASSWD)
 				.executeForId(userid);
 		em.getTransaction().commit();
 		em.clear();
@@ -150,11 +132,10 @@ public class UserDaoImplTest {
 		assertEquals(USERNAME, u.getUsername());
 		assertEquals(EMAIL, u.getEmail());
 		assertEquals(IMAGE_URL, u.getImageUrl());
-		assertEquals(ENCRYPTED_PASSWD, u.getPassword());
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	void testUpdate() {
 		String userid = sut.findByUserName(USERNAME).get().getId();
 		em.clear();
@@ -163,7 +144,6 @@ public class UserDaoImplTest {
 		sut.createUpdate()
 				.setUsername(true, UPDATED_USERNAME)
 				.setEmail(true, UPDATED_EMAIL)
-				.setPassword(true, UPDATED_ENCRYPTED_PASSWD)
 				.executeForId(userid);
 		em.getTransaction().commit();
 		em.clear();
@@ -175,6 +155,5 @@ public class UserDaoImplTest {
 		assertEquals(UPDATED_USERNAME, u.getUsername());
 		assertEquals(UPDATED_EMAIL, u.getEmail());
 		assertEquals(IMAGE_URL, u.getImageUrl());
-		assertEquals(UPDATED_ENCRYPTED_PASSWD, u.getPassword());
 	}
 }
