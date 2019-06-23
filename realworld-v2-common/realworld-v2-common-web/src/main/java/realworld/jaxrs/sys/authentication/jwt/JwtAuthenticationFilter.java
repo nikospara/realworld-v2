@@ -1,4 +1,4 @@
-package realworld.jaxrs.sys.authentication;
+package realworld.jaxrs.sys.authentication.jwt;
 
 import static javax.ws.rs.Priorities.AUTHENTICATION;
 
@@ -8,7 +8,11 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 
-import realworld.authentication.AuthenticationContextHolder;
+import realworld.jaxrs.sys.authentication.AuthenticationContextHolder;
+import realworld.jaxrs.sys.authentication.AuthenticationContextImpl;
+import realworld.jaxrs.sys.authentication.JaxRsSecurityContextImpl;
+import realworld.jaxrs.sys.authentication.UserImpl;
+import realworld.jaxrs.sys.authentication.jwt.TokenHelper;
 
 /**
  * Extract the user info from the request and set the JAX-RS {@code SecurityContext}

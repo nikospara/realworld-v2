@@ -1,4 +1,4 @@
-package realworld.jaxrs.sys.authentication;
+package realworld.jaxrs.sys.authentication.jwt;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -13,52 +13,55 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import realworld.jaxrs.sys.authentication.UserImpl;
 import realworld.services.DateTimeService;
 
 /**
- * Token processing helper.
+ * Implementation of the {@link TokenHelper}.
  */
 @ApplicationScoped
-public class TokenHelper {
+public class TokenHelperImpl implements TokenHelper {
 
-	private static final String AUTHORIZATION_HEADER = "Authorization";
+	public static final String AUTHORIZATION_HEADER = "Authorization";
 	private static final Pattern AUTH_HEADER_RE = Pattern.compile("^Token (.*)$", Pattern.CASE_INSENSITIVE);
-	
-	private JwtService jwtService;
-	
+
+	private JWSVerifierMapper jwsVerifierMapper;
+
 	private DateTimeService dateTimeService;
-	
+
 	private TokenAuthenticationConfig tokenAuthenticationConfig;
-	
+
 	/**
 	 * Default constructor required by the infrastructure.
 	 */
-	TokenHelper() {
+	TokenHelperImpl() {
 		// NO OP
 	}
-	
+
 	/**
 	 * Injection constructor.
-	 * 
-	 * @param jwtService                The JWT service
+	 *
+	 * @param jwsVerifierMapper         The map of JWT verifiers
 	 * @param dateTimeService           The date service
 	 * @param tokenAuthenticationConfig The configuration
 	 */
 	@Inject
-	public TokenHelper(JwtService jwtService, DateTimeService dateTimeService, TokenAuthenticationConfig tokenAuthenticationConfig) {
-		this.jwtService = jwtService;
+	public TokenHelperImpl(JWSVerifierMapper jwsVerifierMapper, DateTimeService dateTimeService, TokenAuthenticationConfig tokenAuthenticationConfig) {
+		this.jwsVerifierMapper = jwsVerifierMapper;
 		this.dateTimeService = dateTimeService;
 		this.tokenAuthenticationConfig = tokenAuthenticationConfig;
 	}
 
 	/**
 	 * Try to extract the token from the {@code ContainerRequestContext}.
-	 * 
+	 *
 	 * @param requestContext The context
 	 * @return The token or {@code null}
 	 */
+	@Override
 	public String extractRawToken(ContainerRequestContext requestContext) {
 		String authenticationHeaderValue = requestContext.getHeaders().getFirst(AUTHORIZATION_HEADER);
 		return extractRawToken(authenticationHeaderValue);
@@ -70,6 +73,7 @@ public class TokenHelper {
 	 * @param headers The headers
 	 * @return The token or {@code null}
 	 */
+	@Override
 	public String extractRawToken(HttpHeaders headers) {
 		String authenticationHeaderValue = headers.getRequestHeaders().getFirst(AUTHORIZATION_HEADER);
 		return extractRawToken(authenticationHeaderValue);
@@ -88,34 +92,41 @@ public class TokenHelper {
 
 	/**
 	 * Process the token to create a {@link UserImpl}.
-	 * 
+	 *
 	 * @param token The token, cannot be {@code null}
 	 * @return The user
 	 */
+	@Override
 	public UserImpl processToken(String token) {
 		try {
 			SignedJWT jwt = parse(token);
-			
-			if( !"HS256".equals(jwt.getHeader().getAlgorithm().getName()) ) {
+
+			if( !"RS256".equals(jwt.getHeader().getAlgorithm().getName()) ) {
 				throw new NotAuthorizedException("unsupported algorithm: " + jwt.getHeader().getAlgorithm().getName(), unauthorized());
 			}
-			
-			if( !jwtService.verify(jwt) ) {
+
+			String kid = jwt.getHeader().getKeyID();
+			JWSVerifier verifier = jwsVerifierMapper.get(kid);
+			if( verifier == null ) {
+				throw new NotAuthorizedException("unknown kid: " + kid, unauthorized());
+			}
+
+			if( !jwt.verify(verifier) ) {
 				throw new NotAuthorizedException("failed to verify JWT: " + token, unauthorized());
 			}
-			
-			JWTClaimsSet jwtClaimsSet = extractJWTClaimsSet(jwt); 
+
+			JWTClaimsSet jwtClaimsSet = extractJWTClaimsSet(jwt);
 			if( jwtClaimsSet.getExpirationTime().before(Date.from(dateTimeService.getNow().atZone(ZoneId.systemDefault()).toInstant())) ) {
 				throw new NotAuthorizedException("JWT expired at " + jwtClaimsSet.getExpirationTime(), unauthorized());
 			}
-			
-			return new UserImpl(jwtClaimsSet.getClaim(tokenAuthenticationConfig.getUsernameFieldInJwt()).toString(), jwtClaimsSet.getClaim("uuid").toString());
+
+			return new UserImpl(jwtClaimsSet.getClaim(tokenAuthenticationConfig.getUsernameFieldInJwt()).toString(), jwtClaimsSet.getClaim(tokenAuthenticationConfig.getUserIdFieldInJwt()).toString());
 		}
 		catch( JOSEException e ) {
 			throw new NotAuthorizedException("failed to verify JWT", unauthorized(), e);
 		}
 	}
-	
+
 	private SignedJWT parse(String token) {
 		try {
 			return SignedJWT.parse(token);
@@ -124,7 +135,7 @@ public class TokenHelper {
 			throw new NotAuthorizedException("error parsing token " + token, unauthorized(), e);
 		}
 	}
-	
+
 	private JWTClaimsSet extractJWTClaimsSet(SignedJWT jwt) {
 		try {
 			return jwt.getJWTClaimsSet();
@@ -133,7 +144,7 @@ public class TokenHelper {
 			throw new NotAuthorizedException("failed to parse JWT", unauthorized(), e);
 		}
 	}
-	
+
 	private static Response unauthorized() {
 		return Response.status(Response.Status.UNAUTHORIZED).build();
 	}

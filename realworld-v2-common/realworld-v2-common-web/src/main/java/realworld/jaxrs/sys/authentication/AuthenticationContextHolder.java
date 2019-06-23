@@ -1,7 +1,9 @@
-package realworld.authentication;
+package realworld.jaxrs.sys.authentication;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
+
+import realworld.authentication.AuthenticationContext;
 
 /**
  * Producer of the {@link AuthenticationContext}.

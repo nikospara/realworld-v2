@@ -6,15 +6,15 @@ thorntail:
           - realworld.user.jaxrs
   naming:
     bindings:
-      java:/jwt.secret:
+      java:/jwk.url:
+        binding-type: simple
+        type: java.net.URL
+        value: http://localhost:8580/auth/realms/realworld/protocol/openid-connect/certs
+      java:/jwt.map.userName:
         binding-type: simple
         type: java.lang.String
-        value: nRvyYC4soFxBdZ-F-5Nnzz5USXstR1YylsTd-mA0aKtI9HUlriGrtkf-TiuDapkLiUCogO3JOK7kwZisrHp6wA
-      java:/jwt.sessionTime:
-        binding-type: simple
-        type: java.lang.Long
-        value: 86400
-      java:/jwt.map.userName:
+        value: oid
+      java:/jwt.map.userId:
         binding-type: simple
         type: java.lang.String
         value: sub

@@ -6,6 +6,7 @@ import com.nimbusds.jwt.SignedJWT;
 /**
  * JWT-related services.
  */
+@Deprecated
 public interface JwtService {
 
 	/**

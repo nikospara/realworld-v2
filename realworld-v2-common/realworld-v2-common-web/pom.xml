@@ -77,6 +77,12 @@
 
 		<!-- TEST -->
 		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-testutils</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>javax.json</groupId>
 			<artifactId>javax.json-api</artifactId>
 			<scope>test</scope>

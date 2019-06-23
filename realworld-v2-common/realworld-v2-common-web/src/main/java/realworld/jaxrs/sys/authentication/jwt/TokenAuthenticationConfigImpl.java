@@ -1,8 +1,10 @@
-package realworld.jaxrs.sys.authentication;
+package realworld.jaxrs.sys.authentication.jwt;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.ApplicationScoped;
 import java.net.URL;
+
+import realworld.jaxrs.sys.authentication.jwt.TokenAuthenticationConfig;
 
 /**
  * Implementation of {@link TokenAuthenticationConfig} using JEE resources.
@@ -10,36 +12,31 @@ import java.net.URL;
 @ApplicationScoped
 public class TokenAuthenticationConfigImpl implements TokenAuthenticationConfig {
 	
-	public static final String JWT_SECRET_KEY = "java:/jwt.secret";
-	public static final String JWT_SESSION_TIME_KEY = "java:/jwt.sessionTime";
+	public static final String JWK_URL_KEY = "java:/jwk.url";
 	public static final String USERNAME_FIELD_IN_JWT_KEY = "java:/jwt.map.userName";
-
-	@Resource(name=JWT_SECRET_KEY)
-	private String jwtSecret;
-	
-	@Resource(name=JWT_SESSION_TIME_KEY)
-	private Long jwtSessionTime;
+	public static final String USERID_FIELD_IN_JWT_KEY = "java:/jwt.map.userId";
 
 	@Resource(name=USERNAME_FIELD_IN_JWT_KEY)
 	private String usernameFieldInJwt;
 
-	@Override
-	public String getJwtSecret() {
-		return jwtSecret;
-	}
+	@Resource(name=USERID_FIELD_IN_JWT_KEY)
+	private String userIdFieldInJwt;
 
-	@Override
-	public Long getJwtSessionTime() {
-		return jwtSessionTime;
-	}
+	@Resource(name=JWK_URL_KEY)
+	private URL jwkUrl;
 
 	@Override
 	public URL getJwkUrl() {
-		return null;
+		return jwkUrl;
 	}
 
 	@Override
 	public String getUsernameFieldInJwt() {
 		return usernameFieldInJwt;
+	}
+
+	@Override
+	public String getUserIdFieldInJwt() {
+		return userIdFieldInJwt;
 	}
 }
