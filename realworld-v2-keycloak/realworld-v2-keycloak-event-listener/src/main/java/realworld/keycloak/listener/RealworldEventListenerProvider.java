@@ -104,6 +104,7 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 		if( event.getResourceType() == USER && INTERESTING_ADMIN_OP_TYPES.contains(event.getOperationType()) ) {
 			boolean success = false;
 			if( !includeRepresentation ) {
+				// TODO On DELETE, representation will be null and includeRepresentation false!
 				LOG.warning("includeRepresentation is false");
 			}
 			try {
