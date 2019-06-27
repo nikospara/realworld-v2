@@ -16,7 +16,6 @@ import realworld.authentication.AuthenticationContext;
 import realworld.user.dao.UserDao;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
-import realworld.user.model.UserRegistrationData;
 import realworld.user.model.UserUpdateData;
 import realworld.user.services.BiographyService;
 import realworld.user.services.UserService;
@@ -56,7 +55,7 @@ class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserData register(@Valid UserRegistrationData registrationData) {
+	public UserData register(@Valid UserUpdateData registrationData) {
 		List<SimpleConstraintViolation> errors = new ArrayList<>();
 
 		if( userDao.usernameExists(registrationData.getUsername()) ) {
@@ -71,6 +70,7 @@ class UserServiceImpl implements UserService {
 		}
 
 		ImmutableUserData userData = ImmutableUserData.builder()
+				.id(registrationData.getId())
 				.username(registrationData.getUsername())
 				.email(registrationData.getEmail())
 				.imageUrl(registrationData.getImageUrl())

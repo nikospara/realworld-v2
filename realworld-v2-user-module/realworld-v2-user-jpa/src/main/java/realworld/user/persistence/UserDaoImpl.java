@@ -8,7 +8,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.BiFunction;
 
 import realworld.user.dao.UserDao;
@@ -44,7 +43,7 @@ class UserDaoImpl implements UserDao {
 	@Override
 	public UserData create(UserData user) {
 		User u = new User();
-		u.setId(UUID.randomUUID().toString());
+		u.setId(user.getId());
 		u.setUsername(user.getUsername());
 		u.setEmail(user.getEmail());
 		u.setImageUrl(user.getImageUrl());

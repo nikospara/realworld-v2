@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import javax.persistence.EntityManager;
+import java.util.UUID;
 
 import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.AfterEach;
@@ -31,6 +32,7 @@ import realworld.user.model.UserData;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserDaoImplTest {
 
+	private static final String ID = UUID.randomUUID().toString();
 	private static final String USERNAME = "username";
 	private static final String EMAIL = "email.one@here.com";
 	private static final String IMAGE_URL = "IMAGE.URL";
@@ -58,13 +60,13 @@ public class UserDaoImplTest {
 	@Order(1)
 	void testCreate() {
 		em.getTransaction().begin();
-		UserData result = sut.create(ImmutableUserData.builder().username(USERNAME).email(EMAIL).imageUrl(IMAGE_URL).build());
+		UserData result = sut.create(ImmutableUserData.builder().id(ID).username(USERNAME).email(EMAIL).imageUrl(IMAGE_URL).build());
 		em.getTransaction().commit();
 		em.clear();
 
-		assertNotNull(result.getId());
+		assertEquals(ID, result.getId());
 
-		User u = em.find(User.class, result.getId());
+		User u = em.find(User.class, ID);
 		assertNotNull(u);
 		assertEquals(USERNAME, u.getUsername());
 		assertEquals(EMAIL, u.getEmail());

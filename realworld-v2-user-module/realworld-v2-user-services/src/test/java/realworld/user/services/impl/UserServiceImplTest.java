@@ -28,7 +28,6 @@ import realworld.user.dao.UserDao;
 import realworld.user.dao.UserUpdateOperation;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
-import realworld.user.model.UserRegistrationData;
 import realworld.user.model.UserUpdateData;
 import realworld.user.model.UserUpdateData.PropName;
 import realworld.user.services.BiographyService;
@@ -64,7 +63,7 @@ public class UserServiceImplTest {
 
 	@Test
 	void testRegisterWithExistingUsername() {
-		UserRegistrationData registrationData = mock(UserRegistrationData.class);
+		UserUpdateData registrationData = mock(UserUpdateData.class);
 		when(registrationData.getUsername()).thenReturn(USERNAME1);
 		when(userDao.usernameExists(USERNAME1)).thenReturn(true);
 
@@ -73,7 +72,7 @@ public class UserServiceImplTest {
 
 	@Test
 	void testRegisterWithExistingEmail() {
-		UserRegistrationData registrationData = mock(UserRegistrationData.class);
+		UserUpdateData registrationData = mock(UserUpdateData.class);
 		when(registrationData.getEmail()).thenReturn(EMAIL1);
 		when(userDao.emailExists(EMAIL1)).thenReturn(true);
 
@@ -82,15 +81,17 @@ public class UserServiceImplTest {
 
 	@Test
 	void testRegister() {
-		UserRegistrationData registrationData = mock(UserRegistrationData.class);
-		when(registrationData.getUsername()).thenReturn(USERNAME1);
-		when(registrationData.getEmail()).thenReturn(EMAIL1);
-		when(registrationData.getImageUrl()).thenReturn(IMAGE_URL1);
-		when(registrationData.getBio()).thenReturn(BIO1);
+		UserUpdateData registrationData = new UserUpdateData();
+		registrationData.setId(USERID1);
+		registrationData.setUsername(USERNAME1);
+		registrationData.setEmail(EMAIL1);
+		registrationData.setImageUrl(IMAGE_URL1);
+		registrationData.setBio(BIO1);
 		when(userDao.create(any(UserData.class))).then(x -> ImmutableUserData.builder().from(x.getArgument(0)).id(USERID1).build());
 
 		UserData result = sut.register(registrationData);
 
+		assertEquals(USERID1, result.getId());
 		assertEquals(USERNAME1, result.getUsername());
 		assertEquals(EMAIL1, result.getEmail());
 		assertEquals(IMAGE_URL1, result.getImageUrl());

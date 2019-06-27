@@ -13,7 +13,6 @@ import realworld.authentication.AuthenticationContext;
 import realworld.authorization.service.Authorization;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
-import realworld.user.model.UserRegistrationData;
 import realworld.user.model.UserUpdateData;
 import realworld.user.services.UserService;
 
@@ -45,7 +44,7 @@ public class UserServiceAuthorizer implements UserService {
 	}
 
 	@Override
-	public UserData register(UserRegistrationData registrationData) {
+	public UserData register(UserUpdateData registrationData) {
 		return delegate.register(registrationData);
 	}
 

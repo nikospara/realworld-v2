@@ -28,7 +28,6 @@ import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.service.Authorization;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
-import realworld.user.model.UserRegistrationData;
 import realworld.user.model.UserUpdateData;
 import realworld.user.services.UserService;
 
@@ -41,7 +40,7 @@ import realworld.user.services.UserService;
 @ExtendWith(MockitoExtension.class)
 public class UserServiceAuthorizerTest {
 
-	private static final UserRegistrationData USER_REG_DATA = mock(UserRegistrationData.class);
+	private static final UserUpdateData USER_REG_DATA = new UserUpdateData();
 	private static final String USERNAME_TO_FIND = "USERNAME_TO_FIND";
 	private static final UserUpdateData USER_UPDATE_DATA = mock(UserUpdateData.class);
 
@@ -119,7 +118,7 @@ public class UserServiceAuthorizerTest {
 	@ApplicationScoped
 	static class DummyUserService implements UserService {
 		@Override
-		public UserData register(@Valid UserRegistrationData registrationData) {
+		public UserData register(@Valid UserUpdateData registrationData) {
 			if( registrationData != USER_REG_DATA ) {
 				throw new IllegalArgumentException();
 			}

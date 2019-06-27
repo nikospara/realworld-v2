@@ -4,7 +4,6 @@ import javax.validation.Valid;
 
 import realworld.EntityDoesNotExistException;
 import realworld.user.model.UserData;
-import realworld.user.model.UserRegistrationData;
 import realworld.user.model.UserUpdateData;
 
 /**
@@ -18,7 +17,7 @@ public interface UserService {
 	 * @param registrationData User registration data
 	 * @return The full user profile - never {@code null}
 	 */
-	UserData register(@Valid UserRegistrationData registrationData);
+	UserData register(@Valid UserUpdateData registrationData);
 
 	/**
 	 * Find by user name.

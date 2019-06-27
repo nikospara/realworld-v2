@@ -9,7 +9,6 @@ import org.immutables.value.Value;
 public interface UserData {
 
 	/** Get the user id. */
-	@Nullable
 	String getId();
 
 	/** Get the user name. */
