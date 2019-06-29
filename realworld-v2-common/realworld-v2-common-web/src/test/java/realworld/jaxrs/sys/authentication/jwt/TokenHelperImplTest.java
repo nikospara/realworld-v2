@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import realworld.jaxrs.sys.authentication.UserImpl;
+import realworld.authentication.UserImpl;
 import realworld.services.DateTimeService;
 
 /**
@@ -55,7 +55,7 @@ public class TokenHelperImplTest {
 	void testExtractRawTokenFromRequestContext() {
 		@SuppressWarnings("unchecked")
 		MultivaluedMap<String, String> headersMap = mock(MultivaluedMap.class);
-		when(headersMap.getFirst(TokenHelperImpl.AUTHORIZATION_HEADER)).thenReturn("token the_token", null);
+		when(headersMap.getFirst(TokenHelperImpl.AUTHORIZATION_HEADER)).thenReturn("token the_token", (String) null);
 		ContainerRequestContext reqctx = mock(ContainerRequestContext.class);
 		when(reqctx.getHeaders()).thenReturn(headersMap);
 		assertEquals("the_token", sut.extractRawToken(reqctx));
@@ -67,7 +67,7 @@ public class TokenHelperImplTest {
 	void testExtractRawTokenFromHeaders() {
 		@SuppressWarnings("unchecked")
 		MultivaluedMap<String, String> headersMap = mock(MultivaluedMap.class);
-		when(headersMap.getFirst(TokenHelperImpl.AUTHORIZATION_HEADER)).thenReturn("token the_token", null);
+		when(headersMap.getFirst(TokenHelperImpl.AUTHORIZATION_HEADER)).thenReturn("token the_token", (String) null);
 		HttpHeaders headers = mock(HttpHeaders.class);
 		when(headers.getRequestHeaders()).thenReturn(headersMap);
 		assertEquals("the_token", sut.extractRawToken(headers));

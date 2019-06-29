@@ -1,15 +1,16 @@
-package realworld.jaxrs.sys.authentication;
+package realworld.authentication;
 
 import javax.enterprise.inject.Vetoed;
-
-import realworld.authentication.AuthenticationContext;
 
 /**
  * {@link AuthenticationContext} implementation.
  */
 @Vetoed
 public class AuthenticationContextImpl implements AuthenticationContext {
-	
+
+	public static final String SYSTEM_USER_ID = "00000000-0000-0000-0000-000000000000";
+	public static final String SYSTEM_USER_NAME = "system";
+
 	private UserImpl userPrincipal;
 	
 	/**
@@ -20,7 +21,17 @@ public class AuthenticationContextImpl implements AuthenticationContext {
 	public static AuthenticationContextImpl unauthenticated() {
 		return new AuthenticationContextImpl();
 	}
-	
+
+	/**
+	 * Create an {@code AuthenticationContextImpl} for the system user.
+	 *
+	 * @return The authentication context for the system user
+	 */
+	public static AuthenticationContextImpl system() {
+		UserImpl systemPrincipal = new UserImpl(SYSTEM_USER_NAME, SYSTEM_USER_ID);
+		return AuthenticationContextImpl.forUser(systemPrincipal);
+	}
+
 	/**
 	 * Create an {@code AuthenticationContextImpl} for the given user.
 	 * 

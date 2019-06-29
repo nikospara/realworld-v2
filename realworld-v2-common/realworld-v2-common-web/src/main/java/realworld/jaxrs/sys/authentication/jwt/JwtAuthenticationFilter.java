@@ -8,11 +8,10 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 
-import realworld.jaxrs.sys.authentication.AuthenticationContextHolder;
-import realworld.jaxrs.sys.authentication.AuthenticationContextImpl;
+import realworld.authentication.RequestAuthenticationContextHolder;
+import realworld.authentication.AuthenticationContextImpl;
 import realworld.jaxrs.sys.authentication.JaxRsSecurityContextImpl;
-import realworld.jaxrs.sys.authentication.UserImpl;
-import realworld.jaxrs.sys.authentication.jwt.TokenHelper;
+import realworld.authentication.UserImpl;
 
 /**
  * Extract the user info from the request and set the JAX-RS {@code SecurityContext}
@@ -23,7 +22,7 @@ import realworld.jaxrs.sys.authentication.jwt.TokenHelper;
 @Priority(AUTHENTICATION)
 public class JwtAuthenticationFilter implements ContainerRequestFilter {
 	
-	private AuthenticationContextHolder authenticationContextHolder;
+	private RequestAuthenticationContextHolder requestAuthenticationContextHolder;
 	
 	private TokenHelper tokenHelper;
 	
@@ -37,12 +36,12 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
 	/**
 	 * Injection constructor.
 	 * 
-	 * @param authenticationContextHolder The authentication context holder
+	 * @param requestAuthenticationContextHolder The authentication context holder
 	 * @param tokenHelper The token helper knows how to extract useful information from the token
 	 */
 	@Inject
-	public JwtAuthenticationFilter(AuthenticationContextHolder authenticationContextHolder, TokenHelper tokenHelper) {
-		this.authenticationContextHolder = authenticationContextHolder;
+	public JwtAuthenticationFilter(RequestAuthenticationContextHolder requestAuthenticationContextHolder, TokenHelper tokenHelper) {
+		this.requestAuthenticationContextHolder = requestAuthenticationContextHolder;
 		this.tokenHelper = tokenHelper;
 	}
 
@@ -52,10 +51,10 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
 		if( token != null ) {
 			UserImpl user = tokenHelper.processToken(token);
 			requestContext.setSecurityContext(new JaxRsSecurityContextImpl(user, requestContext.getSecurityContext().isSecure()));
-			authenticationContextHolder.setAuthenticationContext(AuthenticationContextImpl.forUser(user));
+			requestAuthenticationContextHolder.setAuthenticationContext(AuthenticationContextImpl.forUser(user));
 		}
 		else {
-			authenticationContextHolder.setAuthenticationContext(AuthenticationContextImpl.unauthenticated());
+			requestAuthenticationContextHolder.setAuthenticationContext(AuthenticationContextImpl.unauthenticated());
 		}
 	}
 }

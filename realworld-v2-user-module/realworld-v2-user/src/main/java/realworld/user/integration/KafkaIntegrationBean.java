@@ -31,9 +31,14 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import realworld.authentication.AuthenticationContextImpl;
+import realworld.authentication.AuthenticationContextProducer;
 import realworld.user.model.events.UserModificationEvent;
+import realworld.user.services.UserService;
 
-
+/**
+ * Listens to user events from Kafka and takes appropriate action.
+ */
 @ApplicationScoped
 @WebListener
 public class KafkaIntegrationBean implements ServletContextListener {
@@ -45,6 +50,12 @@ public class KafkaIntegrationBean implements ServletContextListener {
 
 	@Inject
 	private Supplier<ObjectMapper> objectMapperSupplier;
+
+	@Inject
+	private AuthenticationContextProducer authenticationContextProducer;
+
+	@Inject
+	private UserService userService;
 
 	private KafkaConsumer<String, String> consumer;
 
@@ -67,7 +78,7 @@ public class KafkaIntegrationBean implements ServletContextListener {
 
 		closed = new AtomicBoolean(false);
 
-		processorResult = executorService.submit(new MessageProcessor(consumer, closed, objectMapperSupplier));
+		processorResult = executorService.submit(new MessageProcessor(consumer, closed, objectMapperSupplier, authenticationContextProducer, userService));
 	}
 
 	@Override
@@ -80,6 +91,8 @@ public class KafkaIntegrationBean implements ServletContextListener {
 		catch( Exception e ) {
 			throw new RuntimeException(e);
 		}
+		LOG.debug("Closing Kafka consumer");
+		consumer.close();
 	}
 
 	private static class MessageProcessor implements Runnable {
@@ -90,39 +103,51 @@ public class KafkaIntegrationBean implements ServletContextListener {
 
 		private Supplier<ObjectMapper> objectMapperSupplier;
 
-		MessageProcessor(KafkaConsumer<String, String> consumer, AtomicBoolean closed, Supplier<ObjectMapper> objectMapperSupplier) {
+		private AuthenticationContextProducer authenticationContextProducer;
+
+		private UserService userService;
+
+		MessageProcessor(KafkaConsumer<String, String> consumer, AtomicBoolean closed, Supplier<ObjectMapper> objectMapperSupplier, AuthenticationContextProducer authenticationContextProducer, UserService userService) {
 			this.consumer = consumer;
 			this.closed = closed;
 			this.objectMapperSupplier = objectMapperSupplier;
+			this.authenticationContextProducer = authenticationContextProducer;
+			this.userService = userService;
 		}
 
 		@Override
 		public void run() {
 			try {
+				authenticationContextProducer.pushContext(AuthenticationContextImpl.system());
 				consumer.subscribe(Collections.singletonList("users"));
 				while( !closed.get() ) {
 					ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(3000));
 					for (ConsumerRecord<String, String> record : records) {
-						System.out.println("**************************************************************");
-						System.out.println(record.key());
-						System.out.println(record.value());
 						try {
 							UserModificationEvent event = objectMapperSupplier.get().readValue(record.value(), UserModificationEvent.class);
-							System.out.println(event);
+							LOG.info("Received user event from Kafka of type {}", event.getType());
+							switch( event.getType() ) {
+								case CREATE:
+									userService.register(event.getPayload());
+									break;
+								case UPDATE:
+									userService.update(event.getPayload());
+									break;
+							}
 						}
 						catch( IOException e ) {
 							LOG.error("Error deserializing event", e);
 						}
-						System.out.println("**************************************************************");
 					}
 				}
 			}
 			catch( WakeupException e ) {
-				if (!closed.get()) throw e;
+				if (!closed.get()) {
+					throw e;
+				}
 			}
 			finally {
-				LOG.debug("Closing Kafka consumer");
-				consumer.close();
+				authenticationContextProducer.popContext();
 			}
 		}
 	}

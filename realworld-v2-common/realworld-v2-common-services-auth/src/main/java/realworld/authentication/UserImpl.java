@@ -1,4 +1,4 @@
-package realworld.jaxrs.sys.authentication;
+package realworld.authentication;
 
 import javax.enterprise.inject.Vetoed;
 

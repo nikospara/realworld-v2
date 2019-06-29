@@ -1,24 +1,20 @@
-package realworld.jaxrs.sys.authentication;
+package realworld.authentication;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
-
-import realworld.authentication.AuthenticationContext;
 
 /**
- * Producer of the {@link AuthenticationContext}.
+ * Keeps the {@link AuthenticationContext} (if any) associated with the current web request (if any).
  */
 @RequestScoped
-public class AuthenticationContextHolder {
+public class RequestAuthenticationContextHolder {
 
 	private AuthenticationContext authenticationContext;
 
 	/**
 	 * Get and produce the {@code AuthenticationContext}.
-	 * 
+	 *
 	 * @return The current {@code AuthenticationContext}
 	 */
-	@Produces @RequestScoped
 	public AuthenticationContext getAuthenticationContext() {
 		return authenticationContext;
 	}

@@ -3,7 +3,7 @@ package realworld.jaxrs.sys.authentication.jwt;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.HttpHeaders;
 
-import realworld.jaxrs.sys.authentication.UserImpl;
+import realworld.authentication.UserImpl;
 
 /**
  * Token processing helper.

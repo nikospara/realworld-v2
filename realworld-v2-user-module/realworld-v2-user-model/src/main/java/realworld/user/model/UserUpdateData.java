@@ -71,7 +71,7 @@ public class UserUpdateData implements Serializable {
 	}
 
 	/** Get the user name. */
-	@Size(min=5)
+	@Size(min=3)
 	public String getUsername() {
 		return (String) props.get(PropName.USERNAME);
 	}

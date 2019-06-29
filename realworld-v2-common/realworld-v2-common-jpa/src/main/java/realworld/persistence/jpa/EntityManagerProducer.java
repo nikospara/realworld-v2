@@ -1,7 +1,6 @@
 package realworld.persistence.jpa;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,7 +20,7 @@ class EntityManagerProducer {
 	 * @return The {@code EntityManager}
 	 */
 	@Produces
-	@RequestScoped
+	@ApplicationScoped
 	public EntityManager getEntityManager() {
 		return em;
 	}
