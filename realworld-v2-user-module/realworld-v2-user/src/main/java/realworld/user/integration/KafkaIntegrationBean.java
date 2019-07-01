@@ -66,7 +66,7 @@ public class KafkaIntegrationBean implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		Properties props = new Properties();
-		props.put(BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.put(BOOTSTRAP_SERVERS_CONFIG, "localhost:9094");
 		props.setProperty(GROUP_ID_CONFIG, "realworld-v2-user");
 		props.setProperty(ENABLE_AUTO_COMMIT_CONFIG, "true");
 		props.setProperty(AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");

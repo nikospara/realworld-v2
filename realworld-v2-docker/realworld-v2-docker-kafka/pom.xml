@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>realworld.example</groupId>
+		<artifactId>realworld-v2-docker</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>realworld-v2-docker-kafka</artifactId>
+
+	<properties>
+		<version.kafka>2.3.0</version.kafka>
+		<version.kafka.scala>2.12</version.kafka.scala>
+	</properties>
+
+	<build>
+		<plugins>
+			<!-- Do not generate the jar -->
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase/>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Do not install (nothing to install) -->
+			<plugin>
+				<artifactId>maven-install-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<!-- Do not deploy (nothing to deploy) -->
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<build>
+				<plugins>
+					<!--
+						The download and Groovy plugins recreate the process from wurstmeister/kafka-docker:
+						https://github.com/wurstmeister/kafka-docker/blob/master/download-kafka.sh
+					-->
+					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>download-kafka-info</id>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://www.apache.org/dyn/closer.cgi?path=/kafka/${version.kafka}/kafka_${version.kafka.scala}-${version.kafka}.tgz&amp;as_json=1</url>
+									<outputFileName>download-info.json</outputFileName>
+								</configuration>
+							</execution>
+							<execution>
+								<id>download-kafka</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>${kafka.download.url}</url>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.gmaven</groupId>
+						<artifactId>groovy-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>generate-resources</phase>
+								<goals>
+									<goal>execute</goal>
+								</goals>
+								<configuration>
+									<source>
+										def downloadInfo = new groovy.json.JsonSlurper().parse(new FileReader("target/download-info.json"))
+										def prefDownloadUrl = downloadInfo.preferred + downloadInfo.path_info;
+										log.info("Preferred download URL, as computed from groovy-maven-plugin: " + prefDownloadUrl)
+										project.properties['kafka.download.url'] = prefDownloadUrl
+									</source>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<extensions>true</extensions>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>build</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>rwlv2-kafka</name>
+											<build>
+												<contextDir>${project.basedir}</contextDir>
+												<dockerFile>Dockerfile</dockerFile>
+												<args>
+													<kafka_version>${version.kafka}</kafka_version>
+													<scala_version>${version.kafka.scala}</scala_version>
+												</args>
+											</build>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
