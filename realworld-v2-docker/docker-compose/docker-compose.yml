@@ -12,3 +12,8 @@ services:
       - "9094:9094/tcp"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+  keycloak:
+    image: rwlv2-keycloak:latest
+    ports:
+      - "8580:8580"
+      - "10499:10499"

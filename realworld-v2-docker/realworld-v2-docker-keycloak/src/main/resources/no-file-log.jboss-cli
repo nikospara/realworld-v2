@@ -1,0 +1,4 @@
+embed-server -c=standalone.xml
+/subsystem=logging/periodic-rotating-file-handler=FILE:remove()
+/subsystem=logging/root-logger=ROOT:list-remove(name=handlers,value=FILE)
+stop-embedded-server

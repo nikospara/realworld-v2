@@ -1,0 +1,6 @@
+embed-server -c=standalone.xml
+/subsystem=keycloak-server/spi=eventsListener:add()
+/subsystem=keycloak-server/spi=eventsListener/provider=realworld:add(enabled=true)
+/subsystem=keycloak-server/spi=eventsListener/provider=realworld:map-put(name=properties,key=topic-name,value="users")
+/subsystem=keycloak-server/spi=eventsListener/provider=realworld:map-put(name=properties,key=bootstrap-servers,value="kafka:9092")
+stop-embedded-server

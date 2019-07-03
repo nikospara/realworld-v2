@@ -3,6 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<modules>
 		<module>realworld-v2-docker-kafka</module>
+		<module>realworld-v2-docker-keycloak</module>
 	</modules>
 
 	<parent>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>realworld-v2-docker</artifactId>
+		<groupId>realworld.example</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>realworld-v2-docker-keycloak</artifactId>
+
+	<dependencies>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-keycloak-event-listener</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-keycloak-theme</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<!-- Do not generate the jar -->
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<phase/>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Do not install (nothing to install) -->
+			<plugin>
+				<artifactId>maven-install-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<!-- Do not deploy (nothing to deploy) -->
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>docker</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>download-keycloak</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://downloads.jboss.org/keycloak/6.0.1/keycloak-6.0.1.tar.gz</url>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-dependency-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>prepare-package</phase>
+								<goals>
+									<goal>copy-dependencies</goal>
+								</goals>
+								<configuration>
+									<excludeTransitive>true</excludeTransitive>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<extensions>true</extensions>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>build</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>rwlv2-keycloak</name>
+											<build>
+												<contextDir>${project.basedir}</contextDir>
+												<dockerFile>Dockerfile</dockerFile>
+												<args>
+													<project_version>${project.version}</project_version>
+												</args>
+											</build>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
