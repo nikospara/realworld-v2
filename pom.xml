@@ -36,7 +36,8 @@
 		<version.junit.jupiter>5.4.1</version.junit.jupiter>
 		<version.liquibase>3.6.3</version.liquibase>
 		<version.mockito>2.25.1</version.mockito>
-		<version.resteasy-test>3.6.3.Final</version.resteasy-test>
+		<version.quarkus>0.22.0</version.quarkus>
+		<version.resteasy-test>4.2.0.Final</version.resteasy-test><!-- Defined in quarkus-bom -->
 		<version.thorntail>2.4.0.Final</version.thorntail>
 	</properties>
 	
@@ -57,7 +58,16 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-			
+
+			<!-- QUARKUS  -->
+			<dependency>
+				<groupId>io.quarkus</groupId>
+				<artifactId>quarkus-bom</artifactId>
+				<version>${version.quarkus}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
 			<!-- SPECS -->
 			<dependency>
 				<groupId>org.jboss.spec.javax.ws.rs</groupId>
@@ -282,7 +292,7 @@
 						<configuration>
 							<rules>
 								<requireMavenVersion>
-									<version>3.3.9</version>
+									<version>3.6.1</version>
 								</requireMavenVersion>
 							</rules>
 						</configuration>
@@ -297,6 +307,11 @@
 					<groupId>io.thorntail</groupId>
 					<artifactId>thorntail-maven-plugin</artifactId>
 					<version>${version.thorntail}</version>
+				</plugin>
+				<plugin>
+					<groupId>io.quarkus</groupId>
+					<artifactId>quarkus-maven-plugin</artifactId>
+					<version>${version.quarkus}</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
@@ -346,6 +361,11 @@
 					<configuration>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.jboss.jandex</groupId>
+					<artifactId>jandex-maven-plugin</artifactId>
+					<version>1.0.6</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

@@ -55,10 +55,16 @@
 			<groupId>org.jboss.resteasy</groupId>
 			<artifactId>resteasy-cdi</artifactId>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jboss.weld</groupId>
+					<artifactId>weld-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jaxrs</artifactId>
+			<artifactId>resteasy-core</artifactId>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

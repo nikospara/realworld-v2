@@ -75,18 +75,6 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-cdi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jaxrs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jackson2-provider</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-junit5</artifactId>
 		</dependency>

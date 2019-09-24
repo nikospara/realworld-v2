@@ -15,16 +15,15 @@ import javax.ws.rs.core.MediaType;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
-import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
 import org.jboss.resteasy.plugins.server.resourcefactory.SingletonResource;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.metadata.DefaultResourceClass;
 import org.jboss.weld.junit5.auto.ActivateScopes;
 import org.jboss.weld.junit5.auto.AddBeanClasses;

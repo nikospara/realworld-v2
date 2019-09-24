@@ -17,7 +17,7 @@ import realworld.user.services.FollowService;
 public class FollowsResourceImpl implements FollowsResource {
 
 	@Inject
-	private FollowService followService;
+	FollowService followService;
 
 	@Override
 	public Map<String, Boolean> checkFollowed(String username, List<String> usernames) {

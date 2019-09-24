@@ -1,9 +1,10 @@
 package realworld.test.jaxrs;
 
 import org.jboss.resteasy.cdi.CdiInjectorFactory;
-import org.jboss.resteasy.core.Dispatcher;
 import org.jboss.resteasy.core.SynchronousDispatcher;
+import org.jboss.resteasy.core.providerfactory.ResteasyProviderFactoryImpl;
 import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
+import org.jboss.resteasy.spi.Dispatcher;
 import org.jboss.resteasy.spi.ResteasyProviderFactory;
 
 /**
@@ -18,7 +19,7 @@ public class CustomMockDispatcherFactory {
 	 * @return The dispatcher
 	 */
 	public static Dispatcher createDispatcher(Class<?>... providers) {
-		ResteasyProviderFactory providerFactory = new ResteasyProviderFactory();
+		ResteasyProviderFactory providerFactory = new ResteasyProviderFactoryImpl();
 		providerFactory.setInjectorFactory(new CdiInjectorFactory());
 		for( Class<?> provider : providers ) {
 			providerFactory.registerProvider(provider);

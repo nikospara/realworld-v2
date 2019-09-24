@@ -16,7 +16,7 @@ import realworld.user.services.UserService;
 public class UsersResourceImpl implements UsersResource {
 
 	@Inject
-	private UserService userService;
+	UserService userService;
 
 	@Context
 	private UriInfo uriInfo;

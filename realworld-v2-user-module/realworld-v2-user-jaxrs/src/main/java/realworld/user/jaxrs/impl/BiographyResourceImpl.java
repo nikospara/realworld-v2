@@ -13,7 +13,7 @@ import realworld.user.services.BiographyService;
 public class BiographyResourceImpl implements BiographyResource {
 
 	@Inject
-	private BiographyService biographyService;
+	BiographyService biographyService;
 
 	@Override
 	public String get(String username) {

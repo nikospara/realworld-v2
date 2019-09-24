@@ -15,44 +15,26 @@
 	<packaging>war</packaging>
 
 	<dependencies>
-		<!-- WILDFLY SWARM  -->
+		<!-- QUARKUS -->
 		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>bean-validation</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-orm</artifactId>
+		</dependency>
+		<dependency><!-- This dependency would be included anyway from quarkus-resteasy-jackson, declaring explicitly for completeness. -->
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>cdi</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy-jackson</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>datasources</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>jaxrs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>jaxrs-validator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>jpa</artifactId>
-		</dependency>
-		<!-- Is this needed?????
-		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>microprofile</artifactId>
-		</dependency>
+		<!--
+			THIS DEPENDENCY SHOULD BE DECLARED IN THE user-h2 PROFILE, BUT QUARKUS SEEMS NOT TO ACCEPT IT.
+			See https://github.com/quarkusio/quarkus/issues/3702 and https://github.com/quarkusio/quarkus/issues/4147
 		-->
 		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>microprofile-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>swagger</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-jdbc-h2</artifactId>
 		</dependency>
 
 		<!-- PROJECT -->
@@ -83,10 +65,12 @@
 		</dependency>
 
 		<!-- OTHER -->
+		<!--
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
 		</dependency>
+		-->
 		<!--
 		<dependency>
 			<groupId>io.smallrye</groupId>
@@ -159,27 +143,15 @@
 
 		<plugins>
 			<plugin>
-				<groupId>io.thorntail</groupId>
-				<artifactId>thorntail-maven-plugin</artifactId>
+				<groupId>io.quarkus</groupId>
+				<artifactId>quarkus-maven-plugin</artifactId>
 				<executions>
 					<execution>
 						<goals>
-							<goal>package</goal>
+							<goal>build</goal>
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<!--
-						It would be nice to build a hollow jar, but, at this point, hollow jars seem to
-						create problems with configuration: As per the docs, section 2.2 "Hollow JAR":
-
-						- To enable Thorntail to autodetect a JDBC driver, you must add the JAR with the driver to the thorntail.classpath system property
-						- YAML configuration files in your application are not automatically applied
-
-						Leaving it to false to keep this project as simple as possible.
-					-->
-					<hollow>false</hollow>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -188,9 +160,13 @@
 		<profile>
 			<id>user-h2</id>
 			<dependencies>
+				<!--
+					THIS DEPENDENCY HAS NO EFFECT YET, DUE TO https://github.com/quarkusio/quarkus/issues/3702
+					AND https://github.com/quarkusio/quarkus/issues/4147
+				-->
 				<dependency>
-					<groupId>com.h2database</groupId>
-					<artifactId>h2</artifactId>
+					<groupId>io.quarkus</groupId>
+					<artifactId>quarkus-jdbc-h2</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>
