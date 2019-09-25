@@ -1,10 +1,9 @@
 package realworld.jaxrs.sys.authentication.jwt;
 
-import javax.annotation.Resource;
 import javax.enterprise.context.ApplicationScoped;
 import java.net.URL;
 
-import realworld.jaxrs.sys.authentication.jwt.TokenAuthenticationConfig;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * Implementation of {@link TokenAuthenticationConfig} using JEE resources.
@@ -12,18 +11,18 @@ import realworld.jaxrs.sys.authentication.jwt.TokenAuthenticationConfig;
 @ApplicationScoped
 public class TokenAuthenticationConfigImpl implements TokenAuthenticationConfig {
 	
-	public static final String JWK_URL_KEY = "java:/jwk.url";
-	public static final String USERNAME_FIELD_IN_JWT_KEY = "java:/jwt.map.userName";
-	public static final String USERID_FIELD_IN_JWT_KEY = "java:/jwt.map.userId";
+	public static final String JWK_URL_KEY = "config.jwk.url";
+	public static final String USERNAME_FIELD_IN_JWT_KEY = "config.jwt.map.userName";
+	public static final String USERID_FIELD_IN_JWT_KEY = "config.jwt.map.userId";
 
-	@Resource(name=USERNAME_FIELD_IN_JWT_KEY)
-	private String usernameFieldInJwt;
+	@ConfigProperty(name=USERNAME_FIELD_IN_JWT_KEY)
+	String usernameFieldInJwt;
 
-	@Resource(name=USERID_FIELD_IN_JWT_KEY)
-	private String userIdFieldInJwt;
+	@ConfigProperty(name=USERID_FIELD_IN_JWT_KEY)
+	String userIdFieldInJwt;
 
-	@Resource(name=JWK_URL_KEY)
-	private URL jwkUrl;
+	@ConfigProperty(name=JWK_URL_KEY)
+	URL jwkUrl;
 
 	@Override
 	public URL getJwkUrl() {
