@@ -1,57 +1,17 @@
 package realworld.user.services.impl;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
-
-import javax.annotation.Priority;
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
-
-import realworld.authorization.service.Authorization;
-import realworld.user.services.BiographyService;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
- * Security for the {@link BiographyService} implementation.
+ * Security for the {@link realworld.user.services.BiographyService} implementation.
  */
-@Decorator
-@Priority(APPLICATION)
-public class BiographyServiceAuthorizer implements BiographyService {
+public interface BiographyServiceAuthorizer {
+	void create(String userId, String content, BiConsumer<String,String> delegate);
 
-	private BiographyService delegate;
+	String findByUserName(String username, Function<String,String> delegate);
 
-	private Authorization authorization;
+	void updateByUserName(String username, String content, BiConsumer<String,String> delegate);
 
-	/**
-	 * Injection constructor.
-	 *
-	 * @param delegate      The delegate
-	 * @param authorization The authorization
-	 */
-	@Inject
-	public BiographyServiceAuthorizer(@Delegate BiographyService delegate, Authorization authorization) {
-		this.delegate = delegate;
-		this.authorization = authorization;
-	}
-
-	@Override
-	public void create(String userId, String content) {
-		delegate.create(userId, content);
-	}
-
-	@Override
-	public String findByUserName(String username) {
-		return delegate.findByUserName(username);
-	}
-
-	@Override
-	public void updateByUserName(String username, String content) {
-		authorization.requireUsername(username);
-		delegate.updateByUserName(username, content);
-	}
-
-	@Override
-	public void updateById(String userId, String content) {
-		authorization.requireUserId(userId);
-		delegate.updateById(userId, content);
-	}
+	void updateById(String userId, String content, BiConsumer<String,String> delegate);
 }

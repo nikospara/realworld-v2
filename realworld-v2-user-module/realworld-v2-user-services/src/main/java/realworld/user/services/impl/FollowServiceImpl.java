@@ -20,6 +20,8 @@ import realworld.user.services.UserService;
 @Transactional(dontRollbackOn = EntityDoesNotExistException.class)
 public class FollowServiceImpl implements FollowService {
 
+	private FollowServiceAuthorizer authorizer;
+
 	private FollowDao followDao;
 
 	private UserService userService;
@@ -34,45 +36,57 @@ public class FollowServiceImpl implements FollowService {
 	/**
 	 * Full constructor for dependency injection.
 	 *
+	 * @param authorizer  The authorizer
 	 * @param followDao   The Follow entity DAO
 	 * @param userService The user service
 	 */
 	@Inject
-	public FollowServiceImpl(FollowDao followDao, UserService userService) {
+	public FollowServiceImpl(FollowServiceAuthorizer authorizer, FollowDao followDao, UserService userService) {
+		this.authorizer = authorizer;
 		this.followDao = followDao;
 		this.userService = userService;
 	}
 
 	@Override
-	public boolean follows(String followerName, String followedName) {
-		UserData follower = userService.findByUserName(followerName);
-		UserData followed = userService.findByUserName(followedName);
-		return followDao.exists(follower.getId(), followed.getId());
+	public boolean follows(String outerFollowerName, String outerFollowedName) {
+		return authorizer.follows(outerFollowerName, outerFollowedName, (followerName, followedName) -> {
+			UserData follower = userService.findByUserName(followerName);
+			UserData followed = userService.findByUserName(followedName);
+			return followDao.exists(follower.getId(), followed.getId());
+		});
 	}
 
 	@Override
-	public void follow(String followerName, String followedName) {
-		UserData follower = userService.findByUserName(followerName);
-		UserData followed = userService.findByUserName(followedName);
-		followDao.create(follower.getId(), followed.getId());
+	public void follow(String outerFollowerName, String outerFollowedName) {
+		authorizer.follow(outerFollowerName, outerFollowedName, (followerName, followedName) -> {
+			UserData follower = userService.findByUserName(followerName);
+			UserData followed = userService.findByUserName(followedName);
+			followDao.create(follower.getId(), followed.getId());
+		});
 	}
 
 	@Override
-	public void unfollow(String followerName, String followedName) {
-		UserData follower = userService.findByUserName(followerName);
-		UserData followed = userService.findByUserName(followedName);
-		followDao.delete(follower.getId(), followed.getId());
+	public void unfollow(String outerFollowerName, String outerFollowedName) {
+		authorizer.unfollow(outerFollowerName, outerFollowedName, (followerName, followedName) -> {
+			UserData follower = userService.findByUserName(followerName);
+			UserData followed = userService.findByUserName(followedName);
+			followDao.delete(follower.getId(), followed.getId());
+		});
 	}
 
 	@Override
-	public List<String> findAllFollowed(String username) {
-		UserData follower = userService.findByUserName(username);
-		return followDao.findAllFollowed(follower.getId());
+	public List<String> findAllFollowed(String outerUsername) {
+		return authorizer.findAllFollowed(outerUsername, username -> {
+			UserData follower = userService.findByUserName(username);
+			return followDao.findAllFollowed(follower.getId());
+		});
 	}
 
 	@Override
-	public Map<String, Boolean> checkAllFollowed(String username, List<String> userNames) {
-		UserData follower = userService.findByUserName(username);
-		return followDao.checkAllFollowed(follower.getId(), userNames);
+	public Map<String, Boolean> checkAllFollowed(String outerUsername, List<String> outerUserNames) {
+		return authorizer.checkAllFollowed(outerUsername, outerUserNames, (username, userNames) -> {
+			UserData follower = userService.findByUserName(username);
+			return followDao.checkAllFollowed(follower.getId(), userNames);
+		});
 	}
 }

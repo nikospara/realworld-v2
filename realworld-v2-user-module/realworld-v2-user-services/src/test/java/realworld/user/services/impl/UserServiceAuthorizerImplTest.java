@@ -3,25 +3,25 @@ package realworld.user.services.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static realworld.authorization.service.Authorization.REDUCTED;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.validation.Valid;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-import org.jboss.weld.junit5.auto.AddBeanClasses;
-import org.jboss.weld.junit5.auto.AddEnabledDecorators;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import realworld.EntityDoesNotExistException;
 import realworld.authentication.AuthenticationContext;
 import realworld.authentication.User;
 import realworld.authorization.NotAuthenticatedException;
@@ -29,16 +29,13 @@ import realworld.authorization.service.Authorization;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
 import realworld.user.model.UserUpdateData;
-import realworld.user.services.UserService;
 
 /**
- * Tests for the {@link UserServiceAuthorizer}.
+ * Tests for the {@link UserServiceAuthorizerImpl}.
  */
 @EnableAutoWeld
-@AddBeanClasses(UserServiceAuthorizerTest.DummyUserService.class)
-@AddEnabledDecorators(UserServiceAuthorizer.class)
 @ExtendWith(MockitoExtension.class)
-public class UserServiceAuthorizerTest {
+public class UserServiceAuthorizerImplTest {
 
 	private static final UserUpdateData USER_REG_DATA = new UserUpdateData();
 	private static final String USERNAME_TO_FIND = "USERNAME_TO_FIND";
@@ -54,12 +51,16 @@ public class UserServiceAuthorizerTest {
 	private AuthenticationContext authenticationContext;
 
 	@Inject
-	private DummyUserService dummy;
+	private UserServiceAuthorizerImpl sut;
 
 	@Test
 	void testRegister() {
-		Object result = dummy.register(USER_REG_DATA);
+		@SuppressWarnings("unchecked")
+		Function<UserUpdateData,UserData> mockDelegate = mock(Function.class);
+		when(mockDelegate.apply(any(UserUpdateData.class))).thenReturn(FROM_REGISTER);
+		Object result = sut.register(USER_REG_DATA, mockDelegate);
 		assertSame(FROM_REGISTER, result);
+		verify(mockDelegate).apply(USER_REG_DATA);
 	}
 
 	@Test
@@ -67,8 +68,11 @@ public class UserServiceAuthorizerTest {
 		User user = mock(User.class);
 		when(user.getUniqueId()).thenReturn("FROM_FIND_BY_USER_NAME");
 		when(authenticationContext.getUserPrincipal()).thenReturn(user);
-		UserData result = dummy.findByUserName(USERNAME_TO_FIND);
-		assertEquals(FROM_FIND_BY_USER_NAME, result);
+		@SuppressWarnings("unchecked")
+		Function<String,UserData> mockDelegate = mock(Function.class);
+		when(mockDelegate.apply(USERNAME_TO_FIND)).thenReturn(FROM_FIND_BY_USER_NAME);
+		UserData result = sut.findByUserName(USERNAME_TO_FIND, mockDelegate);
+		assertSame(FROM_FIND_BY_USER_NAME, result);
 	}
 
 	@Test
@@ -76,7 +80,10 @@ public class UserServiceAuthorizerTest {
 		User user = mock(User.class);
 		when(user.getUniqueId()).thenReturn("ANOTHER_ID");
 		when(authenticationContext.getUserPrincipal()).thenReturn(user);
-		UserData result = dummy.findByUserName(USERNAME_TO_FIND);
+		@SuppressWarnings("unchecked")
+		Function<String,UserData> mockDelegate = mock(Function.class);
+		when(mockDelegate.apply(USERNAME_TO_FIND)).thenReturn(FROM_FIND_BY_USER_NAME);
+		UserData result = sut.findByUserName(USERNAME_TO_FIND, mockDelegate);
 		assertEquals(REDUCTED, result.getId());
 		assertEquals(USERNAME_TO_FIND, result.getUsername());
 		assertEquals(REDUCTED, result.getEmail());
@@ -86,7 +93,10 @@ public class UserServiceAuthorizerTest {
 	@Test
 	void testFindByUserNameForNoUser() {
 		when(authenticationContext.getUserPrincipal()).thenReturn(null);
-		UserData result = dummy.findByUserName(USERNAME_TO_FIND);
+		@SuppressWarnings("unchecked")
+		Function<String,UserData> mockDelegate = mock(Function.class);
+		when(mockDelegate.apply(USERNAME_TO_FIND)).thenReturn(FROM_FIND_BY_USER_NAME);
+		UserData result = sut.findByUserName(USERNAME_TO_FIND, mockDelegate);
 		assertEquals(REDUCTED, result.getId());
 		assertEquals(USERNAME_TO_FIND, result.getUsername());
 		assertEquals(REDUCTED, result.getEmail());
@@ -96,13 +106,19 @@ public class UserServiceAuthorizerTest {
 	@Test
 	void testUpdateWithoutLogin() {
 		doThrow(NotAuthenticatedException.class).when(authorization).requireLogin();
-		expectNotAuthenticatedException(() -> dummy.update(USER_UPDATE_DATA));
+		@SuppressWarnings("unchecked")
+		Consumer<UserUpdateData> mockDelegate = mock(Consumer.class);
+		expectNotAuthenticatedException(() -> sut.update(USER_UPDATE_DATA, mockDelegate));
+		verifyZeroInteractions(mockDelegate);
 	}
 
 	@Test
 	void testUpdate() {
 		doNothing().when(authorization).requireLogin();
-		dummy.update(USER_UPDATE_DATA);
+		@SuppressWarnings("unchecked")
+		Consumer<UserUpdateData> mockDelegate = mock(Consumer.class);
+		sut.update(USER_UPDATE_DATA, mockDelegate);
+		verify(mockDelegate).accept(USER_UPDATE_DATA);
 	}
 
 	private void expectNotAuthenticatedException(Runnable f) {
@@ -112,32 +128,6 @@ public class UserServiceAuthorizerTest {
 		}
 		catch( NotAuthenticatedException expected ) {
 			// expected
-		}
-	}
-
-	@ApplicationScoped
-	static class DummyUserService implements UserService {
-		@Override
-		public UserData register(@Valid UserUpdateData registrationData) {
-			if( registrationData != USER_REG_DATA ) {
-				throw new IllegalArgumentException();
-			}
-			return FROM_REGISTER;
-		}
-
-		@Override
-		public UserData findByUserName(String username) throws EntityDoesNotExistException {
-			if( username != USERNAME_TO_FIND ) {
-				throw new IllegalArgumentException();
-			}
-			return FROM_FIND_BY_USER_NAME;
-		}
-
-		@Override
-		public void update(@Valid UserUpdateData userUpdateData) {
-			if( userUpdateData != USER_UPDATE_DATA ) {
-				throw new IllegalArgumentException();
-			}
 		}
 	}
 }

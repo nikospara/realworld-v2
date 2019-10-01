@@ -1,65 +1,18 @@
 package realworld.user.services.impl;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
-import static realworld.authorization.service.Authorization.REDUCTED;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
-import javax.annotation.Priority;
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
-import javax.validation.Valid;
-
-import realworld.authentication.AuthenticationContext;
-import realworld.authorization.service.Authorization;
-import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
 import realworld.user.model.UserUpdateData;
-import realworld.user.services.UserService;
 
 /**
- * Security for the {@link UserService} implementation.
+ * Security for the {@link realworld.user.services.UserService} implementation.
  */
-@Decorator
-@Priority(APPLICATION)
-public class UserServiceAuthorizer implements UserService {
+public interface UserServiceAuthorizer {
+	UserData register(UserUpdateData registrationData, Function<UserUpdateData, UserData> delegate);
 
-	private UserService delegate;
+	UserData findByUserName(String username, Function<String, UserData> delegate);
 
-	private Authorization authorization;
-
-	private AuthenticationContext authenticationContext;
-
-	/**
-	 * Injection constructor.
-	 *
-	 * @param delegate      The delegate of this decorator
-	 * @param authorization The authorization utilities
-	 * @param authenticationContext The authentication context
-	 */
-	@Inject
-	public UserServiceAuthorizer(@Delegate UserService delegate, Authorization authorization, AuthenticationContext authenticationContext) {
-		this.delegate = delegate;
-		this.authorization = authorization;
-		this.authenticationContext = authenticationContext;
-	}
-
-	@Override
-	public UserData register(UserUpdateData registrationData) {
-		return delegate.register(registrationData);
-	}
-
-	@Override
-	public UserData findByUserName(String username) {
-		UserData userData = delegate.findByUserName(username);
-		if( authenticationContext.getUserPrincipal() == null || !authenticationContext.getUserPrincipal().getUniqueId().equals(userData.getId()) ) {
-			userData = ImmutableUserData.builder().from(userData).id(REDUCTED).email(REDUCTED).build();
-		}
-		return userData;
-	}
-
-	@Override
-	public void update(@Valid UserUpdateData userUpdateData) {
-		authorization.requireLogin();
-		delegate.update(userUpdateData);
-	}
+	void update(UserUpdateData userUpdateData, Consumer<UserUpdateData> delegate);
 }

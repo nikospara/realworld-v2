@@ -2,15 +2,18 @@ package realworld.user.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
-import org.jboss.weld.junit5.auto.AddBeanClasses;
-import org.jboss.weld.junit5.auto.AddEnabledDecorators;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,16 +21,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.service.Authorization;
-import realworld.user.services.BiographyService;
 
 /**
- * Tests for the {@link BiographyServiceAuthorizer}.
+ * Tests for the {@link BiographyServiceAuthorizerImpl}.
  */
 @EnableAutoWeld
-@AddBeanClasses(BiographyServiceAuthorizerTest.DummyBiographyService.class)
-@AddEnabledDecorators(BiographyServiceAuthorizer.class)
 @ExtendWith(MockitoExtension.class)
-public class BiographyServiceAuthorizerTest {
+public class BiographyServiceAuthorizerImplTest {
 
 	private static final String USER_ID_TO_CREATE = "USER_ID_TO_CREATE";
 	private static final String USERNAME_TO_FIND = "USERNAME_TO_FIND";
@@ -35,104 +35,75 @@ public class BiographyServiceAuthorizerTest {
 	private static final String USER_ID_TO_UPDATE = "USER_ID_TO_UPDATE";
 	private static final String CONTENT = "Content";
 	private static final String FROM_FIND_BY_USER_NAME = "FROM_FIND_BY_USER_NAME";
-	private static final Object FROM_CREATE = new Object();
 
 	@Produces @Mock
 	private Authorization authorization;
 
 	@Inject
-	private DummyBiographyService dummy;
+	private BiographyServiceAuthorizerImpl sut;
 
 	@Test
 	void testCreate() {
-		dummy.setLastOperation(null);
-		dummy.create(USER_ID_TO_CREATE, CONTENT);
-		assertSame(FROM_CREATE, dummy.getLastOperation());
+		@SuppressWarnings("unchecked")
+		BiConsumer<String,String> mockDelegate = mock(BiConsumer.class);
+		sut.create(USER_ID_TO_CREATE, CONTENT, mockDelegate);
+		verify(mockDelegate).accept(USER_ID_TO_CREATE, CONTENT);
 	}
 
 	@Test
 	void testFindByUserName() {
-		Object result = dummy.findByUserName(USERNAME_TO_FIND);
+		@SuppressWarnings("unchecked")
+		Function<String,String> mockDelegate = mock(Function.class);
+		when(mockDelegate.apply(anyString())).thenReturn(FROM_FIND_BY_USER_NAME);
+		Object result = sut.findByUserName(USERNAME_TO_FIND, mockDelegate);
 		assertSame(FROM_FIND_BY_USER_NAME, result);
 	}
 
 	@Test
 	void testUpdateByUserNameWithWrongUser() {
+		@SuppressWarnings("unchecked")
+		BiConsumer<String,String> mockDelegate = mock(BiConsumer.class);
 		doThrow(NotAuthenticatedException.class).when(authorization).requireUsername(USERNAME_TO_UPDATE);
 		try {
-			dummy.updateByUserName(USERNAME_TO_UPDATE, "XXX");
+			sut.updateByUserName(USERNAME_TO_UPDATE, "XXX", mockDelegate);
 			fail("should have thrown");
 		}
 		catch( NotAuthenticatedException expected ) {
 			// expected
 		}
+		verify(mockDelegate, never()).accept(anyString(), anyString());
 	}
 
 	@Test
 	void testUpdateByUserName() {
-		dummy.updateByUserName(USERNAME_TO_UPDATE, CONTENT);
+		@SuppressWarnings("unchecked")
+		BiConsumer<String,String> mockDelegate = mock(BiConsumer.class);
+		sut.updateByUserName(USERNAME_TO_UPDATE, CONTENT, mockDelegate);
 		verify(authorization).requireUsername(USERNAME_TO_UPDATE);
+		verify(mockDelegate).accept(USERNAME_TO_UPDATE, CONTENT);
 	}
 
 	@Test
 	void testUpdateByIdWithWrongUser() {
+		@SuppressWarnings("unchecked")
+		BiConsumer<String,String> mockDelegate = mock(BiConsumer.class);
 		doThrow(NotAuthenticatedException.class).when(authorization).requireUserId(USER_ID_TO_UPDATE);
 		try {
-			dummy.updateById(USER_ID_TO_UPDATE, "XXX");
+			sut.updateById(USER_ID_TO_UPDATE, "XXX", mockDelegate);
 			fail("should have thrown");
 		}
 		catch( NotAuthenticatedException expected ) {
 			// expected
 		}
+		verify(mockDelegate, never()).accept(anyString(), anyString());
 	}
 
 	@Test
 	void testUpdateById() {
-		dummy.updateById(USER_ID_TO_UPDATE, CONTENT);
+		@SuppressWarnings("unchecked")
+		BiConsumer<String,String> mockDelegate = mock(BiConsumer.class);
+		sut.updateById(USER_ID_TO_UPDATE, CONTENT, mockDelegate);
 		verify(authorization).requireUserId(USER_ID_TO_UPDATE);
-	}
-
-	@ApplicationScoped
-	static class DummyBiographyService implements BiographyService {
-
-		private Object lastOperation;
-
-		public Object getLastOperation() {
-			return lastOperation;
-		}
-
-		public void setLastOperation(Object lastOperation) {
-			this.lastOperation = lastOperation;
-		}
-
-		@Override
-		public void create(String userId, String content) {
-			if( userId != USER_ID_TO_CREATE ) {
-				throw new IllegalArgumentException();
-			}
-			this.lastOperation = FROM_CREATE;
-		}
-
-		@Override
-		public String findByUserName(String username) {
-			if( username != USERNAME_TO_FIND ) {
-				throw new IllegalArgumentException();
-			}
-			return FROM_FIND_BY_USER_NAME;
-		}
-
-		@Override
-		public void updateByUserName(String username, String content) {
-			if( username != USERNAME_TO_UPDATE ) {
-				throw new IllegalArgumentException();
-			}
-		}
-
-		@Override
-		public void updateById(String userId, String content) {
-			if( userId != USER_ID_TO_UPDATE ) {
-				throw new IllegalArgumentException();
-			}
-		}
+		verify(mockDelegate).accept(USER_ID_TO_UPDATE, CONTENT);
 	}
 }

@@ -1,68 +1,22 @@
 package realworld.user.services.impl;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
-
-import javax.annotation.Priority;
-import javax.decorator.Decorator;
-import javax.decorator.Delegate;
-import javax.inject.Inject;
-
 import java.util.List;
 import java.util.Map;
-
-import realworld.authorization.service.Authorization;
-import realworld.user.services.FollowService;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
- * Security for the {@link FollowService} implementation.
+ * Security for the {@link realworld.user.services.FollowService} implementation.
  */
-@Decorator
-@Priority(APPLICATION)
-public class FollowServiceAuthorizer implements FollowService {
+public interface FollowServiceAuthorizer {
+	boolean follows(String followerName, String followedName, BiFunction<String,String,Boolean> delegate);
 
-	private FollowService delegate;
+	void follow(String followerName, String followedName, BiConsumer<String,String> delegate);
 
-	private Authorization authorization;
+	void unfollow(String followerName, String followedName, BiConsumer<String,String> delegate);
 
-	/**
-	 * Injection constructor.
-	 *
-	 * @param delegate      The delegate of this decorator
-	 * @param authorization The authorization utilities
-	 */
-	@Inject
-	public FollowServiceAuthorizer(@Delegate FollowService delegate, Authorization authorization) {
-		this.delegate = delegate;
-		this.authorization = authorization;
-	}
+	List<String> findAllFollowed(String username, Function<String,List<String>> delegate);
 
-	@Override
-	public boolean follows(String followerName, String followedName) {
-		authorization.requireUsername(followerName);
-		return delegate.follows(followerName, followedName);
-	}
-
-	@Override
-	public void follow(String followerName, String followedName) {
-		authorization.requireUsername(followerName);
-		delegate.follow(followerName, followedName);
-	}
-
-	@Override
-	public void unfollow(String followerName, String followedName) {
-		authorization.requireUsername(followerName);
-		delegate.unfollow(followerName, followedName);
-	}
-
-	@Override
-	public List<String> findAllFollowed(String username) {
-		authorization.requireUsername(username);
-		return delegate.findAllFollowed(username);
-	}
-
-	@Override
-	public Map<String, Boolean> checkAllFollowed(String username, List<String> userNames) {
-		authorization.requireUsername(username);
-		return delegate.checkAllFollowed(username, userNames);
-	}
+	Map<String,Boolean> checkAllFollowed(String username, List<String> userNames, BiFunction<String,List<String>,Map<String,Boolean>> delegate);
 }
