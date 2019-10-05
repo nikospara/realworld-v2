@@ -48,4 +48,9 @@ public class AuthenticationContextImpl implements AuthenticationContext {
 	public UserImpl getUserPrincipal() {
 		return userPrincipal;
 	}
+
+	@Override
+	public boolean isSystem() {
+		return userPrincipal != null && SYSTEM_USER_ID.equals(userPrincipal.getUniqueId());
+	}
 }

@@ -73,6 +73,11 @@ class UserDaoImpl implements UserDao {
 	}
 
 	@Override
+	public Optional<UserData> findByUserId(String id) {
+		return Optional.ofNullable(em.find(User.class, id)).map(this::fromUser);
+	}
+
+	@Override
 	public UserUpdateOperation createUpdate() {
 		return new UserUpdateOperationImpl(em);
 	}

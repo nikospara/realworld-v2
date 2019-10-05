@@ -42,6 +42,14 @@ public interface UserDao {
 	Optional<UserData> findByUserName(String username);
 
 	/**
+	 * Find user by user id.
+	 *
+	 * @param id The user id
+	 * @return The user with the given user id
+	 */
+	Optional<UserData> findByUserId(String id);
+
+	/**
 	 * Create a User updateById operation. This operation is bound to the current transaction.
 	 *
 	 * @return The User updateById operation

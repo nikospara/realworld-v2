@@ -14,5 +14,11 @@ public interface UserServiceAuthorizer {
 
 	UserData findByUserName(String username, Function<String, UserData> delegate);
 
+	/**
+	 * User data can be updated only by the same user or a system account.
+	 *
+	 * @param userUpdateData The update data
+	 * @param delegate       The {@code UserService} delegate
+	 */
 	void update(UserUpdateData userUpdateData, Consumer<UserUpdateData> delegate);
 }

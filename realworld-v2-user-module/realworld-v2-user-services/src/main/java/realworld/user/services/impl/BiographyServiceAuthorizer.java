@@ -13,5 +13,12 @@ public interface BiographyServiceAuthorizer {
 
 	void updateByUserName(String username, String content, BiConsumer<String,String> delegate);
 
+	/**
+	 * Only same user or system account is allowed.
+	 *
+	 * @param userId   The user id to update
+	 * @param content  Argument for the {@code UserService} delegate
+	 * @param delegate The {@code UserService} delegate
+	 */
 	void updateById(String userId, String content, BiConsumer<String,String> delegate);
 }

@@ -35,4 +35,11 @@ public interface Authorization {
 	 * @throws NotAuthorizedException If the requirement is not met
 	 */
 	void requireUserId(String userId);
+
+	/**
+	 * Require that the current action is running from the system user.
+	 *
+	 * @throws NotAuthenticatedException If the requirement is not met
+	 */
+	void requireSystemUser();
 }

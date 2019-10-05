@@ -100,6 +100,15 @@ public class UserDaoImplTest {
 
 	@Test
 	@Order(5)
+	void testFindById() {
+		UserData result = sut.findByUserId(ID).get();
+		assertEquals(EMAIL, result.getEmail());
+		assertEquals(IMAGE_URL, result.getImageUrl());
+		assertTrue(sut.findByUserId("user_id_that_doesnt_exist").isEmpty());
+	}
+
+	@Test
+	@Order(6)
 	void testUpdateNonExistingUser() {
 		em.getTransaction().begin();
 		try {
@@ -113,7 +122,7 @@ public class UserDaoImplTest {
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
 	void testUpdateWithNoRealUpdate() {
 		String userid = sut.findByUserName(USERNAME).get().getId();
 		em.clear();
@@ -137,7 +146,7 @@ public class UserDaoImplTest {
 	}
 
 	@Test
-	@Order(7)
+	@Order(8)
 	void testUpdate() {
 		String userid = sut.findByUserName(USERNAME).get().getId();
 		em.clear();

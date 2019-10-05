@@ -65,6 +65,13 @@ public class AuthenticationContextProducer {
 					.orElse(null);
 		}
 
+		@Override
+		public boolean isSystem() {
+			return selectAuthenticationContext()
+					.map(AuthenticationContext::isSystem)
+					.orElse(false);
+		}
+
 		private Optional<AuthenticationContext> selectAuthenticationContext() {
 			return Optional.ofNullable(runAsAuthContexts.get().peekFirst())
 					.or(this::getRequestAuthenticationContext);

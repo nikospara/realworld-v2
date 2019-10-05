@@ -58,4 +58,11 @@ class AuthorizationImpl implements Authorization {
 			throw new NotAuthorizedException();
 		}
 	}
+
+	@Override
+	public void requireSystemUser() {
+		if( !authenticationContext.isSystem() ) {
+			throw new NotAuthorizedException();
+		}
+	}
 }

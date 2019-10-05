@@ -6,6 +6,8 @@ import javax.inject.Inject;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import realworld.authentication.AuthenticationContext;
+import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.service.Authorization;
 
 /**
@@ -15,6 +17,8 @@ import realworld.authorization.service.Authorization;
 public class BiographyServiceAuthorizerImpl implements BiographyServiceAuthorizer {
 
 	private Authorization authorization;
+
+	private AuthenticationContext authenticationContext;
 
 	/**
 	 * Constructor for frameworks.
@@ -30,8 +34,9 @@ public class BiographyServiceAuthorizerImpl implements BiographyServiceAuthorize
 	 * @param authorization The authorization
 	 */
 	@Inject
-	public BiographyServiceAuthorizerImpl(Authorization authorization) {
+	public BiographyServiceAuthorizerImpl(Authorization authorization, AuthenticationContext authenticationContext) {
 		this.authorization = authorization;
+		this.authenticationContext = authenticationContext;
 	}
 
 	@Override
@@ -52,7 +57,10 @@ public class BiographyServiceAuthorizerImpl implements BiographyServiceAuthorize
 
 	@Override
 	public void updateById(String userId, String content, BiConsumer<String,String> delegate) {
-		authorization.requireUserId(userId);
+		authorization.requireLogin();
+		if( !authenticationContext.getUserPrincipal().getUniqueId().equals(userId) ) {
+			authorization.requireSystemUser();
+		}
 		delegate.accept(userId, content);
 	}
 }

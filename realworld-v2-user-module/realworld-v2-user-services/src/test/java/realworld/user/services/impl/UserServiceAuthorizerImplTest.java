@@ -10,6 +10,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static realworld.authentication.AuthenticationContextImpl.SYSTEM_USER_ID;
+import static realworld.authentication.AuthenticationContextImpl.SYSTEM_USER_NAME;
 import static realworld.authorization.service.Authorization.REDUCTED;
 
 import javax.enterprise.inject.Produces;
@@ -24,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.authentication.AuthenticationContext;
 import realworld.authentication.User;
+import realworld.authentication.UserImpl;
 import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.service.Authorization;
 import realworld.user.model.ImmutableUserData;
@@ -39,6 +42,8 @@ public class UserServiceAuthorizerImplTest {
 
 	private static final UserUpdateData USER_REG_DATA = new UserUpdateData();
 	private static final String USERNAME_TO_FIND = "USERNAME_TO_FIND";
+	private static final String USER_ID_OTHER = "USER_ID_OTHER";
+	private static final String USER_ID_TO_UPDATE = "USER_ID_TO_UPDATE";
 	private static final UserUpdateData USER_UPDATE_DATA = mock(UserUpdateData.class);
 
 	private static final UserData FROM_REGISTER = mock(UserData.class, "FROM_REGISTER");
@@ -113,12 +118,39 @@ public class UserServiceAuthorizerImplTest {
 	}
 
 	@Test
-	void testUpdate() {
-		doNothing().when(authorization).requireLogin();
+	void testUpdateWithOtherLogin() {
 		@SuppressWarnings("unchecked")
 		Consumer<UserUpdateData> mockDelegate = mock(Consumer.class);
+		User user = mock(User.class);
+		when(user.getUniqueId()).thenReturn(USER_ID_OTHER);
+		when(authenticationContext.getUserPrincipal()).thenReturn(user);
+		doThrow(NotAuthenticatedException.class).when(authorization).requireSystemUser();
+		expectNotAuthenticatedException(() -> sut.update(USER_UPDATE_DATA, mockDelegate));
+		verifyZeroInteractions(mockDelegate);
+	}
+
+	@Test
+	void testUpdateWithSystemUser() {
+		@SuppressWarnings("unchecked")
+		Consumer<UserUpdateData> mockDelegate = mock(Consumer.class);
+		User user = new UserImpl(SYSTEM_USER_NAME, SYSTEM_USER_ID);
+		when(authenticationContext.getUserPrincipal()).thenReturn(user);
+		doNothing().when(authorization).requireSystemUser();
 		sut.update(USER_UPDATE_DATA, mockDelegate);
 		verify(mockDelegate).accept(USER_UPDATE_DATA);
+	}
+
+	@Test
+	void testUpdate() {
+		@SuppressWarnings("unchecked")
+		Consumer<UserUpdateData> mockDelegate = mock(Consumer.class);
+		UserUpdateData userUpdateData = mock(UserUpdateData.class);
+		when(userUpdateData.getId()).thenReturn(USER_ID_TO_UPDATE);
+		User user = mock(User.class);
+		when(user.getUniqueId()).thenReturn(USER_ID_TO_UPDATE);
+		when(authenticationContext.getUserPrincipal()).thenReturn(user);
+		sut.update(userUpdateData, mockDelegate);
+		verify(mockDelegate).accept(userUpdateData);
 	}
 
 	private void expectNotAuthenticatedException(Runnable f) {

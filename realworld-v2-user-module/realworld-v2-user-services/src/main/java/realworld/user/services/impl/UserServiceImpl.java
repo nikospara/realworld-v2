@@ -95,7 +95,7 @@ class UserServiceImpl implements UserService {
 	@Override
 	public void update(@Valid UserUpdateData outerUserUpdateData) {
 		authorizer.update(outerUserUpdateData, userUpdateData -> {
-			UserData u = userDao.findByUserName(authenticationContext.getUserPrincipal().getName()).get();
+			UserData u = userDao.findByUserId(userUpdateData.getId()).orElseThrow(EntityDoesNotExistException::new);
 
 			List<SimpleConstraintViolation> errors = new ArrayList<>();
 

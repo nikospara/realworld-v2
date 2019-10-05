@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import realworld.authentication.AuthenticationContext;
+import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.service.Authorization;
 import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
@@ -60,6 +61,9 @@ public class UserServiceAuthorizerImpl implements UserServiceAuthorizer {
 	@Override
 	public void update(UserUpdateData userUpdateData, Consumer<UserUpdateData> delegate) {
 		authorization.requireLogin();
+		if( !authenticationContext.getUserPrincipal().getUniqueId().equals(userUpdateData.getId()) ) {
+			authorization.requireSystemUser();
+		}
 		delegate.accept(userUpdateData);
 	}
 }

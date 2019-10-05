@@ -132,4 +132,22 @@ public class AuthorizationImplTest {
 		when(authenticationContext.getUserPrincipal()).thenReturn(user);
 		sut.requireUserId(USER_ID);
 	}
+
+	@Test
+	void testRequireSystemWithoutUser() {
+		when(authenticationContext.isSystem()).thenReturn(false);
+		try {
+			sut.requireSystemUser();
+			fail("should have thrown");
+		}
+		catch( NotAuthorizedException expected ) {
+			// expected
+		}
+	}
+
+	@Test
+	void testRequireSystem() {
+		when(authenticationContext.isSystem()).thenReturn(true);
+		sut.requireSystemUser();
+	}
 }

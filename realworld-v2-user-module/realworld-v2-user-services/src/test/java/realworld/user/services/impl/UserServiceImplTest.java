@@ -53,6 +53,7 @@ public class UserServiceImplTest {
 	private static final String BIO2 = "BIO2";
 	private static final String IMAGE_URL1 = "IMAGE1";
 	private static final String IMAGE_URL2 = "IMAGE2";
+	private static final String NON_EXISTING_USER_ID = "NON_EXISTING_USER_ID";
 
 	@Produces @Mock
 	private UserServiceAuthorizer authorizer;
@@ -144,12 +145,31 @@ public class UserServiceImplTest {
 	}
 
 	@Test
+	void testUpdateNonExistingUser() {
+		mockUpdate();
+		when(userDao.findByUserId(NON_EXISTING_USER_ID)).thenReturn(Optional.empty());
+
+		UserUpdateData userUpdateData = mock(UserUpdateData.class);
+		when(userUpdateData.getId()).thenReturn(NON_EXISTING_USER_ID);
+
+		try {
+			sut.update(userUpdateData);
+			fail("should throw for non-existing user");
+		}
+		catch( EntityDoesNotExistException e ) {
+			// expected
+		}
+		verify(authorizer).update(eq(userUpdateData), any());
+	}
+
+	@Test
 	void testUpdateWithExistingUsername() {
 		mockUpdate();
 		UserData cu = mockCurrentUser();
-		when(userDao.findByUserName(USERNAME1)).thenReturn(Optional.of(cu));
+		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 
 		UserUpdateData userUpdateData = mock(UserUpdateData.class);
+		when(userUpdateData.getId()).thenReturn(USERID1);
 		when(userUpdateData.isExplicitlySet(PropName.USERNAME)).thenReturn(true);
 		when(userUpdateData.getUsername()).thenReturn(USERNAME2);
 		when(userDao.usernameExists(USERNAME2)).thenReturn(true);
@@ -162,11 +182,12 @@ public class UserServiceImplTest {
 	void testUpdateWithSameUsername() {
 		mockUpdate();
 		UserData cu = mockCurrentUser();
-		when(userDao.findByUserName(USERNAME1)).thenReturn(Optional.of(cu));
+		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 		UserUpdateOperation updateOp = mockUserUpdateOperation();
 		when(userDao.createUpdate()).thenReturn(updateOp);
 
 		UserUpdateData userUpdateData = mock(UserUpdateData.class);
+		when(userUpdateData.getId()).thenReturn(USERID1);
 		when(userUpdateData.isExplicitlySet(PropName.USERNAME)).thenReturn(true);
 		when(userUpdateData.getUsername()).thenReturn(USERNAME1);
 
@@ -181,9 +202,10 @@ public class UserServiceImplTest {
 	void testUpdateWithExistingEmail() {
 		mockUpdate();
 		UserData cu = mockCurrentUser();
-		when(userDao.findByUserName(USERNAME1)).thenReturn(Optional.of(cu));
+		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 
 		UserUpdateData userUpdateData = mock(UserUpdateData.class);
+		when(userUpdateData.getId()).thenReturn(USERID1);
 		when(userUpdateData.isExplicitlySet(PropName.USERNAME)).thenReturn(false);
 		when(userUpdateData.isExplicitlySet(PropName.EMAIL)).thenReturn(true);
 		when(userUpdateData.getEmail()).thenReturn(EMAIL2);
@@ -197,11 +219,12 @@ public class UserServiceImplTest {
 	void testUpdateWithSameEmail() {
 		mockUpdate();
 		UserData cu = mockCurrentUser();
-		when(userDao.findByUserName(USERNAME1)).thenReturn(Optional.of(cu));
+		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 		UserUpdateOperation updateOp = mockUserUpdateOperation();
 		when(userDao.createUpdate()).thenReturn(updateOp);
 
 		UserUpdateData userUpdateData = mock(UserUpdateData.class);
+		when(userUpdateData.getId()).thenReturn(USERID1);
 		when(userUpdateData.isExplicitlySet(PropName.USERNAME)).thenReturn(false);
 		when(userUpdateData.isExplicitlySet(PropName.EMAIL)).thenReturn(true);
 		when(userUpdateData.getEmail()).thenReturn(EMAIL1);
@@ -217,11 +240,12 @@ public class UserServiceImplTest {
 	void testUpdate() {
 		mockUpdate();
 		UserData cu = mockCurrentUser();
-		when(userDao.findByUserName(USERNAME1)).thenReturn(Optional.of(cu));
+		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 		UserUpdateOperation updateOp = mockUserUpdateOperation();
 		when(userDao.createUpdate()).thenReturn(updateOp);
 
 		UserUpdateData userUpdateData = mock(UserUpdateData.class);
+		when(userUpdateData.getId()).thenReturn(USERID1);
 		when(userUpdateData.isExplicitlySet(any(PropName.class))).thenReturn(true);
 		when(userUpdateData.getUsername()).thenReturn(USERNAME2);
 		when(userUpdateData.getEmail()).thenReturn(EMAIL2);
@@ -265,11 +289,6 @@ public class UserServiceImplTest {
 	}
 
 	private UserData mockCurrentUser() {
-		User user = mock(User.class, Mockito.withSettings().lenient());
-		when(user.getName()).thenReturn(USERNAME1);
-		when(user.getUniqueId()).thenReturn(USERID1);
-		when(authenticationContext.getUserPrincipal()).thenReturn(user);
-
 		return ImmutableUserData.builder().id(USERID1).username(USERNAME1).email(EMAIL1).imageUrl("").build();
 	}
 
