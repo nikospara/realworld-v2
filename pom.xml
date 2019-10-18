@@ -36,8 +36,8 @@
 		<version.junit.jupiter>5.4.1</version.junit.jupiter>
 		<version.liquibase>3.6.3</version.liquibase>
 		<version.mockito>2.25.1</version.mockito>
-		<version.quarkus>0.23.2</version.quarkus>
-		<version.resteasy-test>4.3.0.Final</version.resteasy-test><!-- Defined in quarkus-bom -->
+		<version.quarkus>0.25.0</version.quarkus>
+		<version.resteasy-test>4.3.1.Final</version.resteasy-test><!-- Defined in quarkus-bom -->
 		<version.thorntail>2.4.0.Final</version.thorntail>
 	</properties>
 	
