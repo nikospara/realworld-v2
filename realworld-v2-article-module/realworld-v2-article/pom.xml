@@ -15,34 +15,32 @@
 	<packaging>war</packaging>
 
 	<dependencies>
-		<!-- WILDFLY SWARM  -->
+		<!-- QUARKUS -->
 		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>bean-validation</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-orm</artifactId>
+		</dependency>
+		<dependency><!-- This dependency would be included anyway from quarkus-resteasy-jackson, declaring explicitly for completeness. -->
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>cdi</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy-jackson</artifactId>
 		</dependency>
+		<!--
 		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>datasources</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
 		</dependency>
+		-->
+		<!--
+			THIS DEPENDENCY SHOULD BE DECLARED IN THE user-h2 PROFILE, BUT QUARKUS SEEMS NOT TO ACCEPT IT.
+			See https://github.com/quarkusio/quarkus/issues/3702 and https://github.com/quarkusio/quarkus/issues/4147
+		-->
 		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>jaxrs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>jaxrs-validator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.thorntail</groupId>
-			<artifactId>swagger</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-jdbc-h2</artifactId>
 		</dependency>
 
 		<!-- PROJECT -->
@@ -71,46 +69,6 @@
 			<artifactId>realworld-v2-article-services</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<!-- TEST -->
-		<!--
-		<dependency>
-			<groupId>javax.json</groupId>
-			<artifactId>javax.json-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish</groupId>
-			<artifactId>javax.json</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-cdi</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jaxrs</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.resteasy</groupId>
-			<artifactId>resteasy-jackson2-provider</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.weld</groupId>
-			<artifactId>weld-junit5</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-junit-jupiter</artifactId>
-		</dependency>
-		-->
 	</dependencies>
 
 	<build>
@@ -125,26 +83,17 @@
 
 		<plugins>
 			<plugin>
-				<groupId>io.thorntail</groupId>
-				<artifactId>thorntail-maven-plugin</artifactId>
+				<groupId>io.quarkus</groupId>
+				<artifactId>quarkus-maven-plugin</artifactId>
 				<executions>
 					<execution>
 						<goals>
-							<goal>package</goal>
+							<goal>build</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
-					<!--
-						It would be nice to build a hollow jar, but, at this point, hollow jars seem to
-						create problems with configuration: As per the docs, section 2.2 "Hollow JAR":
-
-						- To enable Thorntail to autodetect a JDBC driver, you must add the JAR with the driver to the thorntail.classpath system property
-						- YAML configuration files in your application are not automatically applied
-
-						Leaving it to false to keep this project as simple as possible.
-					-->
-					<hollow>false</hollow>
+					<debug>5205</debug>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -154,9 +103,13 @@
 		<profile>
 			<id>article-h2</id>
 			<dependencies>
+				<!--
+					THIS DEPENDENCY HAS NO EFFECT YET, DUE TO https://github.com/quarkusio/quarkus/issues/3702
+					AND https://github.com/quarkusio/quarkus/issues/4147
+				-->
 				<dependency>
-					<groupId>com.h2database</groupId>
-					<artifactId>h2</artifactId>
+					<groupId>io.quarkus</groupId>
+					<artifactId>quarkus-jdbc-h2</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>

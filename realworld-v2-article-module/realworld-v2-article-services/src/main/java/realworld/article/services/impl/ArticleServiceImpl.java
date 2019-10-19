@@ -27,6 +27,8 @@ import realworld.services.DateTimeService;
 @Transactional(dontRollbackOn = EntityDoesNotExistException.class)
 public class ArticleServiceImpl implements ArticleService {
 
+	private ArticleServiceAuthorizer authorizer;
+
 	private ArticleDao articleDao;
 
 	private Function<String,String> slugifier;
@@ -42,8 +44,18 @@ public class ArticleServiceImpl implements ArticleService {
 		// NOOP
 	}
 
+	/**
+	 * Injection constructor.
+	 *
+	 * @param authorizer            The authorizer
+	 * @param articleDao            The DAO
+	 * @param slugifier             The service to turn a title to slug
+	 * @param dateTimeService       The date/time service
+	 * @param authenticationContext The authentication context to get connected user data
+	 */
 	@Inject
-	public ArticleServiceImpl(ArticleDao articleDao, @Slugifier Function<String,String> slugifier, DateTimeService dateTimeService, AuthenticationContext authenticationContext) {
+	public ArticleServiceImpl(ArticleServiceAuthorizer authorizer, ArticleDao articleDao, @Slugifier Function<String,String> slugifier, DateTimeService dateTimeService, AuthenticationContext authenticationContext) {
+		this.authorizer = authorizer;
 		this.articleDao = articleDao;
 		this.slugifier = slugifier;
 		this.dateTimeService = dateTimeService;
@@ -51,26 +63,30 @@ public class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public ArticleBase create(ArticleCreationData creationData) {
-		String slug = slugifier.apply(creationData.getTitle());
-		if( articleDao.slugExists(slug) ) {
-			throw new SimpleValidationException(Collections.singletonList(new SimpleConstraintViolation("slug", "duplicate slug")));
-		}
-		LocalDateTime createdAt = dateTimeService.getNow();
-		String id = articleDao.create(creationData, slug, createdAt);
-		return ImmutableArticleBase.builder()
-				.id(id)
-				.slug(slug)
-				.title(creationData.getTitle())
-				.description(creationData.getDescription())
-				.createdAt(createdAt)
-				.build();
+	public ArticleBase create(ArticleCreationData outerCreationData) {
+		return authorizer.create(outerCreationData, creationData -> {
+			String slug = slugifier.apply(creationData.getTitle());
+			if (articleDao.slugExists(slug)) {
+				throw new SimpleValidationException(Collections.singletonList(new SimpleConstraintViolation("slug", "duplicate slug")));
+			}
+			LocalDateTime createdAt = dateTimeService.getNow();
+			String id = articleDao.create(creationData, slug, createdAt);
+			return ImmutableArticleBase.builder()
+					.id(id)
+					.slug(slug)
+					.title(creationData.getTitle())
+					.description(creationData.getDescription())
+					.createdAt(createdAt)
+					.build();
+		});
 	}
 
 	@Override
-	public ArticleCombinedFullData findFullDataBySlug(String slug) {
-		ArticleCombinedFullData result = articleDao.findFullDataBySlug(authenticationContext.getUserPrincipal() != null ? authenticationContext.getUserPrincipal().getUniqueId() : null, slug);
-		result.setTagList(articleDao.findTags(result.getArticle().getId()));
-		return result;
+	public ArticleCombinedFullData findFullDataBySlug(String outerSlug) {
+		return authorizer.findFullDataBySlug(outerSlug, slug -> {
+			ArticleCombinedFullData result = articleDao.findFullDataBySlug(authenticationContext.getUserPrincipal() != null ? authenticationContext.getUserPrincipal().getUniqueId() : null, slug);
+			result.setTagList(articleDao.findTags(result.getArticle().getId()));
+			return result;
+		});
 	}
 }

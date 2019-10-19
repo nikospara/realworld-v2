@@ -56,6 +56,9 @@ public class ArticleServiceImplTest {
 	private static final Set<String> TAG_LIST = Collections.singleton("tag1");
 
 	@Produces @Mock
+	private ArticleServiceAuthorizer authorizer;
+
+	@Produces @Mock
 	private ArticleDao articleDao;
 
 	@Produces @Mock @Slugifier
@@ -81,6 +84,7 @@ public class ArticleServiceImplTest {
 		catch( SimpleValidationException expected ) {
 			// expected
 		}
+		verify(authorizer).create(eq(creationData), any());
 	}
 
 	@Test
@@ -97,6 +101,7 @@ public class ArticleServiceImplTest {
 		assertEquals(CREATED_AT, result.getCreatedAt());
 		assertNull(result.getUpdatedAt());
 		verify(articleDao).create(eq(creationData), eq(SLUG), eq(CREATED_AT));
+		verify(authorizer).create(eq(creationData), any());
 	}
 
 	private ArticleCreationData prepareForCreation() {
@@ -106,8 +111,8 @@ public class ArticleServiceImplTest {
 		when(creationData.getAuthorId()).thenReturn(AUTHOR_ID);
 		when(creationData.getBody()).thenReturn(BODY);
 		when(creationData.getDescription()).thenReturn(DESCRIPTION);
-//		when(creationData.getTagList())
 		when(creationData.getTitle()).thenReturn(TITLE);
+		when(authorizer.create(eq(creationData), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		return creationData;
 	}
 
@@ -118,11 +123,13 @@ public class ArticleServiceImplTest {
 		when(authenticationContext.getUserPrincipal()).thenReturn(u);
 		when(articleDao.findFullDataBySlug(USER_ID, SLUG)).thenReturn(makeArticleCombinedFullData());
 		when(articleDao.findTags(ARTICLE_ID)).thenReturn(TAG_LIST);
+		when(authorizer.findFullDataBySlug(eq(SLUG), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		ArticleCombinedFullData res = sut.findFullDataBySlug(SLUG);
 		assertNotNull(res);
 		assertEquals(ARTICLE_ID, res.getArticle().getId());
 		assertEquals(TAG_LIST, res.getTagList());
 		verify(articleDao).findFullDataBySlug(USER_ID, SLUG);
+		verify(authorizer).findFullDataBySlug(eq(SLUG), any());
 	}
 
 	@Test
@@ -130,11 +137,13 @@ public class ArticleServiceImplTest {
 		when(authenticationContext.getUserPrincipal()).thenReturn(null);
 		when(articleDao.findFullDataBySlug(null, SLUG)).thenReturn(makeArticleCombinedFullData());
 		when(articleDao.findTags(ARTICLE_ID)).thenReturn(TAG_LIST);
+		when(authorizer.findFullDataBySlug(eq(SLUG), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		ArticleCombinedFullData res = sut.findFullDataBySlug(SLUG);
 		assertNotNull(res);
 		assertEquals(ARTICLE_ID, res.getArticle().getId());
 		assertEquals(TAG_LIST, res.getTagList());
 		verify(articleDao).findFullDataBySlug(null, SLUG);
+		verify(authorizer).findFullDataBySlug(eq(SLUG), any());
 	}
 
 	private ArticleCombinedFullData makeArticleCombinedFullData() {

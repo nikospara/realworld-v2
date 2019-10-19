@@ -21,10 +21,10 @@ import realworld.article.services.ArticleService;
 public class ArticlesResourceImpl implements ArticlesResource {
 
 	@Inject
-	private ArticleService articleService;
+	ArticleService articleService;
 
 	@Context
-	private UriInfo uriInfo;
+	UriInfo uriInfo;
 
 	@Override
 	public Response create(ArticleCreationParam creationParam) {
