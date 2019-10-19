@@ -90,9 +90,6 @@
 						</goals>
 					</execution>
 				</executions>
-				<configuration>
-					<debug>5105</debug>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
@@ -110,6 +107,28 @@
 					<artifactId>quarkus-jdbc-h2</artifactId>
 				</dependency>
 			</dependencies>
+		</profile>
+		<profile>
+			<id>user-quarkus-dev</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.quarkus</groupId>
+						<artifactId>quarkus-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>dev</goal>
+								</goals>
+								<phase>process-classes</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<debug>5105</debug>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
 		</profile>
 	</profiles>
 </project>
