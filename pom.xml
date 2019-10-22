@@ -36,29 +36,13 @@
 		<version.junit.jupiter>5.4.1</version.junit.jupiter>
 		<version.liquibase>3.6.3</version.liquibase>
 		<version.mockito>2.25.1</version.mockito>
-		<version.quarkus>0.25.0</version.quarkus>
+		<version.quarkus>0.26.0</version.quarkus>
 		<version.resteasy-test>4.3.1.Final</version.resteasy-test><!-- Defined in quarkus-bom -->
 		<version.thorntail>2.4.0.Final</version.thorntail>
 	</properties>
 	
 	<dependencyManagement>
 		<dependencies>
-			<!-- WILDFLY SWARM  -->
-			<dependency>
-				<groupId>io.thorntail</groupId>
-				<artifactId>bom</artifactId>
-				<version>${version.thorntail}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>io.thorntail</groupId>
-				<artifactId>bom-unstable</artifactId>
-				<version>${version.thorntail}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-
 			<!-- QUARKUS  -->
 			<dependency>
 				<groupId>io.quarkus</groupId>
