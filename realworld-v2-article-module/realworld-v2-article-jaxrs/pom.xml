@@ -8,6 +8,9 @@
 	</parent>
 	<artifactId>realworld-v2-article-jaxrs</artifactId>
 
+	<name>Realworld-v2: Article JAX-RS</name>
+	<description>Realworld-v2: Article module: JAX-RS</description>
+
 	<packaging>jar</packaging>
 
 	<dependencies>

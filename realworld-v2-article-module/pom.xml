@@ -31,7 +31,6 @@
 
 			<properties>
 				<database.article.driver>org.h2.Driver</database.article.driver>
-				<database.article.thorntail.name>h2</database.article.thorntail.name>
 				<database.article.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.article.hibernate.dialect>
 			</properties>
 
