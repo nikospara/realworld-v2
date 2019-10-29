@@ -327,6 +327,31 @@
 		</pluginManagement>
 	</build>
 
+	<reporting>
+		<plugins>
+			<plugin>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.0.0</version>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>index</report>
+							<!--
+								This is a useful report, but activating here puts it in every module (and it is the same).
+								Got to find a way to generate it only for the parent module.
+							<report>dependency-convergence</report>
+							-->
+							<report>dependencies</report>
+							<report>dependency-info</report>
+							<report>modules</report>
+							<report>summary</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+			</plugin>
+		</plugins>
+	</reporting>
+
 	<profiles>
 		<profile>
 			<id>jacoco</id>
