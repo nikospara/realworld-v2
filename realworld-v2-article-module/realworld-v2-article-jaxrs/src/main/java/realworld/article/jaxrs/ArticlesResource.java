@@ -5,6 +5,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -14,6 +15,7 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
+import realworld.SearchResult;
 
 /**
  * Article operations.
@@ -42,5 +44,26 @@ public interface ArticlesResource {
 			@ApiParam(value = "The slug of the article to get.", required = true)
 			@PathParam("slug")
 			String slug
+	);
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="Searches for articles.", tags=TAG)
+	SearchResult<ArticleSearchResultDto> find(
+			@ApiParam(value = "Filter by tag.")
+			@QueryParam("tag")
+			String tag,
+			@ApiParam(value = "Filter by author.")
+			@QueryParam("author")
+			String author,
+			@ApiParam(value = "Favorited by user.")
+			@QueryParam("favorited")
+			String favoritedBy,
+			@ApiParam(value = "Limit returned results.")
+			@QueryParam("limit")
+			Integer limit,
+			@ApiParam(value = "Offset/skip number of articles.")
+			@QueryParam("offset")
+			Integer offset
 	);
 }

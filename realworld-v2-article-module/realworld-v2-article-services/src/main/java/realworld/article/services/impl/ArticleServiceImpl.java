@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.function.Function;
 
 import realworld.EntityDoesNotExistException;
+import realworld.SearchResult;
 import realworld.SimpleConstraintViolation;
 import realworld.SimpleValidationException;
 import realworld.article.dao.ArticleDao;
@@ -16,7 +17,10 @@ import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ImmutableArticleBase;
+import realworld.article.model.ImmutableArticleSearchCriteria;
 import realworld.article.services.ArticleService;
+import realworld.article.model.ArticleSearchCriteria;
+import realworld.article.model.ArticleSearchResult;
 import realworld.authentication.AuthenticationContext;
 import realworld.services.DateTimeService;
 
@@ -26,6 +30,8 @@ import realworld.services.DateTimeService;
 @ApplicationScoped
 @Transactional(dontRollbackOn = EntityDoesNotExistException.class)
 public class ArticleServiceImpl implements ArticleService {
+
+	private static final ArticleSearchCriteria DEFAULT_CRITERIA = ImmutableArticleSearchCriteria.builder().limit(20).offset(0).build();
 
 	private ArticleServiceAuthorizer authorizer;
 
@@ -88,5 +94,20 @@ public class ArticleServiceImpl implements ArticleService {
 			result.setTagList(articleDao.findTags(result.getArticle().getId()));
 			return result;
 		});
+	}
+
+	@Override
+	public SearchResult<ArticleSearchResult> find(ArticleSearchCriteria outerCriteria) {
+		return authorizer.find(outerCriteria, criteria -> articleDao.find(authenticationContext.getUserPrincipal().getUniqueId(), mergeArticleSearchCriteria(DEFAULT_CRITERIA, criteria)));
+	}
+
+	private ArticleSearchCriteria mergeArticleSearchCriteria(ArticleSearchCriteria defaultCriteria, ArticleSearchCriteria criteria) {
+		return ImmutableArticleSearchCriteria.builder()
+				.authors(criteria.getAuthors() != null ? criteria.getAuthors() : defaultCriteria.getAuthors())
+				.favoritedBy(criteria.getFavoritedBy() != null ? criteria.getFavoritedBy() : defaultCriteria.getFavoritedBy())
+				.tag(criteria.getTag() != null ? criteria.getTag() : defaultCriteria.getTag())
+				.limit(criteria.getLimit() != null ? criteria.getLimit() : defaultCriteria.getLimit())
+				.offset(criteria.getOffset() != null ? criteria.getOffset() : defaultCriteria.getOffset())
+				.build();
 	}
 }

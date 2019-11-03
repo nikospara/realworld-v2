@@ -4,8 +4,11 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import realworld.EntityDoesNotExistException;
+import realworld.SearchResult;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
+import realworld.article.model.ArticleSearchCriteria;
+import realworld.article.model.ArticleSearchResult;
 
 /**
  * DAO interface for the Article entity.
@@ -57,4 +60,13 @@ public interface ArticleDao {
 	 * @throws EntityDoesNotExistException If the article does not exist
 	 */
 	String findArticleIdBySlug(String slug);
+
+	/**
+	 * Search for articles.
+	 *
+	 * @param userId   The current user id, to calculate {@code favorited}
+	 * @param criteria The search criteria
+	 * @return The results
+	 */
+	SearchResult<ArticleSearchResult> find(String userId, ArticleSearchCriteria criteria);
 }

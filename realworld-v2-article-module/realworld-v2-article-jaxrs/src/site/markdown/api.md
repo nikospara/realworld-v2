@@ -30,7 +30,7 @@
 ### Article Search Results
 
 	{
-		"articles": [
+		"results": [
 			{
 				"slug": "how-to-train-your-dragon",
 				"title": "How to train your dragon",
@@ -47,7 +47,7 @@
 				"href": "https://article-server/...."
 			}
 		],
-		"articlesCount": 93
+		"count": 93
 	}
 
 ## Endpoints

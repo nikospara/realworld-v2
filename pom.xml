@@ -33,7 +33,7 @@
 		<version.javax.json>1.1.4</version.javax.json>
 		<version.jaxb.api>2.3.1</version.jaxb.api>
 		<version.jaxb.impl>2.3.0.1</version.jaxb.impl>
-		<version.junit.jupiter>5.4.1</version.junit.jupiter>
+		<version.junit.jupiter>5.5.2</version.junit.jupiter>
 		<version.liquibase>3.8.0</version.liquibase>
 		<version.mockito>3.1.0</version.mockito>
 		<version.quarkus>0.26.1</version.quarkus>

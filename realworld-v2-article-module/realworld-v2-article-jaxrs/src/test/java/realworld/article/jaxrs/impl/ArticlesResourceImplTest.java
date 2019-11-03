@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static realworld.article.jaxrs.impl.ArticleCombinedFullDataDtoAssertions.assertDto;
+import static realworld.article.jaxrs.impl.ArticleSearchResultsDtoAssertions.assertSearchResultsDto;
 
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
@@ -15,6 +16,7 @@ import javax.ws.rs.core.MediaType;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -36,12 +38,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.EntityDoesNotExistException;
+import realworld.SearchResult;
 import realworld.article.jaxrs.ArticlesResource;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ImmutableArticleBase;
 import realworld.article.services.ArticleService;
+import realworld.article.model.ArticleSearchCriteria;
+import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ImmutableArticleSearchResult;
 import realworld.jaxrs.sys.ObjectMapperProvider;
 import realworld.jaxrs.sys.exceptionmap.EntityDoesNotExistExceptionMapper;
 import realworld.test.jaxrs.CustomMockDispatcherFactory;
@@ -134,14 +140,7 @@ public class ArticlesResourceImplTest {
 		MockHttpRequest request = MockHttpRequest.get(APPLICATION_PATH + "/articles/" + SLUG)
 			.accept(MediaType.APPLICATION_JSON);
 
-		ImmutableArticleBase articleBase = ImmutableArticleBase.builder()
-				.id(ARTICLE_ID)
-				.title(TITLE)
-				.slug(SLUG)
-				.description(DESCRIPTION)
-				.createdAt(CREATED_AT)
-				.updatedAt(UPDATED_AT)
-				.build();
+		ArticleBase articleBase = makeArticleBase();
 		ArticleCombinedFullData fullData = new ArticleCombinedFullData();
 		fullData.setArticle(articleBase);
 		fullData.setFavoritesCount(FAV_COUNT);
@@ -164,5 +163,57 @@ public class ArticlesResourceImplTest {
 				.assertDescription(DESCRIPTION)
 				.assertCreatedAt("2019-03-11T16:45:55.000Z")
 				.assertTagList("tag1", "tag2");
+	}
+
+	@Test
+	void testFind() throws Exception {
+		MockHttpRequest request = MockHttpRequest.get(APPLICATION_PATH + "/articles?tag=TTT&author=123&favorited=456&limit=8&offset=9")
+				.accept(MediaType.APPLICATION_JSON);
+
+		ArticleBase articleBase = makeArticleBase();
+		ArticleSearchResult articleSearchResult = ImmutableArticleSearchResult.builder()
+				.article(articleBase)
+				.addAllTagList(TAG_LIST)
+				.isFavorited(FALSE)
+				.favoritesCount(FAV_COUNT)
+				.authorId(AUTHOR_ID)
+				.build();
+		SearchResult<ArticleSearchResult> searchResults = new SearchResult<>(1, Collections.singletonList(articleSearchResult));
+		when(articleService.find(any(ArticleSearchCriteria.class))).thenReturn(searchResults);
+
+		dispatcher.invoke(request, response);
+
+		assertEquals(200, response.getStatus());
+		ArgumentCaptor<ArticleSearchCriteria> captor = ArgumentCaptor.forClass(ArticleSearchCriteria.class);
+		verify(articleService).find(captor.capture());
+		ArticleSearchCriteria criteria = captor.getValue();
+		assertEquals("TTT", criteria.getTag());
+		assertEquals("123", criteria.getAuthors().get(0));
+		assertEquals(1, criteria.getAuthors().size());
+		assertEquals("456", criteria.getFavoritedBy());
+		assertEquals(8, criteria.getLimit());
+		assertEquals(9, criteria.getOffset());
+
+		assertSearchResultsDto(response)
+				.assertCount(1)
+				.nextResult()
+				.assertId(ARTICLE_ID)
+				.assertTitle(TITLE)
+				.assertSlug(SLUG)
+				.assertDescription(DESCRIPTION)
+				.assertCreatedAt("2019-03-11T16:45:55.000Z")
+				.assertUpdatedAt("2019-03-12T16:45:55.000Z")
+				.assertTagList("tag1", "tag2");
+	}
+
+	private ArticleBase makeArticleBase() {
+		return ImmutableArticleBase.builder()
+				.id(ARTICLE_ID)
+				.title(TITLE)
+				.slug(SLUG)
+				.description(DESCRIPTION)
+				.createdAt(CREATED_AT)
+				.updatedAt(UPDATED_AT)
+				.build();
 	}
 }

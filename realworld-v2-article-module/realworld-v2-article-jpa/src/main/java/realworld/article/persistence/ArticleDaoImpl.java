@@ -7,21 +7,26 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import realworld.EntityDoesNotExistException;
+import realworld.SearchResult;
 import realworld.article.dao.ArticleDao;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
+import realworld.article.model.ArticleSearchCriteria;
+import realworld.article.model.ArticleSearchResult;
 import realworld.article.model.ImmutableArticleBase;
+import realworld.article.model.ImmutableArticleSearchResult;
 
 /**
  * JPA implementation of the {@link ArticleDao}.
@@ -34,6 +39,7 @@ public class ArticleDaoImpl implements ArticleDao {
 	/**
 	 * Default constructor for the frameworks.
 	 */
+	@SuppressWarnings("unused")
 	ArticleDaoImpl() {
 		// NOOP
 	}
@@ -185,5 +191,75 @@ public class ArticleDaoImpl implements ArticleDao {
 			Set<Tag> dbtags = tags.stream().map(tag -> Optional.ofNullable(em.find(Tag.class, tag)).orElseGet(() -> new Tag(tag))).collect(Collectors.toSet());
 			article.setTags(dbtags);
 		}
+	}
+
+	@Override
+	public SearchResult<ArticleSearchResult> find(String userId, ArticleSearchCriteria criteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		CriteriaQuery<Object[]> query = cb.createQuery(Object[].class);
+		Root<Article> articleRoot = applyCriteria(cb, query, criteria);
+		query.multiselect(
+				articleRoot,
+				favoritedSubquery(cb, query, articleRoot, userId),
+				favoritesCountSubquery(cb, query, articleRoot)
+		);
+
+		var results = em.createQuery(query)
+				.setMaxResults(criteria.getLimit())
+				.setFirstResult(criteria.getOffset())
+				.getResultStream()
+				.map(this::fromQueryResult)
+				.collect(Collectors.toList());
+
+		long count = results.size();
+		if( count >= criteria.getLimit() || criteria.getOffset() != 0 ) {
+			CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+			applyCriteria(cb, countQuery, criteria);
+			count = em.createQuery(countQuery.select(cb.count(countQuery.getRoots().iterator().next()))).getSingleResult();
+		}
+
+		return new SearchResult<>(count, results);
+	}
+
+	private Root<Article> applyCriteria(CriteriaBuilder cb, CriteriaQuery<?> query, ArticleSearchCriteria criteria) {
+		Root<Article> articleRoot = query.from(Article.class);
+		var restrictions = new ArrayList<Predicate>();
+
+		if( criteria.getTag() != null ) {
+			restrictions.add(cb.isMember(new Tag(criteria.getTag()), articleRoot.get(Article_.tags)));
+		}
+
+		if( criteria.getAuthors() != null && !criteria.getAuthors().isEmpty() ) {
+			restrictions.add(articleRoot.get(Article_.authorId).in(criteria.getAuthors()));
+		}
+
+		if( criteria.getFavoritedBy() != null && criteria.getFavoritedBy().trim().length() > 0  ) {
+			Subquery<ArticleFavorite> favoriteSubquery = query.subquery(ArticleFavorite.class);
+			Root<ArticleFavorite> favRoot = favoriteSubquery.from(ArticleFavorite.class);
+			favoriteSubquery
+					.select(favRoot)
+					.where(
+							cb.equal(favRoot.get(ArticleFavorite_.articleId), articleRoot.get(Article_.id)),
+							cb.equal(favRoot.get(ArticleFavorite_.userId), criteria.getFavoritedBy())
+					);
+			restrictions.add(cb.exists(favoriteSubquery));
+		}
+
+		query.where(restrictions.toArray(new Predicate[0]));
+
+		return articleRoot;
+	}
+
+	private ArticleSearchResult fromQueryResult(Object[] result) {
+		Article article = (Article) result[0];
+		boolean isFavorited = (Boolean) result[1];
+		int favoritesCount = ((Long) result[2]).intValue();
+		return ImmutableArticleSearchResult.builder()
+				.article(fromArticle(article))
+				.isFavorited(isFavorited)
+				.favoritesCount(favoritesCount)
+				.authorId(article.getAuthorId())
+				.build();
 	}
 }

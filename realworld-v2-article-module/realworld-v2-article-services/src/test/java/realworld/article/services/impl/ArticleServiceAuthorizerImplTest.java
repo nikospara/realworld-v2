@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import javax.enterprise.inject.Produces;
@@ -19,9 +19,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import realworld.SearchResult;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
+import realworld.article.model.ArticleSearchCriteria;
+import realworld.article.model.ArticleSearchResult;
 import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.service.Authorization;
 
@@ -37,6 +40,9 @@ public class ArticleServiceAuthorizerImplTest {
 	private static final ArticleCreationData ARTICLE_CREATION_DATA = mock(ArticleCreationData.class);
 	private static final ArticleBase FROM_CREATE = mock(ArticleBase.class);
 	private static final String AUTHOR_ID = UUID.randomUUID().toString();
+	private static final ArticleSearchCriteria FIND_CRITERIA = mock(ArticleSearchCriteria.class);
+	@SuppressWarnings("unchecked")
+	private static final SearchResult<ArticleSearchResult> FROM_FIND = mock(SearchResult.class);
 
 	static {
 		when(ARTICLE_CREATION_DATA.getAuthorId()).thenReturn(AUTHOR_ID);
@@ -54,7 +60,7 @@ public class ArticleServiceAuthorizerImplTest {
 		@SuppressWarnings("unchecked")
 		Function<ArticleCreationData, ArticleBase> mockDelegate = mock(Function.class);
 		expectNotAuthenticatedException(() -> sut.create(ARTICLE_CREATION_DATA, mockDelegate));
-		verifyZeroInteractions(mockDelegate);
+		verifyNoMoreInteractions(mockDelegate);
 	}
 
 	@Test
@@ -74,7 +80,17 @@ public class ArticleServiceAuthorizerImplTest {
 		when(mockDelegate.apply(SLUG_TO_FIND_COMBINED_DATA)).thenReturn(FROM_FIND_FULL_DATA_BY_SLUG);
 		ArticleCombinedFullData result = sut.findFullDataBySlug(SLUG_TO_FIND_COMBINED_DATA, mockDelegate);
 		assertSame(FROM_FIND_FULL_DATA_BY_SLUG, result);
-		verifyZeroInteractions(authorization);
+		verifyNoMoreInteractions(authorization);
+	}
+
+	@Test
+	void testFind() {
+		@SuppressWarnings("unchecked")
+		Function<ArticleSearchCriteria, SearchResult<ArticleSearchResult>> mockDelegate = mock(Function.class);
+		when(mockDelegate.apply(FIND_CRITERIA)).thenReturn(FROM_FIND);
+		SearchResult<ArticleSearchResult> result = sut.find(FIND_CRITERIA, mockDelegate);
+		assertSame(FROM_FIND, result);
+		verifyNoMoreInteractions(authorization);
 	}
 
 	private void expectNotAuthenticatedException(Runnable f) {

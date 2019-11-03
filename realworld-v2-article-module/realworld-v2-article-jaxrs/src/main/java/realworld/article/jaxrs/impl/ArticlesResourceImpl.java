@@ -6,13 +6,20 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import java.util.stream.Collectors;
+
 import realworld.ResourceLink;
+import realworld.SearchResult;
 import realworld.article.jaxrs.ArticleCombinedFullDataDto;
 import realworld.article.jaxrs.ArticleCreationParam;
+import realworld.article.jaxrs.ArticleSearchResultDto;
 import realworld.article.jaxrs.ArticlesResource;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.services.ArticleService;
+import realworld.article.model.ArticleSearchCriteria;
+import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ImmutableArticleSearchCriteria;
 
 /**
  * Implementation of the {@link ArticlesResource}.
@@ -43,5 +50,27 @@ public class ArticlesResourceImpl implements ArticlesResource {
 		result.setFavoritesCount(data.getFavoritesCount());
 		result.setTagList(data.getTagList());
 		return result;
+	}
+
+	@Override
+	public SearchResult<ArticleSearchResultDto> find(String tag, String author, String favoritedBy, Integer limit, Integer offset) {
+		ArticleSearchCriteria criteria = ImmutableArticleSearchCriteria.builder()
+				.tag(tag)
+				.addAuthors(author)
+				.favoritedBy(favoritedBy)
+				.limit(limit)
+				.offset(offset)
+				.build();
+		SearchResult<ArticleSearchResult> searchResult = articleService.find(criteria);
+		return new SearchResult<>(searchResult.getCount(), searchResult.getResults().stream().map(a -> {
+			ArticleSearchResultDto d = new ArticleSearchResultDto();
+			d.setArticle(a.getArticle());
+			d.setAuthor(new ResourceLink("TODO", "TODO"));
+			d.setTagList(a.getTagList());
+			d.setFavorited(a.isFavorited());
+			d.setFavoritesCount(a.getFavoritesCount());
+			d.setHref(uriInfo.getRequestUriBuilder().path(ArticlesResource.class, "get").build(a.getArticle().getSlug()).toString());
+			return d;
+		}).collect(Collectors.toList()));
 	}
 }

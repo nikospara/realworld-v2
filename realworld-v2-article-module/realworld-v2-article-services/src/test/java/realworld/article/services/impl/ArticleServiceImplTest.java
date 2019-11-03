@@ -3,6 +3,7 @@ package realworld.article.services.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -25,14 +26,19 @@ import java.util.function.Function;
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import realworld.SearchResult;
 import realworld.SimpleValidationException;
 import realworld.article.dao.ArticleDao;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
+import realworld.article.model.ArticleSearchCriteria;
+import realworld.article.model.ArticleSearchResult;
 import realworld.article.model.ImmutableArticleBase;
+import realworld.article.model.ImmutableArticleSearchCriteria;
 import realworld.authentication.AuthenticationContext;
 import realworld.authentication.User;
 import realworld.services.DateTimeService;
@@ -151,5 +157,26 @@ public class ArticleServiceImplTest {
 		d.setArticle(ImmutableArticleBase.builder().id(ARTICLE_ID).createdAt(CREATED_AT).description(DESCRIPTION).slug(SLUG).title(TITLE).updatedAt(UPDATED_AT).build());
 		d.setAuthorId(AUTHOR_ID);
 		return d;
+	}
+
+	@Test
+	void testFind() {
+		User u = mock(User.class);
+		when(u.getUniqueId()).thenReturn(USER_ID);
+		when(authenticationContext.getUserPrincipal()).thenReturn(u);
+		ArticleSearchCriteria criteria = ImmutableArticleSearchCriteria.builder()
+				.addAuthors("a")
+				.favoritedBy("b")
+				.build();
+		when(authorizer.find(any(ArticleSearchCriteria.class), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
+		SearchResult<ArticleSearchResult> daoResult = new SearchResult<>();
+		when(articleDao.find(anyString(), any())).thenReturn(daoResult);
+		SearchResult<ArticleSearchResult> result = sut.find(criteria);
+		assertSame(daoResult, result);
+		ArgumentCaptor<ArticleSearchCriteria> criteriaCaptor = ArgumentCaptor.forClass(ArticleSearchCriteria.class);
+		verify(articleDao).find(eq(USER_ID), criteriaCaptor.capture());
+		ArticleSearchCriteria daoCriteria = criteriaCaptor.getValue();
+		assertNotNull(daoCriteria.getLimit());
+		assertNotNull(daoCriteria.getOffset());
 	}
 }
