@@ -29,7 +29,7 @@ import realworld.services.DateTimeService;
  */
 @ApplicationScoped
 @Transactional(dontRollbackOn = EntityDoesNotExistException.class)
-public class ArticleServiceImpl implements ArticleService {
+class ArticleServiceImpl implements ArticleService {
 
 	private static final ArticleSearchCriteria DEFAULT_CRITERIA = ImmutableArticleSearchCriteria.builder().limit(20).offset(0).build();
 
@@ -46,6 +46,7 @@ public class ArticleServiceImpl implements ArticleService {
 	/**
 	 * Default constructor for the frameworks.
 	 */
+	@SuppressWarnings("unused")
 	ArticleServiceImpl() {
 		// NOOP
 	}

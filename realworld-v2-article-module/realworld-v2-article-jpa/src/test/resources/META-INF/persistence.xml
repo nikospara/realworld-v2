@@ -4,6 +4,7 @@
 		<class>realworld.article.persistence.ArticleBody</class>
 		<class>realworld.article.persistence.ArticleFavorite</class>
 		<class>realworld.article.persistence.Tag</class>
+		<class>realworld.article.persistence.User</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.url"      value="${database-test.url}" />

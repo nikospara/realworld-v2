@@ -16,7 +16,7 @@ import realworld.authorization.service.Authorization;
  * Security for the {@link realworld.article.services.ArticleService} implementation.
  */
 @ApplicationScoped
-public class ArticleServiceAuthorizerImpl implements ArticleServiceAuthorizer {
+class ArticleServiceAuthorizerImpl implements ArticleServiceAuthorizer {
 
 	private Authorization authorization;
 
