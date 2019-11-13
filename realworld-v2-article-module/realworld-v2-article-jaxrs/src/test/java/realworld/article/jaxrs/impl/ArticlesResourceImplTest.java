@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import io.smallrye.config.inject.ConfigExtension;
 import org.jboss.resteasy.cdi.ResteasyCdiExtension;
 import org.jboss.resteasy.mock.MockHttpRequest;
 import org.jboss.resteasy.mock.MockHttpResponse;
@@ -38,16 +39,17 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.EntityDoesNotExistException;
+import realworld.NameAndId;
 import realworld.SearchResult;
 import realworld.article.jaxrs.ArticlesResource;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
-import realworld.article.model.ImmutableArticleBase;
-import realworld.article.services.ArticleService;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ImmutableArticleBase;
 import realworld.article.model.ImmutableArticleSearchResult;
+import realworld.article.services.ArticleService;
 import realworld.jaxrs.sys.ObjectMapperProvider;
 import realworld.jaxrs.sys.exceptionmap.EntityDoesNotExistExceptionMapper;
 import realworld.test.jaxrs.CustomMockDispatcherFactory;
@@ -57,7 +59,7 @@ import realworld.test.jaxrs.CustomMockDispatcherFactory;
  */
 @EnableAutoWeld
 @AddBeanClasses(ObjectMapperProvider.class)
-@AddExtensions(ResteasyCdiExtension.class)
+@AddExtensions({ResteasyCdiExtension.class, ConfigExtension.class})
 @ActivateScopes(RequestScoped.class)
 @ExtendWith(MockitoExtension.class)
 public class ArticlesResourceImplTest {
@@ -66,6 +68,7 @@ public class ArticlesResourceImplTest {
 	private static final String APPLICATION_PATH = "/api/current";
 	private static final String SLUG = "slug";
 	private static final String AUTHOR_ID = UUID.randomUUID().toString();
+	private static final String AUTHOR_NAME = "AUTHOR_NAME";
 	private static final String DESCRIPTION = "Description";
 	private static final String TITLE = "Title";
 	private static final LocalDateTime CREATED_AT = LocalDateTime.of(2019, Month.MARCH, 11, 16, 45, 55);
@@ -75,11 +78,14 @@ public class ArticlesResourceImplTest {
 	private static final Set<String> TAG_LIST = new HashSet<>(Arrays.asList("tag1", "tag2"));
 
 	@Produces
-	@Mock
-	private ArticleService articleService;
+	private ArticleRestLayerConfig config = new ArticleRestLayerConfig() {
+		@Override public String getUserUrlTemplate() {
+			return "http://user-server/api/v2/users/{username}";
+		}
+	};
 
-	@Inject
-	private ObjectMapperProvider objectMapperProvider;
+	@Produces @Mock
+	private ArticleService articleService;
 
 	@Inject
 	private ArticlesResourceImpl sut;
@@ -146,7 +152,7 @@ public class ArticlesResourceImplTest {
 		fullData.setFavoritesCount(FAV_COUNT);
 		fullData.setFavorited(FALSE);
 		fullData.setBody(BODY);
-		fullData.setAuthorId(AUTHOR_ID);
+		fullData.setAuthor(new NameAndId(AUTHOR_NAME, AUTHOR_ID));
 		fullData.setTagList(TAG_LIST);
 		when(articleService.findFullDataBySlug(SLUG)).thenReturn(fullData);
 
@@ -161,6 +167,8 @@ public class ArticlesResourceImplTest {
 				.assertTitle(TITLE)
 				.assertSlug(SLUG)
 				.assertDescription(DESCRIPTION)
+				.assertAuthorName(AUTHOR_NAME)
+				.assertAuthorHref("http://user-server/api/v2/users/" + AUTHOR_NAME)
 				.assertCreatedAt("2019-03-11T16:45:55.000Z")
 				.assertTagList("tag1", "tag2");
 	}
@@ -176,7 +184,7 @@ public class ArticlesResourceImplTest {
 				.addAllTagList(TAG_LIST)
 				.isFavorited(FALSE)
 				.favoritesCount(FAV_COUNT)
-				.authorId(AUTHOR_ID)
+				.author(new NameAndId(AUTHOR_NAME, AUTHOR_ID))
 				.build();
 		SearchResult<ArticleSearchResult> searchResults = new SearchResult<>(1, Collections.singletonList(articleSearchResult));
 		when(articleService.find(any(ArticleSearchCriteria.class))).thenReturn(searchResults);

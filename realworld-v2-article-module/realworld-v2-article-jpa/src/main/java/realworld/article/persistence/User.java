@@ -19,6 +19,24 @@ public class User {
 	@Column(name = "username")
 	private String username;
 
+	/**
+	 * Default constructor.
+	 */
+	public User() {
+		// NOOP
+	}
+
+	/**
+	 * Constructor from all data.
+	 *
+	 * @param id       The id
+	 * @param username The user name
+	 */
+	public User(String id, String username) {
+		this.id = id;
+		this.username = username;
+	}
+
 	public String getId() {
 		return id;
 	}

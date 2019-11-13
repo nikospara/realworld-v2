@@ -3,6 +3,7 @@ package realworld.article.model;
 import java.util.Set;
 
 import org.immutables.value.Value;
+import realworld.NameAndId;
 import realworld.article.model.ArticleBase;
 
 /**
@@ -30,9 +31,9 @@ public interface ArticleSearchResult {
 	int getFavoritesCount();
 
 	/**
-	 * Get the author id.
+	 * Get the author name and id.
 	 *
-	 * @return The author id
+	 * @return The author name and id
 	 */
-	String getAuthorId();
+	NameAndId getAuthor();
 }

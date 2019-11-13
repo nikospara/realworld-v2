@@ -59,6 +59,16 @@ class ArticleCombinedFullDataDtoAssertions {
 		return this;
 	}
 
+	ArticleCombinedFullDataDtoAssertions assertAuthorName(String expected) {
+		assertEquals(expected, data.getJsonObject("author").getString("name"));
+		return this;
+	}
+
+	ArticleCombinedFullDataDtoAssertions assertAuthorHref(String expected) {
+		assertEquals(expected, data.getJsonObject("author").getString("href"));
+		return this;
+	}
+
 	ArticleCombinedFullDataDtoAssertions assertTagList(String... tags) {
 		JsonArray jsonTagList = data.getJsonArray("tagList");
 		assertEquals(new HashSet<>(Arrays.asList(tags)), jsonTagList.getValuesAs(JsonString.class).stream().map(JsonString::getString).collect(toSet()));

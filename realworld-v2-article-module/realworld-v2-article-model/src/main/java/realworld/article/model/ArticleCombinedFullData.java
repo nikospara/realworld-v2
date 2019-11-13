@@ -2,6 +2,8 @@ package realworld.article.model;
 
 import java.util.Set;
 
+import realworld.NameAndId;
+
 /**
  * Article full data.
  */
@@ -17,7 +19,7 @@ public class ArticleCombinedFullData {
 
 	private int favoritesCount;
 
-	private String authorId;
+	private NameAndId author;
 
 	/**
 	 * Get the main article data.
@@ -75,15 +77,20 @@ public class ArticleCombinedFullData {
 	}
 
 	/**
-	 * Get the author id.
+	 * Get the author.
 	 *
-	 * @return The author id
+	 * @return The author name and id
 	 */
-	public String getAuthorId() {
-		return authorId;
+	public NameAndId getAuthor() {
+		return author;
 	}
 
-	public void setAuthorId(String authorId) {
-		this.authorId = authorId;
+	/**
+	 * Set the author.
+	 *
+	 * @param author The author name and id
+	 */
+	public void setAuthor(NameAndId author) {
+		this.author = author;
 	}
 }

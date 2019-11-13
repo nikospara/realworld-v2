@@ -18,6 +18,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import realworld.EntityDoesNotExistException;
+import realworld.NameAndId;
 import realworld.SearchResult;
 import realworld.article.dao.ArticleDao;
 import realworld.article.model.ArticleBase;
@@ -92,7 +93,7 @@ public class ArticleDaoImpl implements ArticleDao {
 			Article a = (Article) res[0];
 			ArticleCombinedFullData result = new ArticleCombinedFullData();
 			result.setArticle(fromArticle(a));
-			result.setAuthorId(a.getAuthorId());
+			result.setAuthor(new NameAndId((String) res[4], a.getAuthorId()));
 			result.setFavorited((Boolean) res[1]);
 			result.setFavoritesCount(((Long) res[2]).intValue());
 			result.setBody((String) res[3]);
@@ -132,9 +133,19 @@ public class ArticleDaoImpl implements ArticleDao {
 				article,
 				favoritedSubquery(cb, query, article, userId),
 				favoritesCountSubquery(cb, query, article),
-				bodySubquery(cb, query, article)
+				bodySubquery(cb, query, article),
+				authorNameSubquery(cb, query, article)
 		);
 		return query;
+	}
+
+	private Expression<String> authorNameSubquery(CriteriaBuilder cb, CriteriaQuery<?> query, Root<Article> article) {
+		Subquery<String> subquery = query.subquery(String.class);
+		Root<User> user = subquery.from(User.class);
+		subquery
+				.select(user.get(User_.username))
+				.where(cb.equal(user.get(User_.id), article.get(Article_.authorId)));
+		return cb.trim(subquery);
 	}
 
 	private Expression<String> bodySubquery(CriteriaBuilder cb, CriteriaQuery<?> query, Root<Article> article) {
@@ -202,7 +213,8 @@ public class ArticleDaoImpl implements ArticleDao {
 		query.multiselect(
 				articleRoot,
 				favoritedSubquery(cb, query, articleRoot, userId),
-				favoritesCountSubquery(cb, query, articleRoot)
+				favoritesCountSubquery(cb, query, articleRoot),
+				authorNameSubquery(cb, query, articleRoot)
 		);
 
 		var results = em.createQuery(query)
@@ -255,11 +267,12 @@ public class ArticleDaoImpl implements ArticleDao {
 		Article article = (Article) result[0];
 		boolean isFavorited = (Boolean) result[1];
 		int favoritesCount = ((Long) result[2]).intValue();
+		String authorName = (String) result[3];
 		return ImmutableArticleSearchResult.builder()
 				.article(fromArticle(article))
 				.isFavorited(isFavorited)
 				.favoritesCount(favoritesCount)
-				.authorId(article.getAuthorId())
+				.author(new NameAndId(authorName, article.getAuthorId()))
 				.build();
 	}
 }

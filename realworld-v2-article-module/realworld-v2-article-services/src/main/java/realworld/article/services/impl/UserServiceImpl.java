@@ -12,7 +12,9 @@ import realworld.article.services.UserService;
 /**
  * Implementation of the limited user service for the article module.
  * <p>
- * Despite the fact that this implementation looks naive - it simply delegates to the DAO, it accomplishes 2 tasks:
+ * Despite the fact that this implementation looks naive - it simply delegates to the DAO - it is responsible for 2
+ * distinct tasks:
+ *
  * <ol>
  *     <li>Transaction management</li>
  *     <li>Security management</li>

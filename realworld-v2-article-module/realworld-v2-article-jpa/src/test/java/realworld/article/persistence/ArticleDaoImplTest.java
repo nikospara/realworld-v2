@@ -33,6 +33,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
 import realworld.EntityDoesNotExistException;
+import realworld.NameAndId;
 import realworld.SearchResult;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
@@ -52,6 +53,7 @@ import realworld.test.liquibase.LiquibaseExtension;
 public class ArticleDaoImplTest {
 
 	private static final String AUTHOR_ID = UUID.randomUUID().toString();
+	private static final String AUTHOR_NAME = "AUTHOR NAME";
 	private static final LocalDateTime CREATED_AT = LocalDateTime.now().minus(1, ChronoUnit.DAYS);
 	private static final LocalDateTime UPDATED_AT = LocalDateTime.now();
 	private static final String DESCRIPTION = "Description";
@@ -81,6 +83,8 @@ public class ArticleDaoImplTest {
 		em.getTransaction().begin();
 		Tag tag1 = new Tag("tag1");
 		em.persist(tag1);
+		User user = new User(AUTHOR_ID, AUTHOR_NAME);
+		em.persist(user);
 		em.flush();
 		ArticleCreationData creationData = mock(ArticleCreationData.class);
 		when(creationData.getAuthorId()).thenReturn(AUTHOR_ID);
@@ -119,7 +123,8 @@ public class ArticleDaoImplTest {
 	void testFindFullDataBySlugForAnonymousUser() {
 		ArticleCombinedFullData res = sut.findFullDataBySlug(null, SLUG);
 		assertNotNull(res.getArticle().getId());
-		assertEquals(AUTHOR_ID, res.getAuthorId());
+		assertEquals(AUTHOR_ID, res.getAuthor().getId());
+		assertEquals(AUTHOR_NAME, res.getAuthor().getName());
 		assertEquals(CREATED_AT, res.getArticle().getCreatedAt());
 		assertEquals(DESCRIPTION, res.getArticle().getDescription());
 		assertEquals(SLUG, res.getArticle().getSlug());
@@ -133,7 +138,8 @@ public class ArticleDaoImplTest {
 	void testFindFullDataBySlugForUser() {
 		ArticleCombinedFullData res = sut.findFullDataBySlug(UUID.randomUUID().toString(), SLUG);
 		assertNotNull(res.getArticle().getId());
-		assertEquals(AUTHOR_ID, res.getAuthorId());
+		assertEquals(AUTHOR_ID, res.getAuthor().getId());
+		assertEquals(AUTHOR_NAME, res.getAuthor().getName());
 		assertEquals(CREATED_AT, res.getArticle().getCreatedAt());
 		assertEquals(DESCRIPTION, res.getArticle().getDescription());
 		assertEquals(SLUG, res.getArticle().getSlug());
@@ -167,8 +173,8 @@ public class ArticleDaoImplTest {
 	void testFind() {
 		em.getTransaction().begin();
 		Article a1 = createArticle("ar1", AUTHOR_ID);
-		Article a2 = createArticle("ar2", "b", "tag1");
-		Article a3 = createArticle("ar3", "c", "tag2");
+		Article a2 = createArticle("ar2", "y", "tag1");
+		Article a3 = createArticle("ar3", "z", "tag2");
 		favoriteArticle(a1, "u");
 		favoriteArticle(a3, "u");
 		em.getTransaction().commit();
@@ -177,12 +183,14 @@ public class ArticleDaoImplTest {
 		SearchResult<ArticleSearchResult> r1 = sut.find(null, c1);
 		assertNotNull(r1);
 		assertEquals(2L, r1.getCount());
-		assertEquals(Arrays.asList(a2.getSlug(), SLUG), sortedSlugs(r1));
+		assertEquals(Arrays.asList(AUTHOR_ID, "y"), sortedAuthorIds(r1));
+		assertEquals(AUTHOR_NAME, r1.getResults().stream().map(ArticleSearchResult::getAuthor).filter(a -> a.getId().equals(AUTHOR_ID)).map(NameAndId::getName).findFirst().get());
 
 		ArticleSearchCriteria c2 = ImmutableArticleSearchCriteria.builder().favoritedBy("u").offset(0).limit(10).build();
 		SearchResult<ArticleSearchResult> r2 = sut.find(null, c2);
 		assertEquals(2L, r2.getCount());
 		assertEquals(Arrays.asList(a1.getSlug(), a3.getSlug()), sortedSlugs(r2));
+		assertEquals(Arrays.asList(AUTHOR_ID, "z"), sortedAuthorIds(r2));
 
 		ArticleSearchCriteria c2limited = ImmutableArticleSearchCriteria.builder().favoritedBy("u").offset(0).limit(1).build();
 		SearchResult<ArticleSearchResult> r2limited = sut.find(null, c2limited);
@@ -228,5 +236,9 @@ public class ArticleDaoImplTest {
 
 	private List<String> sortedSlugs(SearchResult<ArticleSearchResult> r) {
 		return r.getResults().stream().map(ArticleSearchResult::getArticle).map(ArticleBase::getSlug).sorted().collect(toList());
+	}
+
+	private List<String> sortedAuthorIds(SearchResult<ArticleSearchResult> r) {
+		return r.getResults().stream().map(ArticleSearchResult::getAuthor).map(NameAndId::getId).sorted().collect(toList());
 	}
 }

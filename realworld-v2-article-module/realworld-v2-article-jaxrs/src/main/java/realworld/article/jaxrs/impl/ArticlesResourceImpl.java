@@ -8,6 +8,7 @@ import javax.ws.rs.core.UriInfo;
 
 import java.util.stream.Collectors;
 
+import realworld.NameAndId;
 import realworld.ResourceLink;
 import realworld.SearchResult;
 import realworld.article.jaxrs.ArticleCombinedFullDataDto;
@@ -28,6 +29,9 @@ import realworld.article.model.ImmutableArticleSearchCriteria;
 public class ArticlesResourceImpl implements ArticlesResource {
 
 	@Inject
+	ArticleRestLayerConfig config;
+
+	@Inject
 	ArticleService articleService;
 
 	@Context
@@ -44,7 +48,7 @@ public class ArticlesResourceImpl implements ArticlesResource {
 		ArticleCombinedFullData data = articleService.findFullDataBySlug(slug);
 		ArticleCombinedFullDataDto result = new ArticleCombinedFullDataDto();
 		result.setArticle(data.getArticle());
-		result.setAuthor(new ResourceLink("TODO", "TODO"));
+		result.setAuthor(linkToAuthor(data.getAuthor()));
 		result.setBody(data.getBody());
 		result.setFavorited(data.isFavorited());
 		result.setFavoritesCount(data.getFavoritesCount());
@@ -65,12 +69,16 @@ public class ArticlesResourceImpl implements ArticlesResource {
 		return new SearchResult<>(searchResult.getCount(), searchResult.getResults().stream().map(a -> {
 			ArticleSearchResultDto d = new ArticleSearchResultDto();
 			d.setArticle(a.getArticle());
-			d.setAuthor(new ResourceLink("TODO", "TODO"));
+			d.setAuthor(linkToAuthor(a.getAuthor()));
 			d.setTagList(a.getTagList());
 			d.setFavorited(a.isFavorited());
 			d.setFavoritesCount(a.getFavoritesCount());
 			d.setHref(uriInfo.getRequestUriBuilder().path(ArticlesResource.class, "get").build(a.getArticle().getSlug()).toString());
 			return d;
 		}).collect(Collectors.toList()));
+	}
+
+	private ResourceLink linkToAuthor(NameAndId author) {
+		return new ResourceLink(author.getName(), uriInfo.getRequestUriBuilder().uri(config.getUserUrlTemplate()).build(author.getName()).toString());
 	}
 }

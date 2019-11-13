@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import realworld.NameAndId;
 import realworld.SearchResult;
 import realworld.SimpleValidationException;
 import realworld.article.dao.ArticleDao;
@@ -52,6 +53,7 @@ public class ArticleServiceImplTest {
 
 	private static final String ARTICLE_ID = UUID.randomUUID().toString();
 	private static final String AUTHOR_ID = UUID.randomUUID().toString();
+	private static final String AUTHOR_NAME = "AUTHOR NAME";
 	private static final String USER_ID = UUID.randomUUID().toString();
 	private static final LocalDateTime CREATED_AT = LocalDateTime.now().minus(1, ChronoUnit.DAYS);
 	private static final LocalDateTime UPDATED_AT = LocalDateTime.now();
@@ -155,7 +157,7 @@ public class ArticleServiceImplTest {
 	private ArticleCombinedFullData makeArticleCombinedFullData() {
 		ArticleCombinedFullData d = new ArticleCombinedFullData();
 		d.setArticle(ImmutableArticleBase.builder().id(ARTICLE_ID).createdAt(CREATED_AT).description(DESCRIPTION).slug(SLUG).title(TITLE).updatedAt(UPDATED_AT).build());
-		d.setAuthorId(AUTHOR_ID);
+		d.setAuthor(new NameAndId(AUTHOR_NAME, AUTHOR_ID));
 		return d;
 	}
 
