@@ -11,7 +11,7 @@
 	<artifactId>realworld-v2-docker-kafka</artifactId>
 
 	<properties>
-		<version.kafka>2.3.0</version.kafka>
+		<version.kafka>2.3.1</version.kafka>
 		<version.kafka.scala>2.12</version.kafka.scala>
 	</properties>
 
@@ -91,10 +91,10 @@
 								</goals>
 								<configuration>
 									<source>
-										def downloadInfo = new groovy.json.JsonSlurper().parse(new FileReader("target/download-info.json"))
+										def downloadInfo = new groovy.json.JsonSlurper().parse(new FileReader(project.build.directory + File.separator + "download-info.json"));
 										def prefDownloadUrl = downloadInfo.preferred + downloadInfo.path_info;
-										log.info("Preferred download URL, as computed from groovy-maven-plugin: " + prefDownloadUrl)
-										project.properties['kafka.download.url'] = prefDownloadUrl
+										log.info("Preferred download URL, as computed from groovy-maven-plugin: " + prefDownloadUrl);
+										project.properties['kafka.download.url'] = prefDownloadUrl;
 									</source>
 								</configuration>
 							</execution>

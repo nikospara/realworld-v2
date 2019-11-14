@@ -68,7 +68,7 @@
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>https://downloads.jboss.org/keycloak/6.0.1/keycloak-6.0.1.tar.gz</url>
+									<url>https://downloads.jboss.org/keycloak/${version.keycloak}/keycloak-${version.keycloak}.tar.gz</url>
 								</configuration>
 							</execution>
 						</executions>
@@ -107,6 +107,7 @@
 												<dockerFile>Dockerfile</dockerFile>
 												<args>
 													<project_version>${project.version}</project_version>
+													<keycloak_version>${version.keycloak}</keycloak_version>
 												</args>
 											</build>
 										</image>

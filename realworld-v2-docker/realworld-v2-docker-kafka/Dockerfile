@@ -1,6 +1,6 @@
 FROM adoptopenjdk/openjdk11:alpine-jre
 
-ARG kafka_version=2.3.0
+ARG kafka_version=2.3.1
 ARG scala_version=2.12
 
 ADD target/kafka_${scala_version}-${kafka_version}.tgz /opt

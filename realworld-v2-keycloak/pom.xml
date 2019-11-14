@@ -19,10 +19,6 @@
 		<module>realworld-v2-keycloak-event-listener</module>
 	</modules>
 
-	<properties>
-		<version.keycloak>6.0.1</version.keycloak>
-	</properties>
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>

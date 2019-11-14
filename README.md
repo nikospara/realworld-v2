@@ -25,6 +25,7 @@ will it activate; e.g. `dev` will activate the `data-dev` context
 - `test-h2`: This will activate the DAO tests, using an in-memory H2 database
 - `article-quarkus-dev`, `user-quarkus-dev`: Activate `quarkus:dev` for the respective microservice; no not use together in the same command
   (naturally there is no problem running them in parallel, as long as they run from different shells)
+- `docker`: Activating the Docker image build
 
 ## Building
 
@@ -74,7 +75,34 @@ You can omit `test-h2` to skip the DB tests.
 
 ### Building the Docker image
 
-**TODO**
+Building the Docker images occurs during the `package` phase.
+It is not active by default; activate it with the `docker` profile.
+I.e. the Maven command line should be amended as follows:
+
+```shell
+mvn ... package -Pdocker,...
+```
+
+E.g.
+
+```shell
+mvn clean package -Pdocker,user-h2,article-h2,test-h2,realworld-v2-local-h2
+```
+
+#### Docker compose
+
+There is a `docker-compose` file under `realworld-v2-docker/docker-compose` that can be used to start the collaborating
+applications: Zookeeper, Kafka and Keycloak with a predefined domain.
+Make sure the images are built first!
+To run:
+
+```shell
+cd realworld-v2-docker/docker-compose
+docker-compose -p rwl up -d # the first time
+docker-compose -p rwl start # to start
+docker-compose -p rwl stop  # to stop
+docker-compose -p rwl down  # to remove the containers
+```
 
 ## Launching
 
