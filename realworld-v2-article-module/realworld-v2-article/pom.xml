@@ -113,6 +113,7 @@
 				</dependency>
 			</dependencies>
 		</profile>
+
 		<profile>
 			<id>article-quarkus-dev</id>
 			<build>
@@ -131,6 +132,87 @@
 						<configuration>
 							<debug>5205</debug>
 						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>docker</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>com.googlecode.maven-download-plugin</groupId>
+						<artifactId>download-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>download-liquibase</id>
+								<phase>package</phase>
+								<goals>
+									<goal>wget</goal>
+								</goals>
+								<configuration>
+									<url>https://github.com/liquibase/liquibase/releases/download/v${version.liquibase}/liquibase-${version.liquibase}.tar.gz</url>
+									<outputFileName>liquibase.tar.gz</outputFileName>
+								</configuration>
+							</execution>
+							<execution>
+								<id>download-db-driver</id>
+								<phase>package</phase>
+								<goals>
+									<goal>artifact</goal>
+								</goals>
+								<configuration>
+									<groupId>${database.article.driver.groupId}</groupId>
+									<artifactId>${database.article.driver.artifactId}</artifactId>
+									<version>${database.article.driver.version}</version>
+									<outputFileName>dbdriver.jar</outputFileName>
+								</configuration>
+							</execution>
+							<execution>
+								<id>download-migrations</id>
+								<phase>package</phase>
+								<goals>
+									<goal>artifact</goal>
+								</goals>
+								<configuration>
+									<groupId>realworld.example</groupId>
+									<artifactId>realworld-v2-article-migrations</artifactId>
+									<version>${project.version}</version>
+									<outputFileName>migrations.jar</outputFileName>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<extensions>true</extensions>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>build</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>rwlv2-article</name>
+											<build>
+												<contextDir>${project.basedir}</contextDir>
+												<dockerFile>src/main/docker/Dockerfile</dockerFile>
+												<args>
+													<dbusername>${database.article.username}</dbusername>
+													<dbpassword>${database.article.password}</dbpassword>
+													<dburl>${database.article.url}</dburl>
+													<dbdriver>${database.article.driver}</dbdriver>
+												</args>
+											</build>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>

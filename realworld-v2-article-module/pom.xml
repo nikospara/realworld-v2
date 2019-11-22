@@ -32,6 +32,9 @@
 			<properties>
 				<database.article.driver>org.h2.Driver</database.article.driver>
 				<database.article.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.article.hibernate.dialect>
+				<database.article.driver.groupId>com.h2database</database.article.driver.groupId>
+				<database.article.driver.artifactId>h2</database.article.driver.artifactId>
+				<database.article.driver.version>${version.h2}</database.article.driver.version>
 			</properties>
 
 			<dependencyManagement>

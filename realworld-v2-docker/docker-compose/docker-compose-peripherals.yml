@@ -17,11 +17,3 @@ services:
     ports:
       - "8580:8580"
       - "10499:10499"
-  user:
-    image: rwlv2-user:latest
-    ports:
-      - "8180:8180/tcp"
-  article:
-    image: rwlv2-article:latest
-    ports:
-      - "8280:8280/tcp"

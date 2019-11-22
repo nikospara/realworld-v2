@@ -35,7 +35,7 @@
 		<version.jaxb.impl>2.3.0.1</version.jaxb.impl>
 		<version.junit.jupiter>5.5.2</version.junit.jupiter>
 		<version.keycloak>7.0.1</version.keycloak>
-		<version.liquibase>3.8.0</version.liquibase>
+		<version.liquibase>3.8.1</version.liquibase>
 		<version.mockito>3.1.0</version.mockito>
 		<version.quarkus>1.0.0.CR2</version.quarkus>
 		<version.resteasy-test>4.4.1.Final</version.resteasy-test><!-- Defined in quarkus-bom, resteasy.version -->
@@ -265,6 +265,16 @@
 		
 		<pluginManagement>
 			<plugins>
+				<plugin>
+					<groupId>com.googlecode.maven-download-plugin</groupId>
+					<artifactId>download-maven-plugin</artifactId>
+					<version>1.4.2</version>
+				</plugin>
+				<plugin>
+					<groupId>io.fabric8</groupId>
+					<artifactId>docker-maven-plugin</artifactId>
+					<version>0.31.0</version>
+				</plugin>
 				<plugin>
 					<groupId>io.quarkus</groupId>
 					<artifactId>quarkus-maven-plugin</artifactId>
