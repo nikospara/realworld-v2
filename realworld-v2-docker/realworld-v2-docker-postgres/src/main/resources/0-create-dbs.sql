@@ -1,0 +1,17 @@
+-- USER
+CREATE USER rwlv2_user WITH PASSWORD 'rwlv2_user';
+CREATE SCHEMA AUTHORIZATION rwlv2_user;
+ALTER USER rwlv2_user SET search_path = rwlv2_user, public;
+GRANT CONNECT ON DATABASE rwlv2 TO rwlv2_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA rwlv2_user TO rwlv2_user;
+ALTER SCHEMA rwlv2_user OWNER TO rwlv2_user;
+ALTER DEFAULT PRIVILEGES FOR USER postgres IN SCHEMA rwlv2_user GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO rwlv2_user;
+
+-- ARTICLE
+CREATE USER rwlv2_article WITH PASSWORD 'rwlv2_article';
+CREATE SCHEMA AUTHORIZATION rwlv2_article;
+ALTER USER rwlv2_article SET search_path = rwlv2_article, public;
+GRANT CONNECT ON DATABASE rwlv2 TO rwlv2_article;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA rwlv2_article TO rwlv2_article;
+ALTER SCHEMA rwlv2_article OWNER TO rwlv2_article;
+ALTER DEFAULT PRIVILEGES FOR USER postgres IN SCHEMA rwlv2_article GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO rwlv2_article;

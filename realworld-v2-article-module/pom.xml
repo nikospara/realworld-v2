@@ -47,5 +47,27 @@
 				</dependencies>
 			</dependencyManagement>
 		</profile>
+
+		<profile>
+			<id>article-postgres</id>
+
+			<properties>
+				<database.article.driver>org.postgresql.Driver</database.article.driver>
+				<database.article.hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</database.article.hibernate.dialect>
+				<database.article.driver.groupId>org.postgresql</database.article.driver.groupId>
+				<database.article.driver.artifactId>postgresql</database.article.driver.artifactId>
+				<database.article.driver.version>${version.postgres}</database.article.driver.version>
+			</properties>
+
+			<dependencyManagement>
+				<dependencies>
+					<dependency>
+						<groupId>org.postgresql</groupId>
+						<artifactId>postgresql</artifactId>
+						<version>${version.postgres}</version>
+					</dependency>
+				</dependencies>
+			</dependencyManagement>
+		</profile>
 	</profiles>
 </project>

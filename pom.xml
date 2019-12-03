@@ -37,6 +37,7 @@
 		<version.keycloak>7.0.1</version.keycloak>
 		<version.liquibase>3.8.1</version.liquibase>
 		<version.mockito>3.1.0</version.mockito>
+		<version.postgres>42.2.8</version.postgres>
 		<version.quarkus>1.0.1.Final</version.quarkus>
 		<version.resteasy-test>4.4.1.Final</version.resteasy-test><!-- Defined in quarkus-bom, resteasy.version -->
 	</properties>
