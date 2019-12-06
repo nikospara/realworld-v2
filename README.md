@@ -27,6 +27,18 @@ will it activate; e.g. `dev` will activate the `data-dev` context
   (naturally there is no problem running them in parallel, as long as they run from different shells)
 - `docker`: Activating the Docker image build
 
+### Updating dependencies
+
+The versions of all dependencies are controlled by Maven properties in the form `version.<uniqueId>`,
+where `<uniqueId>` is a unique identifier for the dependency, preferably the artifact id, but anything
+unique and sufficiently descriptive will do. As such, detecting updates is as simple as running:
+
+```shell
+mvn versions:display-property-updates
+```
+
+If a dependency is left behind for a reason, please add a comment in the parent pom.
+
 ## Building
 
 ### Creating/updating the DB
