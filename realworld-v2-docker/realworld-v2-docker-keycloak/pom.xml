@@ -71,6 +71,19 @@
 									<url>https://downloads.jboss.org/keycloak/${version.keycloak}/keycloak-${version.keycloak}.tar.gz</url>
 								</configuration>
 							</execution>
+							<execution>
+								<id>download-db-driver</id>
+								<phase>package</phase>
+								<goals>
+									<goal>artifact</goal>
+								</goals>
+								<configuration>
+									<groupId>org.postgresql</groupId>
+									<artifactId>postgresql</artifactId>
+									<version>${version.postgres}</version>
+									<outputFileName>dbdriver.jar</outputFileName>
+								</configuration>
+							</execution>
 						</executions>
 					</plugin>
 					<plugin>
