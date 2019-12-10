@@ -4,6 +4,9 @@ services:
     image: 'zookeeper'
     ports:
       - "2181:2181"
+    volumes:
+    - data_zookeeper:/data
+    - data_zookeeperlog:/datalog
   kafka:
     image: 'rwlv2-kafka:latest'
     depends_on:
@@ -12,6 +15,7 @@ services:
       - "9094:9094/tcp"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - data_kafka:/var/kafka-logs
   keycloak:
     image: 'rwlv2-keycloak:latest'
     ports:
@@ -26,6 +30,8 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
     - "5432:5432"
+    volumes:
+    - data_db:/var/lib/postgresql/data
   user:
     image: rwlv2-user:latest
     depends_on:
@@ -38,3 +44,9 @@ services:
       - postgres
     ports:
       - "8280:8280/tcp"
+
+volumes:
+  data_db:
+  data_kafka:
+  data_zookeeper:
+  data_zookeeperlog:

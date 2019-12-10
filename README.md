@@ -110,10 +110,11 @@ To run:
 
 ```shell
 cd realworld-v2-docker/docker-compose
-docker-compose -p rwl up -d # the first time
-docker-compose -p rwl start # to start
-docker-compose -p rwl stop  # to stop
-docker-compose -p rwl down  # to remove the containers
+docker-compose -p rwl up -d    # the first time
+docker-compose -p rwl start    # to start
+docker-compose -p rwl stop     # to stop
+docker-compose -p rwl down     # to remove the containers, without removing the persistent volumes
+docker-compose -p rwl down -v  # to remove the containers, also removing the persistent volumes
 ```
 
 ## Launching
