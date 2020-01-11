@@ -106,15 +106,23 @@ mvn clean package -Pdocker,user-h2,article-h2,test-h2,realworld-v2-local-h2
 There is a `docker-compose` file under `realworld-v2-docker/docker-compose` that can be used to start the collaborating
 applications: Zookeeper, Kafka and Keycloak with a predefined domain.
 Make sure the images are built first!
-To run:
+
+There are several flavors of the docker-compose file:
+
+- `docker-compose.yml`: Start everything, using embedded H2
+- `docker-compose-peripherals.yml`: Start only the peripheral applications (e.g. Kafka, Keycloak), using embedded H2
+- `docker-compose-postgres.yml`: Start everything, using a single separate Postgres instance as database
+- `docker-compose-postgres-peripherals.yml`: Start only the peripheral applications (e.g. Kafka, Keycloak), using a single separate Postgres instance as database
+
+To run e.g. the postgres/full flavor:
 
 ```shell
 cd realworld-v2-docker/docker-compose
-docker-compose -p rwl up -d    # the first time
-docker-compose -p rwl start    # to start
-docker-compose -p rwl stop     # to stop
-docker-compose -p rwl down     # to remove the containers, without removing the persistent volumes
-docker-compose -p rwl down -v  # to remove the containers, also removing the persistent volumes
+docker-compose -f docker-compose-postgres.yml -p rwl up -d    # the first time
+docker-compose -f docker-compose-postgres.yml -p rwl start    # to start
+docker-compose -f docker-compose-postgres.yml -p rwl stop     # to stop
+docker-compose -f docker-compose-postgres.yml -p rwl down     # to remove the containers, without removing the persistent volumes
+docker-compose -f docker-compose-postgres.yml -p rwl down -v  # to remove the containers, also removing the persistent volumes
 ```
 
 ## Launching

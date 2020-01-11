@@ -14,6 +14,10 @@
 
 	<packaging>war</packaging>
 
+	<properties>
+		<jvm.args>-Dquarkus.datasource.url=${database.user.url} -Dquarkus.datasource.username=${database.user.username} -Dquarkus.datasource.password=${database.user.password}</jvm.args>
+	</properties>
+
 	<dependencies>
 		<!-- QUARKUS -->
 		<dependency>
@@ -80,6 +84,11 @@
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/docker</directory>
+				<filtering>true</filtering>
+				<targetPath>../docker</targetPath>
 			</resource>
 		</resources>
 

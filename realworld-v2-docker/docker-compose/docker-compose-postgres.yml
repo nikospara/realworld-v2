@@ -38,6 +38,8 @@ services:
       - postgres
     ports:
       - "8180:8180/tcp"
+    env_file:
+      - env-user
   article:
     image: rwlv2-article:latest
     depends_on:
