@@ -1,0 +1,6 @@
+# This can be used to produce the env file utilized from docker-compose during Maven build.
+# This file is for the container of the article application.
+
+QUARKUS_DATASOURCE_URL=${database.article.url}
+QUARKUS_DATASOURCE_USERNAME=${database.article.username}
+QUARKUS_DATASOURCE_PASSWORD=${database.article.password}

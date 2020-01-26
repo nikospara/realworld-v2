@@ -46,6 +46,8 @@ services:
       - postgres
     ports:
       - "8280:8280/tcp"
+    env_file:
+      - env-article
 
 volumes:
   data_db:
