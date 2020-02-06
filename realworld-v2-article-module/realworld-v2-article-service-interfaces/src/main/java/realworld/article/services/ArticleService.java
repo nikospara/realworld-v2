@@ -8,6 +8,7 @@ import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ArticleUpdateData;
 
 /**
  * Article services.
@@ -20,6 +21,15 @@ public interface ArticleService {
 	 * @param creationData The article creation data
 	 */
 	ArticleBase create(ArticleCreationData creationData);
+
+	/**
+	 * Update an article.
+	 *
+	 * @param slug       The slug to identify which article to update; if {@code null}, use the id (permitted only to superuser)
+	 * @param updateData The article update data
+	 * @return The id of the updated article
+	 */
+	String update(String slug, ArticleUpdateData updateData);
 
 	/**
 	 * Retrieve the full article data by slug.

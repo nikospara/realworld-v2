@@ -3,6 +3,7 @@ package realworld.article.jaxrs.impl;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -14,6 +15,7 @@ import realworld.SearchResult;
 import realworld.article.jaxrs.ArticleCombinedFullDataDto;
 import realworld.article.jaxrs.ArticleCreationParam;
 import realworld.article.jaxrs.ArticleSearchResultDto;
+import realworld.article.jaxrs.ArticleUpdateParam;
 import realworld.article.jaxrs.ArticlesResource;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
@@ -41,6 +43,12 @@ public class ArticlesResourceImpl implements ArticlesResource {
 	public Response create(ArticleCreationParam creationParam) {
 		ArticleBase a = articleService.create(creationParam);
 		return Response.created(uriInfo.getRequestUriBuilder().path(ArticlesResource.class, "get").build(a.getSlug())).build();
+	}
+
+	@Override
+	public Response update(String slug, ArticleUpdateParam updateParam) {
+		articleService.update(slug, updateParam);
+		return Response.noContent().header(HttpHeaders.LOCATION, uriInfo.getRequestUriBuilder().path(ArticlesResource.class, "get").build(slug)).build();
 	}
 
 	@Override

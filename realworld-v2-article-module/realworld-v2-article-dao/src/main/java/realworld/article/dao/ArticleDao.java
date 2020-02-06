@@ -9,6 +9,7 @@ import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ArticleUpdateData;
 
 /**
  * DAO interface for the Article entity.
@@ -32,6 +33,16 @@ public interface ArticleDao {
 	 * @return The id of the new article
 	 */
 	String create(ArticleCreationData creationData, String slug, LocalDateTime creationDate);
+
+	/**
+	 * Create a new article (and related entities).
+	 *
+	 * @param slug       The slug to use
+	 * @param updateData The article update data
+	 * @param updateTime The update time to set
+	 * @return The id of the updated article
+	 */
+	String update(String slug, ArticleUpdateData updateData, LocalDateTime updateTime);
 
 	/**
 	 * Retrieve the full article data by slug.

@@ -2,6 +2,7 @@ package realworld.article.jaxrs;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -34,6 +35,21 @@ public interface ArticlesResource {
 	Response create(
 			@ApiParam(value = "Information required to create an article.", required = true)
 			ArticleCreationParam creationParam
+	);
+
+	@PUT
+	@Path("/{slug}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="Update article.", tags=TAG)
+	@ApiResponses(
+			@ApiResponse(code=204, message="Successfully updated", responseHeaders=@ResponseHeader(name="Location", description="The location of the newly created article"))
+	)
+	Response update(
+			@ApiParam(value = "The slug of the article to put.", required = true)
+			@PathParam("slug")
+					String slug,
+			@ApiParam(value = "Information required to update an article.", required = true)
+					ArticleUpdateParam updateParam
 	);
 
 	@GET

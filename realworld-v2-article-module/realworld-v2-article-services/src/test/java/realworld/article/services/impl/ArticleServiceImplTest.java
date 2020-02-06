@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
@@ -21,6 +22,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -38,6 +40,7 @@ import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ArticleUpdateData;
 import realworld.article.model.ImmutableArticleBase;
 import realworld.article.model.ImmutableArticleSearchCriteria;
 import realworld.authentication.AuthenticationContext;
@@ -62,6 +65,7 @@ public class ArticleServiceImplTest {
 	private static final String TITLE = "Title";
 	private static final String BODY = "Body";
 	private static final Set<String> TAG_LIST = Collections.singleton("tag1");
+	private static final LocalDateTime NOW = LocalDateTime.now();
 
 	@Produces @Mock
 	private ArticleServiceAuthorizer authorizer;
@@ -80,6 +84,18 @@ public class ArticleServiceImplTest {
 
 	@Inject
 	private ArticleServiceImpl sut;
+
+	@Test
+	void testCreateWithNullData() {
+		try {
+			sut.create(null);
+			fail("should fail on null creation data");
+		}
+		catch( NullPointerException expected ) {
+			// expected
+		}
+		verifyNoInteractions(authorizer);
+	}
 
 	@Test
 	void testCreateWithDuplicateSlug() {
@@ -110,6 +126,31 @@ public class ArticleServiceImplTest {
 		assertNull(result.getUpdatedAt());
 		verify(articleDao).create(eq(creationData), eq(SLUG), eq(CREATED_AT));
 		verify(authorizer).create(eq(creationData), any());
+	}
+
+	@Test
+	void testUpdateWithNullData() {
+		try {
+			sut.update(SLUG, null);
+			fail("should fail on null update data");
+		}
+		catch( NullPointerException expected ) {
+			// expected
+		}
+		verifyNoInteractions(authorizer);
+	}
+
+	@Test
+	void testUpdate() {
+		ArticleUpdateData updateData = mock(ArticleUpdateData.class);
+		when(dateTimeService.getNow()).thenReturn(NOW);
+		when(articleDao.update(eq(SLUG), any(), eq(NOW))).thenReturn(ARTICLE_ID);
+		when(authorizer.update(eq(SLUG), any(), any())).thenAnswer(iom -> ((BiFunction<?,?,?>) iom.getArgument(2)).apply(iom.getArgument(0),iom.getArgument(1)));
+		String result = sut.update(SLUG, updateData);
+		assertEquals(ARTICLE_ID, result);
+		ArgumentCaptor<ArticleUpdateData> captor = ArgumentCaptor.forClass(ArticleUpdateData.class);
+		verify(articleDao).update(eq(SLUG), captor.capture(), eq(NOW));
+		assertSame(updateData, captor.getValue());
 	}
 
 	private ArticleCreationData prepareForCreation() {

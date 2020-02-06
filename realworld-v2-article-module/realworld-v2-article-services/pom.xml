@@ -63,6 +63,12 @@
 
 		<!-- TEST -->
 		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-testutils</artifactId>
+			<version>${project.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.jboss.weld</groupId>
 			<artifactId>weld-junit5</artifactId>
 		</dependency>

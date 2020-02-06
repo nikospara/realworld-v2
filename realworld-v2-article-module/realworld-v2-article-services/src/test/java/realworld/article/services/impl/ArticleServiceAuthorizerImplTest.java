@@ -1,17 +1,18 @@
 package realworld.article.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static realworld.authorization.AuthorizationAssertions.expectNotAuthenticatedException;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import java.util.UUID;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -25,6 +26,7 @@ import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ArticleUpdateData;
 import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.service.Authorization;
 
@@ -43,6 +45,8 @@ public class ArticleServiceAuthorizerImplTest {
 	private static final ArticleSearchCriteria FIND_CRITERIA = mock(ArticleSearchCriteria.class);
 	@SuppressWarnings("unchecked")
 	private static final SearchResult<ArticleSearchResult> FROM_FIND = mock(SearchResult.class);
+	private static final String SLUG = "SLUG";
+	private static final String FROM_UPDATE = "from update";
 
 	static {
 		when(ARTICLE_CREATION_DATA.getAuthorId()).thenReturn(AUTHOR_ID);
@@ -50,6 +54,9 @@ public class ArticleServiceAuthorizerImplTest {
 
 	@Produces @Mock
 	private Authorization authorization;
+
+	@Produces @Mock
+	private ArticleAuthorization articleAuthorization;
 
 	@Inject
 	private ArticleServiceAuthorizerImpl sut;
@@ -81,6 +88,7 @@ public class ArticleServiceAuthorizerImplTest {
 		ArticleCombinedFullData result = sut.findFullDataBySlug(SLUG_TO_FIND_COMBINED_DATA, mockDelegate);
 		assertSame(FROM_FIND_FULL_DATA_BY_SLUG, result);
 		verifyNoMoreInteractions(authorization);
+		verifyNoMoreInteractions(articleAuthorization);
 	}
 
 	@Test
@@ -91,15 +99,19 @@ public class ArticleServiceAuthorizerImplTest {
 		SearchResult<ArticleSearchResult> result = sut.find(FIND_CRITERIA, mockDelegate);
 		assertSame(FROM_FIND, result);
 		verifyNoMoreInteractions(authorization);
+		verifyNoMoreInteractions(articleAuthorization);
 	}
 
-	private void expectNotAuthenticatedException(Runnable f) {
-		try {
-			f.run();
-			fail("expected NotAuthenticatedException");
-		}
-		catch( NotAuthenticatedException expected ) {
-			// expected
-		}
+	@Test
+	void testUpdate() {
+		@SuppressWarnings("unchecked")
+		BiFunction<String, ArticleUpdateData, String> mockDelegate = mock(BiFunction.class);
+		ArticleUpdateData mockUpdateData = mock(ArticleUpdateData.class);
+		when(mockDelegate.apply(SLUG,mockUpdateData)).thenReturn(FROM_UPDATE);
+		String result = sut.update(SLUG, mockUpdateData, mockDelegate);
+		assertSame(FROM_UPDATE, result);
+		verify(articleAuthorization).authorizeUpdate(SLUG,mockUpdateData);
+		verifyNoMoreInteractions(authorization);
+		verifyNoMoreInteractions(articleAuthorization);
 	}
 }

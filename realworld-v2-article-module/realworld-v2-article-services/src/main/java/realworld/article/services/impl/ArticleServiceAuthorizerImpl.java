@@ -2,6 +2,7 @@ package realworld.article.services.impl;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import realworld.SearchResult;
@@ -10,6 +11,7 @@ import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ArticleUpdateData;
 import realworld.authorization.service.Authorization;
 
 /**
@@ -19,6 +21,8 @@ import realworld.authorization.service.Authorization;
 class ArticleServiceAuthorizerImpl implements ArticleServiceAuthorizer {
 
 	private Authorization authorization;
+
+	private ArticleAuthorization articleAuthorization;
 
 	/**
 	 * Default constructor for frameworks.
@@ -32,10 +36,12 @@ class ArticleServiceAuthorizerImpl implements ArticleServiceAuthorizer {
 	 * Constructor for injection.
 	 *
 	 * @param authorization The authorization
+	 * @param articleAuthorization The article authorization logic
 	 */
 	@Inject
-	public ArticleServiceAuthorizerImpl(Authorization authorization) {
+	public ArticleServiceAuthorizerImpl(Authorization authorization, ArticleAuthorization articleAuthorization) {
 		this.authorization = authorization;
+		this.articleAuthorization = articleAuthorization;
 	}
 
 	@Override
@@ -52,5 +58,11 @@ class ArticleServiceAuthorizerImpl implements ArticleServiceAuthorizer {
 	@Override
 	public SearchResult<ArticleSearchResult> find(ArticleSearchCriteria criteria, Function<ArticleSearchCriteria, SearchResult<ArticleSearchResult>> delegate) {
 		return delegate.apply(criteria);
+	}
+
+	@Override
+	public String update(String slug, ArticleUpdateData updateData, BiFunction<String, ArticleUpdateData, String> delegate) {
+		articleAuthorization.authorizeUpdate(slug, updateData);
+		return delegate.apply(slug, updateData);
 	}
 }

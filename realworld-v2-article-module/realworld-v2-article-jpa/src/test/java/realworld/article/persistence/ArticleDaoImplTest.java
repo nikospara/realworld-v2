@@ -19,9 +19,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +42,7 @@ import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ArticleUpdateData;
 import realworld.article.model.ImmutableArticleSearchCriteria;
 import realworld.test.jpa.JpaDaoExtension;
 import realworld.test.liquibase.LiquibaseExtension;
@@ -55,11 +58,20 @@ public class ArticleDaoImplTest {
 	private static final String AUTHOR_ID = UUID.randomUUID().toString();
 	private static final String AUTHOR_NAME = "AUTHOR NAME";
 	private static final LocalDateTime CREATED_AT = LocalDateTime.now().minus(1, ChronoUnit.DAYS);
-	private static final LocalDateTime UPDATED_AT = LocalDateTime.now();
+	private static final LocalDateTime UPDATED_AT = LocalDateTime.now().minus(12, ChronoUnit.HOURS);
 	private static final String DESCRIPTION = "Description";
 	private static final String SLUG = "slug";
 	private static final String TITLE = "Title";
 	private static final String BODY = "Body";
+
+	private static final String SLUG_FOR_UPDATE = "updated-slug";
+	private static final String UPDATED_AUTHOR_ID = UUID.randomUUID().toString();
+	//	private static final String UPDATED_AUTHOR_NAME = "AUTHOR NAME";
+	private static final LocalDateTime UPDATED_CREATED_AT = LocalDateTime.now().minus(6, ChronoUnit.HOURS);
+	private static final LocalDateTime UPDATED_UPDATED_AT = LocalDateTime.now().minus(1, ChronoUnit.HOURS);
+	private static final String UPDATED_DESCRIPTION = "Updated Description";
+	private static final String UPDATED_TITLE = "Updated Title";
+	private static final String UPDATED_BODY = "Updated Body";
 
 	private EntityManager em;
 	private Statistics statistics;
@@ -86,12 +98,7 @@ public class ArticleDaoImplTest {
 		User user = new User(AUTHOR_ID, AUTHOR_NAME);
 		em.persist(user);
 		em.flush();
-		ArticleCreationData creationData = mock(ArticleCreationData.class);
-		when(creationData.getAuthorId()).thenReturn(AUTHOR_ID);
-		when(creationData.getBody()).thenReturn(BODY);
-		when(creationData.getDescription()).thenReturn(DESCRIPTION);
-		when(creationData.getTagList()).thenReturn(new HashSet<>(Arrays.asList("tag1", "tag2")));
-		when(creationData.getTitle()).thenReturn(TITLE);
+		ArticleCreationData creationData = makeCreationData();
 		String id = sut.create(creationData, SLUG, CREATED_AT);
 		em.getTransaction().commit();
 
@@ -99,15 +106,57 @@ public class ArticleDaoImplTest {
 		assertNotNull(a);
 	}
 
+	private ArticleCreationData makeCreationData() {
+		ArticleCreationData creationData = mock(ArticleCreationData.class);
+		when(creationData.getAuthorId()).thenReturn(AUTHOR_ID);
+		when(creationData.getBody()).thenReturn(BODY);
+		when(creationData.getDescription()).thenReturn(DESCRIPTION);
+		when(creationData.getTagList()).thenReturn(new HashSet<>(Arrays.asList("tag1", "tag2")));
+		when(creationData.getTitle()).thenReturn(TITLE);
+		return creationData;
+	}
+
 	@Test
 	@Order(2)
+	void testUpdate() {
+		em.getTransaction().begin();
+		ArticleCreationData creationData = makeCreationData();
+		sut.create(creationData, SLUG_FOR_UPDATE, CREATED_AT);
+		em.getTransaction().commit();
+
+		em.getTransaction().begin();
+		ArticleUpdateData d = mock(ArticleUpdateData.class);
+		when(d.getAuthorId()).thenReturn(Optional.of(UPDATED_AUTHOR_ID));
+		when(d.getUpdatedAt()).thenReturn(Optional.of(UPDATED_UPDATED_AT));
+		when(d.getCreatedAt()).thenReturn(Optional.of(UPDATED_CREATED_AT));
+		when(d.getBody()).thenReturn(Optional.of(UPDATED_BODY));
+		when(d.getDescription()).thenReturn(Optional.of(UPDATED_DESCRIPTION));
+		when(d.getTagList()).thenReturn(Optional.of(new HashSet<>(Arrays.asList("tag4", "tag5"))));
+		when(d.getTitle()).thenReturn(Optional.of(UPDATED_TITLE));
+		String id = sut.update(SLUG_FOR_UPDATE, d, UPDATED_AT);
+		em.getTransaction().commit();
+
+		Article a = em.find(Article.class, id);
+		assertNotNull(a);
+		assertEquals(SLUG_FOR_UPDATE, a.getSlug());
+		assertEquals(UPDATED_AUTHOR_ID, a.getAuthorId());
+		assertEquals(UPDATED_UPDATED_AT, a.getUpdatedAt());
+		assertEquals(UPDATED_CREATED_AT, a.getCreatedAt());
+		assertEquals(UPDATED_BODY, em.find(ArticleBody.class, a.getId()).getBody());
+		assertEquals(UPDATED_DESCRIPTION, a.getDescription());
+		assertEquals(new HashSet<>(Arrays.asList("tag4", "tag5")), a.getTags().stream().map(Tag::getName).collect(Collectors.toSet()));
+		assertEquals(UPDATED_TITLE, a.getTitle());
+	}
+
+	@Test
+	@Order(3)
 	void testSlugExists() {
 		assertTrue(sut.slugExists(SLUG));
 		assertFalse(sut.slugExists("slug that doesnt exist"));
 	}
 
 	@Test
-	@Order(3)
+	@Order(4)
 	void testFindFullDataBySlugThrowsWhenNotFound() {
 		try {
 			sut.findFullDataBySlug(null, "non-existing-slug");
@@ -119,7 +168,7 @@ public class ArticleDaoImplTest {
 	}
 
 	@Test
-	@Order(4)
+	@Order(5)
 	void testFindFullDataBySlugForAnonymousUser() {
 		ArticleCombinedFullData res = sut.findFullDataBySlug(null, SLUG);
 		assertNotNull(res.getArticle().getId());
@@ -134,7 +183,7 @@ public class ArticleDaoImplTest {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
 	void testFindFullDataBySlugForUser() {
 		ArticleCombinedFullData res = sut.findFullDataBySlug(UUID.randomUUID().toString(), SLUG);
 		assertNotNull(res.getArticle().getId());
@@ -149,7 +198,7 @@ public class ArticleDaoImplTest {
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
 	void testFindArticleIdBySlug() {
 		String articleId = sut.findArticleIdBySlug(SLUG);
 		Set<String> tags = sut.findTags(articleId);
@@ -157,7 +206,7 @@ public class ArticleDaoImplTest {
 	}
 
 	@Test
-	@Order(7)
+	@Order(8)
 	void testFindArticleIdBySlugThrowsWhenNotFound() {
 		try {
 			sut.findArticleIdBySlug("non-existing-slug");

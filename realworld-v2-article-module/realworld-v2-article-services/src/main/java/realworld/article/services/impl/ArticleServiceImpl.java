@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Function;
 
 import realworld.EntityDoesNotExistException;
@@ -16,6 +17,7 @@ import realworld.article.dao.ArticleDao;
 import realworld.article.model.ArticleBase;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
+import realworld.article.model.ArticleUpdateData;
 import realworld.article.model.ImmutableArticleBase;
 import realworld.article.model.ImmutableArticleSearchCriteria;
 import realworld.article.services.ArticleService;
@@ -71,6 +73,7 @@ class ArticleServiceImpl implements ArticleService {
 
 	@Override
 	public ArticleBase create(ArticleCreationData outerCreationData) {
+		Objects.requireNonNull(outerCreationData, "creationData cannot be null");
 		return authorizer.create(outerCreationData, creationData -> {
 			String slug = slugifier.apply(creationData.getTitle());
 			if (articleDao.slugExists(slug)) {
@@ -86,6 +89,12 @@ class ArticleServiceImpl implements ArticleService {
 					.createdAt(createdAt)
 					.build();
 		});
+	}
+
+	@Override
+	public String update(String outerSlug, ArticleUpdateData outerUpdateData) {
+		Objects.requireNonNull(outerUpdateData, "updateData cannot be null");
+		return authorizer.update(outerSlug, outerUpdateData, (slug, updateData) -> articleDao.update(slug, updateData, dateTimeService.getNow()));
 	}
 
 	@Override

@@ -2,7 +2,9 @@ package realworld.article.jaxrs.impl;
 
 import static java.lang.Boolean.FALSE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,6 +49,7 @@ import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ArticleUpdateData;
 import realworld.article.model.ImmutableArticleBase;
 import realworld.article.model.ImmutableArticleSearchResult;
 import realworld.article.services.ArticleService;
@@ -78,11 +81,7 @@ public class ArticlesResourceImplTest {
 	private static final Set<String> TAG_LIST = new HashSet<>(Arrays.asList("tag1", "tag2"));
 
 	@Produces
-	private ArticleRestLayerConfig config = new ArticleRestLayerConfig() {
-		@Override public String getUserUrlTemplate() {
-			return "http://user-server/api/v2/users/{username}";
-		}
-	};
+	private ArticleRestLayerConfig config = () -> "http://user-server/api/v2/users/{username}";
 
 	@Produces @Mock
 	private ArticleService articleService;
@@ -124,6 +123,27 @@ public class ArticlesResourceImplTest {
 		assertEquals(DESCRIPTION, cd.getDescription());
 		assertEquals(BODY, cd.getBody());
 		assertEquals(AUTHOR_ID, cd.getAuthorId());
+	}
+
+	@Test
+	void testUpdate() throws Exception {
+		MockHttpRequest request = MockHttpRequest.put(APPLICATION_PATH + "/articles/" + SLUG)
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(("{\"title\":\"" + TITLE + "\", \"body\":\"" + BODY + "\", \"tagList\":[\"tag1\", \"tag2\"], \"authorId\": \"" + AUTHOR_ID + "\"}").getBytes());
+
+		when(articleService.update(eq(SLUG), any())).thenReturn(ARTICLE_ID);
+
+		dispatcher.invoke(request, response);
+
+		assertEquals(204, response.getStatus());
+		ArgumentCaptor<ArticleUpdateData> captor = ArgumentCaptor.forClass(ArticleUpdateData.class);
+		verify(articleService).update(eq(SLUG), captor.capture());
+		ArticleUpdateData ud = captor.getValue();
+		assertEquals(TITLE, ud.getTitle().orElseThrow());
+		assertNull(ud.getDescription());
+		assertEquals(BODY, ud.getBody().orElseThrow());
+		assertEquals(TAG_LIST, ud.getTagList().orElseThrow());
+		assertEquals(AUTHOR_ID, ud.getAuthorId().orElseThrow());
 	}
 
 	@Test

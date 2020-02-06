@@ -125,14 +125,6 @@
 				<artifactId>jaxb-impl</artifactId>
 				<version>${version.jaxb.impl}</version>
 			</dependency>
-			<!--
-			<dependency>
-				<groupId>org.eclipse.microprofile.rest.client</groupId>
-				<artifactId>microprofile-rest-client-api</artifactId>
-				<version>1.2.1</version>
-				<scope>provided</scope>
-			</dependency>
-			-->
 
 			<!--  OTHER -->
 			<dependency>
@@ -146,6 +138,11 @@
 				<artifactId>jackson-databind</artifactId>
 				<version>${version.jackson}</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jdk8</artifactId>
+				<version>${version.jackson}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.fasterxml.jackson.datatype</groupId>

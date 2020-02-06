@@ -12,9 +12,12 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import realworld.EntityDoesNotExistException;
@@ -26,6 +29,7 @@ import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
+import realworld.article.model.ArticleUpdateData;
 import realworld.article.model.ImmutableArticleBase;
 import realworld.article.model.ImmutableArticleSearchResult;
 
@@ -87,6 +91,39 @@ public class ArticleDaoImpl implements ArticleDao {
 	}
 
 	@Override
+	public String update(String slug, ArticleUpdateData updateData, LocalDateTime updateTime) {
+		Article a = findBySlug(slug);
+		boolean changed = false;
+		changed = updateFromOptional(updateData.getAuthorId(), a::setAuthorId, changed);
+		changed = updateFromOptional(updateData.getCreatedAt(), a::setCreatedAt, changed);
+		changed = updateFromOptional(updateData.getDescription(), a::setDescription, changed);
+		changed = updateFromOptional(updateData.getTitle(), a::setTitle, changed);
+		if( updateData.getBody() != null ) {
+			ArticleBody body = em.find(ArticleBody.class, a.getId());
+			body.setBody(updateData.getBody().orElse(null));
+			changed = true;
+		}
+		if( updateData.getTagList() != null ) {
+			handleTags(a, updateData.getTagList().orElseGet(Collections::emptySet));
+			changed = true;
+		}
+		if( changed || updateData.getUpdatedAt() != null ) {
+			a.setUpdatedAt(updateData.getUpdatedAt() != null ? updateData.getUpdatedAt().orElse(updateTime) : updateTime);
+		}
+		return a.getId();
+	}
+
+	private <X> boolean updateFromOptional(Optional<X> opt, Consumer<X> consumer, boolean changed) {
+		if( opt != null ) {
+			opt.ifPresentOrElse(consumer, () -> consumer.accept(null));
+			return true;
+		}
+		else {
+			return changed;
+		}
+	}
+
+	@Override
 	public ArticleCombinedFullData findFullDataBySlug(String userId, String slug) {
 		try {
 			Object[] res = em.createQuery(findArticleBySlugCriteriaQuery(userId, slug)).getSingleResult();
@@ -112,11 +149,22 @@ public class ArticleDaoImpl implements ArticleDao {
 
 	@Override
 	public String findArticleIdBySlug(String slug) {
+		return findBySlug(String.class, slug, (query,article) -> query.select(article.get(Article_.id)));
+	}
+
+	private Article findBySlug(String slug) {
+		return findBySlug(Article.class, slug, null);
+	}
+
+	private <X> X findBySlug(Class<X> x, String slug, BiConsumer<CriteriaQuery<X>, Root<Article>> querySpecializer) {
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<String> query = cb.createQuery(String.class);
+			CriteriaQuery<X> query = cb.createQuery(x);
 			Root<Article> article = query.from(Article.class);
-			query.select(article.get(Article_.id)).where(cb.equal(article.get(Article_.slug), slug));
+			query.where(cb.equal(article.get(Article_.slug), slug));
+			if( querySpecializer != null ) {
+				querySpecializer.accept(query, article);
+			}
 			return em.createQuery(query).getSingleResult();
 		}
 		catch( NoResultException e ) {
