@@ -22,7 +22,7 @@ will it activate; e.g. `dev` will activate the `data-dev` context
 
 - `article-h2`, `user-h2`: Activate the H2 database for the server and Liquibase for the respective microservice (currently `h2` and `postgres` are the only DB options)
 - `article-dbupdate`, `user-dbupdate`: Execute Liquibase to bring the respective database up-to-date (in the case of embedded H2 it will create it if it doesn't exist; just make sure that the directory exists)
-- `test-h2`: This will activate the DAO tests, using an in-memory H2 database
+- `test-h2`: This will activate the DAO tests, using an in-memory H2 database (currently `h2` is the only DB option)
 - `article-quarkus-dev`, `user-quarkus-dev`: Activate `quarkus:dev` for the respective microservice; no not use together in the same command
   (naturally there is no problem running them in parallel, as long as they run from different shells)
 - `docker`: Activating the Docker image build
@@ -76,7 +76,7 @@ mvn process-resources -Particle-h2,user-h2,article-dbupdate,user-dbupdate -Ddata
 ### Building the JAR artifacts
 
 ```shell
-mvn clean package -Puser-h2,article-h2,test-h2,realworld-v2-local-h2
+mvn clean package -Puser-h2,article-h2,test-h2
 ```
 
 You can omit `test-h2` to skip the DB tests.
@@ -98,7 +98,7 @@ mvn ... package -Pdocker,...
 E.g.
 
 ```shell
-mvn clean package -Pdocker,user-h2,article-h2,test-h2,realworld-v2-local-h2
+mvn clean package -Pdocker,user-h2,article-h2,test-h2
 ```
 
 #### Docker compose
@@ -132,13 +132,15 @@ You have to build first! At least `mvn ... package` is required.
 Development launch, assuming the profile `realworld-v2-local-h2` is defined in `settings.xml` as above:
 
 ```shell
-mvn process-classes -Particle-quarkus-dev,article-h2,realworld-v2-local-h2
+cd realworld-v2-article-module/realworld-v2-article
+mvn process-classes quarkus:dev -Particle-quarkus-dev,article-h2,realworld-v2-local-h2
 ```
 
 Likewise for user:
 
 ```shell
-mvn process-classes -Puser-quarkus-dev,user-h2,realworld-v2-local-h2
+cd realworld-v2-user-module/realworld-v2-user
+mvn process-classes quarkus:dev -Puser-quarkus-dev,user-h2,realworld-v2-local-h2
 ```
 
 Note that it requires the `process-classes` goal, not just `compile`. The reason is that some modules
