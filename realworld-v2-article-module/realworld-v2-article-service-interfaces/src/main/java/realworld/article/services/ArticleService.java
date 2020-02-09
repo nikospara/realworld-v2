@@ -32,6 +32,13 @@ public interface ArticleService {
 	String update(String slug, ArticleUpdateData updateData);
 
 	/**
+	 * Delete an article.
+	 *
+	 * @param slug The slug to identify which article to delete
+	 */
+	void delete(String slug);
+
+	/**
 	 * Retrieve the full article data by slug.
 	 *
 	 * @param slug The slug

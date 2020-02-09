@@ -99,6 +99,20 @@ class ArticleAuthorizationImpl implements ArticleAuthorization {
 		}
 	}
 
+	/**
+	 * Implement article deletion authorization tests.
+	 * <p>
+	 * Only system or author are allowed to delete an article.
+	 *
+	 * @param slug The slug to identify the article
+	 */
+	@Override
+	public void authorizeDelete(String slug) {
+		if( !authenticationContext.isSystem() ) {
+			requireCurrentUserToBeAuthorOf(slug);
+		}
+	}
+
 	private void requireCurrentUserToBeAuthorOf(ArticleCombinedFullData article) {
 		if( !article.getAuthor().getId().equals(authenticationContext.getUserPrincipal().getUniqueId()) ) {
 			throw new NotAuthorizedException();

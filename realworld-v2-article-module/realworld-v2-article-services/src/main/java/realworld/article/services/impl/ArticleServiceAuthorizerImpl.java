@@ -3,6 +3,7 @@ package realworld.article.services.impl;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import realworld.SearchResult;
@@ -51,6 +52,18 @@ class ArticleServiceAuthorizerImpl implements ArticleServiceAuthorizer {
 	}
 
 	@Override
+	public String update(String slug, ArticleUpdateData updateData, BiFunction<String, ArticleUpdateData, String> delegate) {
+		articleAuthorization.authorizeUpdate(slug, updateData);
+		return delegate.apply(slug, updateData);
+	}
+
+	@Override
+	public void delete(String slug, Consumer<String> delegate) {
+		articleAuthorization.authorizeDelete(slug);
+		delegate.accept(slug);
+	}
+
+	@Override
 	public ArticleCombinedFullData findFullDataBySlug(String slug, Function<String, ArticleCombinedFullData> delegate) {
 		return delegate.apply(slug);
 	}
@@ -58,11 +71,5 @@ class ArticleServiceAuthorizerImpl implements ArticleServiceAuthorizer {
 	@Override
 	public SearchResult<ArticleSearchResult> find(ArticleSearchCriteria criteria, Function<ArticleSearchCriteria, SearchResult<ArticleSearchResult>> delegate) {
 		return delegate.apply(criteria);
-	}
-
-	@Override
-	public String update(String slug, ArticleUpdateData updateData, BiFunction<String, ArticleUpdateData, String> delegate) {
-		articleAuthorization.authorizeUpdate(slug, updateData);
-		return delegate.apply(slug, updateData);
 	}
 }

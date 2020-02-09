@@ -147,6 +147,18 @@ public class ArticlesResourceImplTest {
 	}
 
 	@Test
+	void testDelete() throws Exception {
+		MockHttpRequest request = MockHttpRequest.delete(APPLICATION_PATH + "/articles/" + SLUG);
+
+		dispatcher.invoke(request, response);
+
+		assertEquals(204, response.getStatus());
+		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+		verify(articleService).delete(captor.capture());
+		assertEquals(SLUG, captor.getValue());
+	}
+
+	@Test
 	void testGetNonExistingSlug() throws Exception {
 		MockHttpRequest request = MockHttpRequest.get(APPLICATION_PATH + "/articles/" + SLUG)
 			.accept(MediaType.APPLICATION_JSON);

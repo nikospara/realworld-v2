@@ -1,18 +1,22 @@
 package realworld.article.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static realworld.authorization.AuthorizationAssertions.expectNotAuthenticatedException;
+import static realworld.authorization.AuthorizationAssertions.expectNotAuthorizedException;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -28,6 +32,7 @@ import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
 import realworld.article.model.ArticleUpdateData;
 import realworld.authorization.NotAuthenticatedException;
+import realworld.authorization.NotAuthorizedException;
 import realworld.authorization.service.Authorization;
 
 /**
@@ -113,5 +118,23 @@ public class ArticleServiceAuthorizerImplTest {
 		verify(articleAuthorization).authorizeUpdate(SLUG,mockUpdateData);
 		verifyNoMoreInteractions(authorization);
 		verifyNoMoreInteractions(articleAuthorization);
+	}
+
+	@Test
+	void testDeleteForInvalidUser() {
+		@SuppressWarnings("unchecked")
+		Consumer<String> mockDelegate = mock(Consumer.class);
+		doThrow(NotAuthorizedException.class).when(articleAuthorization).authorizeDelete(SLUG);
+		expectNotAuthorizedException(() -> sut.delete(SLUG, mockDelegate));
+		verifyNoInteractions(mockDelegate);
+	}
+
+	@Test
+	void testDeleteForValidUser() {
+		@SuppressWarnings("unchecked")
+		Consumer<String> mockDelegate = mock(Consumer.class);
+		doNothing().when(articleAuthorization).authorizeDelete(SLUG);
+		sut.delete(SLUG, mockDelegate);
+		verify(mockDelegate).accept(SLUG);
 	}
 }

@@ -1,5 +1,6 @@
 package realworld.article.jaxrs;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -45,11 +46,24 @@ public interface ArticlesResource {
 			@ApiResponse(code=204, message="Successfully updated", responseHeaders=@ResponseHeader(name="Location", description="The location of the newly created article"))
 	)
 	Response update(
-			@ApiParam(value = "The slug of the article to put.", required = true)
+			@ApiParam(value = "The slug of the article to update.", required = true)
 			@PathParam("slug")
-					String slug,
+			String slug,
 			@ApiParam(value = "Information required to update an article.", required = true)
-					ArticleUpdateParam updateParam
+			ArticleUpdateParam updateParam
+	);
+
+	@DELETE
+	@Path("/{slug}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value="Delete article.", tags=TAG)
+	@ApiResponses(
+			@ApiResponse(code=204, message="Successfully deleted")
+	)
+	Response delete(
+			@ApiParam(value = "The slug of the article to delete.", required = true)
+			@PathParam("slug")
+			String slug
 	);
 
 	@GET

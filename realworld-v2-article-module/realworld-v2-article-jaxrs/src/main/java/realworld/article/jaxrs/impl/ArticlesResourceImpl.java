@@ -52,6 +52,12 @@ public class ArticlesResourceImpl implements ArticlesResource {
 	}
 
 	@Override
+	public Response delete(String slug) {
+		articleService.delete(slug);
+		return Response.noContent().build();
+	}
+
+	@Override
 	public ArticleCombinedFullDataDto get(String slug) {
 		ArticleCombinedFullData data = articleService.findFullDataBySlug(slug);
 		ArticleCombinedFullDataDto result = new ArticleCombinedFullDataDto();

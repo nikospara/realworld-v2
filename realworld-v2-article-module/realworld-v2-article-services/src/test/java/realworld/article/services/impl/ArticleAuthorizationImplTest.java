@@ -168,6 +168,28 @@ public class ArticleAuthorizationImplTest {
 		sut.authorizeUpdate(SLUG, updateData);
 	}
 
+	@Test
+	void testAuthorizeDeleteForSystemUser() {
+		when(authenticationContext.isSystem()).thenReturn(true);
+		sut.authorizeDelete(SLUG);
+	}
+
+	@Test
+	void testAuthorizeDeleteForAuthor() {
+		setupCurrentUser();
+		setupArticleForSlugWithAuthor(USER_ID);
+		when(authenticationContext.isSystem()).thenReturn(false);
+		sut.authorizeDelete(SLUG);
+	}
+
+	@Test
+	void testAuthorizeDeleteForOtherUser() {
+		setupCurrentUser();
+		setupArticleForSlugWithAuthor(AUTHOR_ID, USER_ID);
+		when(authenticationContext.isSystem()).thenReturn(false);
+		expectNotAuthorizedException(() -> sut.authorizeDelete(SLUG));
+	}
+
 	private User setupCurrentUser() {
 		User currentUser = mock(User.class);
 		when(currentUser.getUniqueId()).thenReturn(USER_ID);

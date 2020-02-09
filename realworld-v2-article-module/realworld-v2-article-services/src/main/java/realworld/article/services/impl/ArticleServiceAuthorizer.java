@@ -1,6 +1,7 @@
 package realworld.article.services.impl;
 
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import realworld.SearchResult;
@@ -25,6 +26,24 @@ public interface ArticleServiceAuthorizer {
 	ArticleBase create(ArticleCreationData creationData, Function<ArticleCreationData,ArticleBase> delegate);
 
 	/**
+	 * Authorization logic for {@link realworld.article.services.ArticleService#update(String,ArticleUpdateData)}.
+	 *
+	 * @param slug       The article slug
+	 * @param updateData The article update data
+	 * @param delegate   The delegate
+	 * @return The return value of the delegate
+	 */
+	String update(String slug, ArticleUpdateData updateData, BiFunction<String, ArticleUpdateData, String> delegate);
+
+	/**
+	 * Authorization logic for {@link realworld.article.services.ArticleService#delete(String)}.
+	 *
+	 * @param slug       The article slug
+	 * @param delegate   The delegate
+	 */
+	void delete(String slug, Consumer<String> delegate);
+
+	/**
 	 * Authorization logic for {@link realworld.article.services.ArticleService#findFullDataBySlug(String)}.
 	 *
 	 * @param slug     Input
@@ -41,14 +60,4 @@ public interface ArticleServiceAuthorizer {
 	 * @return The return value of the delegate
 	 */
 	SearchResult<ArticleSearchResult> find(ArticleSearchCriteria criteria, Function<ArticleSearchCriteria,SearchResult<ArticleSearchResult>> delegate);
-
-	/**
-	 * Authorization logic for {@link realworld.article.services.ArticleService#update(String,ArticleUpdateData)}.
-	 *
-	 * @param slug       The article slug
-	 * @param updateData The article update data
-	 * @param delegate   The delegate
-	 * @return The return value of the delegate
-	 */
-	String update(String slug, ArticleUpdateData updateData, BiFunction<String, ArticleUpdateData, String> delegate);
 }

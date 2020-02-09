@@ -98,6 +98,11 @@ class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
+	public void delete(String slug) {
+		authorizer.delete(slug, articleDao::delete);
+	}
+
+	@Override
 	public ArticleCombinedFullData findFullDataBySlug(String outerSlug) {
 		return authorizer.findFullDataBySlug(outerSlug, slug -> {
 			ArticleCombinedFullData result = articleDao.findFullDataBySlug(authenticationContext.getUserPrincipal() != null ? authenticationContext.getUserPrincipal().getUniqueId() : null, slug);

@@ -150,13 +150,41 @@ public class ArticleDaoImplTest {
 
 	@Test
 	@Order(3)
+	void testDelete() {
+		em.getTransaction().begin();
+		ArticleFavorite fav = new ArticleFavorite();
+		fav.setArticleId(sut.findArticleIdBySlug(SLUG_FOR_UPDATE));
+		fav.setUserId(AUTHOR_ID);
+		em.persist(fav);
+		em.getTransaction().commit();
+
+		statistics.clear();
+		em.getTransaction().begin();
+		sut.delete(SLUG_FOR_UPDATE);
+		em.getTransaction().commit();
+
+		try {
+			em.getTransaction().begin();
+			sut.delete(SLUG_FOR_UPDATE);
+			fail("should throw when trying to delete non-existing slug");
+		}
+		catch( EntityDoesNotExistException expected ) {
+			// expected
+		}
+		finally {
+			em.getTransaction().rollback();
+		}
+	}
+
+	@Test
+	@Order(4)
 	void testSlugExists() {
 		assertTrue(sut.slugExists(SLUG));
 		assertFalse(sut.slugExists("slug that doesnt exist"));
 	}
 
 	@Test
-	@Order(4)
+	@Order(5)
 	void testFindFullDataBySlugThrowsWhenNotFound() {
 		try {
 			sut.findFullDataBySlug(null, "non-existing-slug");
@@ -168,7 +196,7 @@ public class ArticleDaoImplTest {
 	}
 
 	@Test
-	@Order(5)
+	@Order(6)
 	void testFindFullDataBySlugForAnonymousUser() {
 		ArticleCombinedFullData res = sut.findFullDataBySlug(null, SLUG);
 		assertNotNull(res.getArticle().getId());
@@ -183,7 +211,7 @@ public class ArticleDaoImplTest {
 	}
 
 	@Test
-	@Order(6)
+	@Order(7)
 	void testFindFullDataBySlugForUser() {
 		ArticleCombinedFullData res = sut.findFullDataBySlug(UUID.randomUUID().toString(), SLUG);
 		assertNotNull(res.getArticle().getId());
@@ -198,7 +226,7 @@ public class ArticleDaoImplTest {
 	}
 
 	@Test
-	@Order(7)
+	@Order(8)
 	void testFindArticleIdBySlug() {
 		String articleId = sut.findArticleIdBySlug(SLUG);
 		Set<String> tags = sut.findTags(articleId);
@@ -206,7 +234,7 @@ public class ArticleDaoImplTest {
 	}
 
 	@Test
-	@Order(8)
+	@Order(9)
 	void testFindArticleIdBySlugThrowsWhenNotFound() {
 		try {
 			sut.findArticleIdBySlug("non-existing-slug");

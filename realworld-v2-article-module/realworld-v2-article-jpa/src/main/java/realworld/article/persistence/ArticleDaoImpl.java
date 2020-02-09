@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
@@ -111,6 +112,28 @@ public class ArticleDaoImpl implements ArticleDao {
 			a.setUpdatedAt(updateData.getUpdatedAt() != null ? updateData.getUpdatedAt().orElse(updateTime) : updateTime);
 		}
 		return a.getId();
+	}
+
+	@Override
+	public void delete(String slug) {
+		Article article = findBySlug(slug);
+		if( article == null ) {
+			throw new EntityDoesNotExistException();
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		CriteriaDelete<ArticleBody> deleteBody = em.getCriteriaBuilder().createCriteriaDelete(ArticleBody.class);
+		Root<ArticleBody> bodyRoot = deleteBody.from(ArticleBody.class);
+		deleteBody.where(cb.equal(bodyRoot.get(ArticleBody_.article), article));
+		em.createQuery(deleteBody).executeUpdate();
+
+		CriteriaDelete<ArticleFavorite> deleteFav = em.getCriteriaBuilder().createCriteriaDelete(ArticleFavorite.class);
+		Root<ArticleFavorite> favRoot = deleteFav.from(ArticleFavorite.class);
+		deleteFav.where(cb.equal(favRoot.get(ArticleFavorite_.articleId), article.getId()));
+		em.createQuery(deleteFav).executeUpdate();
+
+		em.remove(article);
 	}
 
 	private <X> boolean updateFromOptional(Optional<X> opt, Consumer<X> consumer, boolean changed) {

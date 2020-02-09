@@ -16,17 +16,6 @@ public interface ArticleAuthorization {
 	 * @throws AppSecurityException If the check fails
 	 */
 	void requireCurrentUserToBeAuthorOf(String slug);
-//
-//	/**
-//	 * Require special user (system, superuser) to change the protected fields of
-//	 * the article, such as {@code creationDate}.
-//	 * If a protected field is defined in the update data, but the value is the same as
-//	 * the original, this method returns silently. Also returns silently if the article does not exist.
-//	 *
-//	 * @param slug       The slug of the article
-//	 * @param updateData The update data
-//	 */
-//	void requireSpecialUserToChangeProtectedFields(String slug, ArticleUpdateData updateData);
 
 	/**
 	 * Authorize an update of the article with the given slug.
@@ -35,4 +24,11 @@ public interface ArticleAuthorization {
 	 * @param updateData The update data
 	 */
 	void authorizeUpdate(String slug, ArticleUpdateData updateData);
+
+	/**
+	 * Authorize the deletion of the article with the given slug.
+	 *
+	 * @param slug       The slug to identify the article
+	 */
+	void authorizeDelete(String slug);
 }

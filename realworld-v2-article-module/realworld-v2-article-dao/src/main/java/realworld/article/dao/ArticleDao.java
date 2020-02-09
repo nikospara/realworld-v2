@@ -35,7 +35,7 @@ public interface ArticleDao {
 	String create(ArticleCreationData creationData, String slug, LocalDateTime creationDate);
 
 	/**
-	 * Create a new article (and related entities).
+	 * Update an article (and related entities).
 	 *
 	 * @param slug       The slug to use
 	 * @param updateData The article update data
@@ -43,6 +43,13 @@ public interface ArticleDao {
 	 * @return The id of the updated article
 	 */
 	String update(String slug, ArticleUpdateData updateData, LocalDateTime updateTime);
+
+	/**
+	 * Delete an article.
+	 *
+	 * @param slug The slug of the article to delete
+	 */
+	void delete(String slug);
 
 	/**
 	 * Retrieve the full article data by slug.

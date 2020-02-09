@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -151,6 +152,16 @@ public class ArticleServiceImplTest {
 		ArgumentCaptor<ArticleUpdateData> captor = ArgumentCaptor.forClass(ArticleUpdateData.class);
 		verify(articleDao).update(eq(SLUG), captor.capture(), eq(NOW));
 		assertSame(updateData, captor.getValue());
+	}
+
+	@Test
+	void testDelete() {
+		sut.delete(SLUG);
+		@SuppressWarnings("unchecked")
+		ArgumentCaptor<Consumer<String>> delegateCaptor = ArgumentCaptor.forClass(Consumer.class);
+		verify(authorizer).delete(eq(SLUG), delegateCaptor.capture());
+		delegateCaptor.getValue().accept(SLUG);
+		verify(articleDao).delete(SLUG);
 	}
 
 	private ArticleCreationData prepareForCreation() {
