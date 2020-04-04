@@ -16,6 +16,7 @@
 		<module>realworld-v2-docker-kafka</module>
 		<module>realworld-v2-docker-keycloak</module>
 		<module>realworld-v2-docker-postgres</module>
+		<module>realworld-v2-k8s-zookeeper</module>
 	</modules>
 
 	<build>

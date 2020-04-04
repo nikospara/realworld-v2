@@ -20,7 +20,7 @@ metadata:
   labels:
     app: rwlv2
 spec:
-  storageClassName: local-storage
+#  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:
@@ -64,7 +64,7 @@ spec:
           volumeMounts:
             - name: postgres-persistent-storage
               mountPath: /var/lib/postgresql/data
-              subPath: postgres
+#              subPath: postgres
       volumes:
         - name: postgres-persistent-storage
           persistentVolumeClaim:

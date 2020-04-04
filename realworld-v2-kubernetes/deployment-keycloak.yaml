@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rwlv2-keycloak
+  labels:
+    app: rwlv2
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 8580
+      nodePort: 30580
+    - name: admin
+      port: 10499
+      nodePort: 30599
+  selector:
+    app: rwlv2
+    tier: idm
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rwlv2-keycloak
+  labels:
+    app: rwlv2
+spec:
+  selector:
+    matchLabels:
+      app: rwlv2
+      tier: idm
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: rwlv2
+        tier: idm
+    spec:
+      containers:
+        - image: rwlv2-keycloak:local
+          name: keycloak
+          env:
+            - name: DB_ADDR
+              value: rwlv2-postgres
+          ports:
+            - containerPort: 8580
+              name: http
+            - containerPort: 10499
+              name: admin

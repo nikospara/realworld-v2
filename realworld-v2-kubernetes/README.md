@@ -1,7 +1,13 @@
 Kubernetes resources and instructions
 =====================================
 
-1. Create a persistent volume having the same `spec.storageClassName` as the _postgres-pv-claim_ in the deployment, e.g. as follows:
+1. Enable the `storage` addon:
+
+    ```shell script
+    microk8s.enable storage
+    ```
+
+    (OUTDATED - ENABLE THE storage ADDON) Create a persistent volume having the same `spec.storageClassName` as the _postgres-pv-claim_ in the deployment, e.g. as follows:
 
     - Put the following in the file `pv-local.yaml` - source https://kubernetes.io/docs/concepts/storage/volumes/#local:
 
@@ -40,16 +46,17 @@ Kubernetes resources and instructions
 
 3. Create the file `kustomization.yaml`:
 
-        ```yaml
-        resources:
-          - deployment-postgres.yaml
-        ```
+    ```yaml
+    resources:
+      - deployment-postgres.yaml
+      - statefulset-zookeeper.yaml
+    ```
 
 4. Run:
 
-        ```shell script
-        kubectl apply -k ./
-        ```
+    ```shell script
+    kubectl apply -k ./
+    ```
 
 Database
 --------
@@ -64,3 +71,19 @@ Destroying
 kubectl delete -k ./
 kubectl delete -f pv-local.yaml
 ```
+
+
+Using a local Docker repo
+-------------------------
+
+(From https://microk8s.io/docs/registry-images)
+
+Explanation: Kubernetes needs the local tag (reference?). So you need to tag an already built image first.
+
+```shell script
+docker tag myimage myimage:local
+docker save myimage:local > myimage.tar
+microk8s.ctr image import myimage.tar
+```
+
+Verify with `microk8s.ctr images ls`.
