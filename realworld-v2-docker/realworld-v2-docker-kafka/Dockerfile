@@ -11,7 +11,7 @@ ENV KAFKA_GC_LOG_OPTS=-Dnogclog
 
 COPY src/main/resources/start-kafka.sh ${KAFKA_HOME}/bin/start-kafka.sh
 
-RUN apk add --no-cache bash curl jq \
+RUN apk add --no-cache bash \
 	&& chmod a+x ${KAFKA_HOME}/bin/start-kafka.sh \
 	&& mkdir /var/kafka-logs
 

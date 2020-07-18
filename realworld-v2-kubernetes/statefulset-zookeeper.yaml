@@ -55,16 +55,16 @@ spec:
       labels:
         app: rwlv2-zk
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: "app"
-                    operator: In
-                    values:
-                      - "rwlv2-zk"
-              topologyKey: "kubernetes.io/hostname"
+#      affinity:
+#        podAntiAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            - labelSelector:
+#                matchExpressions:
+#                  - key: "app"
+#                    operator: In
+#                    values:
+#                      - "rwlv2-zk"
+#              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: rwlv2-zookeeper
 #          image: "k8s.gcr.io/kubernetes-zookeeper:1.0-3.4.10"

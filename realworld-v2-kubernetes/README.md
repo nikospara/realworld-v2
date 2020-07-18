@@ -50,6 +50,7 @@ Kubernetes resources and instructions
     resources:
       - deployment-postgres.yaml
       - statefulset-zookeeper.yaml
+      - statefulset-kafka.yaml
     ```
 
 4. Run:
@@ -62,6 +63,12 @@ Database
 --------
 
 The service named _rwlv2-postgres_ is exposed on port 32543 on the Kubernetes node.
+
+Zookeeper/Kafka
+---------------
+
+The service name _rwlv2-kafka-ext_ is exposed on port 30094 on the Kubernetes node.
+Inside the cluster, Zookeeper is exposed under _rwlv2-zk-cs_ and Kafka as _rwlv2-kafka-int_.
 
 
 Destroying

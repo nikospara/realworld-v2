@@ -43,6 +43,8 @@ if [[ ! -f "$ZOO_CONF_DIR/zoo.cfg" ]]; then
 		echo "dataDir=$ZOO_DATA_DIR"
 		echo "dataLogDir=$ZOO_DATA_LOG_DIR"
 
+		echo "clientPort=2181"
+
 		echo "tickTime=$ZOO_TICK_TIME"
 		echo "initLimit=$ZOO_INIT_LIMIT"
 		echo "syncLimit=$ZOO_SYNC_LIMIT"

@@ -1,0 +1,103 @@
+apiVersion: v1
+# This is the service required by the stateful set
+kind: Service
+metadata:
+  name: rwlv2-kafka-int
+  labels:
+    app: rwlv2-kafka
+spec:
+  ports:
+    - port: 9092
+      name: server-int
+  clusterIP: None
+  selector:
+    app: rwlv2-kafka
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rwlv2-kafka-ext
+  labels:
+    app: rwlv2-kafka
+spec:
+  type: NodePort
+  ports:
+    - port: 9094
+      nodePort: 30094
+  selector:
+    app: rwlv2-kafka
+#---
+#apiVersion: policy/v1beta1
+#kind: PodDisruptionBudget
+#metadata:
+#  name: zk-pdb
+#spec:
+#  selector:
+#    matchLabels:
+#      app: zk
+#  maxUnavailable: 1
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rwlv2-kafka
+spec:
+  selector:
+    # has to match .spec.template.metadata.labels
+    matchLabels:
+      app: rwlv2-kafka
+  # StatefulSets currently require a Headless Service to be responsible for the network identity of the Pods
+  serviceName: rwlv2-kafka-int
+  replicas: 1 # was 3
+#  updateStrategy:
+#    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      labels:
+        app: rwlv2-kafka
+    spec:
+#      affinity:
+#        podAntiAffinity:
+#          requiredDuringSchedulingIgnoredDuringExecution:
+#            - labelSelector:
+#                matchExpressions:
+#                  - key: "app"
+#                    operator: In
+#                    values:
+#                      - "rwlv2-kafka"
+#              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: rwlv2-kafka-container
+          image: "rwlv2-kafka:local"
+          env:
+            # This should take the value of the cluster host, so that Kafka advertises itself to the outside world; localhost is good enough for a local, development setup
+            - name: KAFKA_HOST
+              value: localhost
+            - name: KAFKA_PORT
+              value: "30094"
+            - name: ZOOKEEPER_HOST
+              value: rwlv2-zk-cs
+#          resources:
+#            requests:
+#              memory: "1Gi"
+#              cpu: "0.5"
+          ports:
+            - containerPort: 9092
+              name: internal
+            - containerPort: 9094
+              name: external
+          volumeMounts:
+            - name: kafkalogdir
+              mountPath: /var/kafka-logs
+#      securityContext:
+#        runAsUser: 1000
+#        fsGroup: 1000
+  volumeClaimTemplates:
+    - metadata:
+        name: kafkalogdir
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 50Mi

@@ -1,0 +1,14 @@
+version: "3"
+services:
+  zookeeper:
+    image: "rwlv2-k8s-zookeeper"
+    ports:
+      - "2181:2181"
+  kafka:
+    image: "rwlv2-kafka:latest"
+    depends_on:
+      - zookeeper
+    ports:
+      - "9094:9094/tcp"
+    environment:
+      KAFKA_HOST: localhost
