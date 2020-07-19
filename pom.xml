@@ -29,8 +29,8 @@
 
 		<version.cdi-api>2.0.SP1</version.cdi-api>
 		<version.h2>1.4.199</version.h2>
-		<version.hibernate>5.4.10.Final</version.hibernate><!-- Defined in quarkus-bom, hibernate-orm.version -->
-		<version.jackson>2.10.2</version.jackson><!-- Defined in quarkus-bom, jackson.version -->
+		<version.hibernate>5.4.18.Final</version.hibernate><!-- Defined in quarkus-universe-bom, hibernate-core -->
+		<version.jackson>2.10.4</version.jackson><!-- Defined in quarkus-universe-bom, jackson-annotations -->
 		<version.javax.annotation-api>1.3.2</version.javax.annotation-api>
 		<version.javax.interceptor-api>1.2.2</version.javax.interceptor-api>
 		<version.javax.json>1.1.4</version.javax.json>
@@ -38,30 +38,31 @@
 		<version.javax.transaction-api>1.3</version.javax.transaction-api>
 		<version.validation-api>2.0.1.Final</version.validation-api>
 		<version.jaxb.api>2.3.1</version.jaxb.api>
-		<version.jaxb.impl>2.3.0.1</version.jaxb.impl>
-		<version.jboss-jaxrs-api_2.1_spec>1.0.2.Final</version.jboss-jaxrs-api_2.1_spec>
-		<version.junit.jupiter>5.5.2</version.junit.jupiter>
-		<version.kafka-clients>2.3.1</version.kafka-clients>
+		<version.jaxb.impl>2.3.3</version.jaxb.impl>
+		<version.jboss-jaxrs-api_2.1_spec>2.0.1.Final</version.jboss-jaxrs-api_2.1_spec>
+		<version.junit.jupiter>5.6.2</version.junit.jupiter>
+		<version.kafka>2.5.0</version.kafka>
+		<version.kafka.scala>2.13</version.kafka.scala>
 		<version.keycloak>8.0.1</version.keycloak>
 		<version.liquibase>3.8.1</version.liquibase>
-		<version.mockito>3.2.0</version.mockito>
-		<version.nimbus-jose-jwt>8.2.1</version.nimbus-jose-jwt>
-		<version.org.immutables>2.8.2</version.org.immutables>
+		<version.mockito>3.4.4</version.mockito>
+		<version.nimbus-jose-jwt>8.19</version.nimbus-jose-jwt>
+		<version.org.immutables>2.8.8</version.org.immutables>
 		<version.postgres>42.2.8</version.postgres>
-		<version.quarkus>1.2.0.Final</version.quarkus>
-		<version.resteasy-test>4.4.2.Final</version.resteasy-test><!-- Defined in quarkus-bom, resteasy.version -->
-		<version.slf4j>1.7.28</version.slf4j>
+		<version.quarkus>1.6.1.Final</version.quarkus>
+		<version.resteasy-test>4.5.5.Final</version.resteasy-test><!-- Defined in quarkus-universe-bom, resteasy-core -->
+		<version.slf4j>1.7.30</version.slf4j>
 		<version.slugify>2.4</version.slugify>
-		<version.swagger-annotations>1.5.21</version.swagger-annotations>
+		<version.swagger-annotations>1.6.2</version.swagger-annotations>
 		<version.weld-junit5>2.0.1.Final</version.weld-junit5>
 	</properties>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<!-- QUARKUS  -->
 			<dependency>
 				<groupId>io.quarkus</groupId>
-				<artifactId>quarkus-bom</artifactId>
+				<artifactId>quarkus-universe-bom</artifactId>
 				<version>${version.quarkus}</version>
 				<type>pom</type>
 				<scope>import</scope>
@@ -168,7 +169,7 @@
 			<dependency>
 				<groupId>org.apache.kafka</groupId>
 				<artifactId>kafka-clients</artifactId>
-				<version>${version.kafka-clients}</version>
+				<version>${version.kafka}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -268,7 +269,7 @@
 						<configuration>
 							<rules>
 								<requireMavenVersion>
-									<version>3.6.1</version>
+									<version>3.6.2</version>
 								</requireMavenVersion>
 							</rules>
 						</configuration>
@@ -287,7 +288,7 @@
 				<plugin>
 					<groupId>io.fabric8</groupId>
 					<artifactId>docker-maven-plugin</artifactId>
-					<version>0.31.0</version>
+					<version>0.33.0</version>
 				</plugin>
 				<plugin>
 					<groupId>io.quarkus</groupId>
@@ -300,7 +301,7 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.0</version>
+					<version>3.8.1</version>
 					<configuration>
 						<release>${version.java}</release>
 						<source>${version.java}</source>
@@ -334,11 +335,11 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.22.0</version>
+					<version>2.22.2</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>3.2.2</version>
+					<version>3.2.3</version>
 					<configuration>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 					</configuration>
@@ -346,7 +347,7 @@
 				<plugin>
 					<groupId>org.jboss.jandex</groupId>
 					<artifactId>jandex-maven-plugin</artifactId>
-					<version>1.0.6</version>
+					<version>1.0.8</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -356,7 +357,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>3.1.0</version>
 				<reportSets>
 					<reportSet>
 						<reports>
@@ -387,7 +388,7 @@
 						<plugin>
 							<groupId>org.jacoco</groupId>
 							<artifactId>jacoco-maven-plugin</artifactId>
-							<version>0.8.3</version>
+							<version>0.8.4</version>
 						</plugin>
 					</plugins>
 				</pluginManagement>

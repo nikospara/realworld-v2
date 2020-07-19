@@ -10,11 +10,6 @@
 
 	<artifactId>realworld-v2-docker-kafka</artifactId>
 
-	<properties>
-		<version.kafka>2.3.1</version.kafka>
-		<version.kafka.scala>2.12</version.kafka.scala>
-	</properties>
-
 	<build>
 		<plugins>
 			<!-- Do not generate the jar -->

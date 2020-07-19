@@ -182,6 +182,11 @@ public class JWSVerifierMapperImpl implements JWSVerifierMapper {
 			}
 			return jwkSet;
 		}
+
+		@Override
+		public boolean requiresRefresh() {
+			return isExpired();
+		}
 	}
 	
 	

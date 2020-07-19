@@ -30,8 +30,9 @@
 			<id>user-h2</id>
 
 			<properties>
+				<database.user.db-kind>h2</database.user.db-kind>
 				<database.user.driver>org.h2.Driver</database.user.driver>
-				<database.user.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.user.hibernate.dialect>
+				<database.user.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.user.hibernate.dialect><!-- OBSOLETE -->
 				<database.user.driver.groupId>com.h2database</database.user.driver.groupId>
 				<database.user.driver.artifactId>h2</database.user.driver.artifactId>
 				<database.user.driver.version>${version.h2}</database.user.driver.version>
@@ -52,8 +53,9 @@
 			<id>user-postgres</id>
 
 			<properties>
+				<database.user.db-kind>postgresql</database.user.db-kind>
 				<database.user.driver>org.postgresql.Driver</database.user.driver>
-				<database.user.hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</database.user.hibernate.dialect>
+				<database.user.hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</database.user.hibernate.dialect><!-- OBSOLETE -->
 				<database.user.driver.groupId>org.postgresql</database.user.driver.groupId>
 				<database.user.driver.artifactId>postgresql</database.user.driver.artifactId>
 				<database.user.driver.version>${version.postgres}</database.user.driver.version>

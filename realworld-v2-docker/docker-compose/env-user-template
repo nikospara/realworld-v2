@@ -4,6 +4,8 @@
 # Docker-compose files are designed to pick it up.
 # The Maven build will generate the env-user file in realworld-v2-user/target/docker.
 
-QUARKUS_DATASOURCE_URL=
+QUARKUS_DATASOURCE_JDBC_URL=
 QUARKUS_DATASOURCE_USERNAME=
 QUARKUS_DATASOURCE_PASSWORD=
+
+MP_MESSAGING_INCOMING_USERS_STREAM_BOOTSTRAP_SERVERS=

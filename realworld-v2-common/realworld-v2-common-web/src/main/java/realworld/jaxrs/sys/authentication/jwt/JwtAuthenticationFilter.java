@@ -21,9 +21,11 @@ import realworld.authentication.UserImpl;
 @Provider
 @Priority(AUTHENTICATION)
 public class JwtAuthenticationFilter implements ContainerRequestFilter {
-	
+
+	@Inject
 	private RequestAuthenticationContextHolder requestAuthenticationContextHolder;
-	
+
+	@Inject
 	private TokenHelper tokenHelper;
 	
 	/**
@@ -31,18 +33,6 @@ public class JwtAuthenticationFilter implements ContainerRequestFilter {
 	 */
 	public JwtAuthenticationFilter() {
 		// NO OP
-	}
-	
-	/**
-	 * Injection constructor.
-	 * 
-	 * @param requestAuthenticationContextHolder The authentication context holder
-	 * @param tokenHelper The token helper knows how to extract useful information from the token
-	 */
-	@Inject
-	public JwtAuthenticationFilter(RequestAuthenticationContextHolder requestAuthenticationContextHolder, TokenHelper tokenHelper) {
-		this.requestAuthenticationContextHolder = requestAuthenticationContextHolder;
-		this.tokenHelper = tokenHelper;
 	}
 
 	@Override

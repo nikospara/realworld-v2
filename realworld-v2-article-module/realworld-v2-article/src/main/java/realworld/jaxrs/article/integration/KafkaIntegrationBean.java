@@ -7,7 +7,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.smallrye.reactive.messaging.kafka.KafkaMessage;
+import io.smallrye.reactive.messaging.kafka.IncomingKafkaRecord;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class KafkaIntegrationBean {
 
 	@Incoming("users-stream")
 	@SuppressWarnings("unused")
-	public CompletionStage<Void> onUsersEvent(KafkaMessage<String,String> message) {
+	public CompletionStage<Void> onUsersEvent(IncomingKafkaRecord<String,String> message) {
 		return CompletableFuture.runAsync(() -> {
 			authenticationContextProducer.pushContext(AuthenticationContextImpl.system());
 			try {

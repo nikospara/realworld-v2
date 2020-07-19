@@ -12,10 +12,8 @@
 	<name>Realworld-v2: User microservice</name>
 	<description>Realworld-v2: User module: The microservice WAR</description>
 
-	<packaging>war</packaging>
-
 	<properties>
-		<jvm.args>-Dquarkus.datasource.url=${database.user.url} -Dquarkus.datasource.username=${database.user.username} -Dquarkus.datasource.password=${database.user.password}</jvm.args>
+		<jvm.args>-Dquarkus.datasource.jdbc.url=${database.user.url} -Dquarkus.datasource.username=${database.user.username} -Dquarkus.datasource.password=${database.user.password} -Dmp.messaging.incoming.users-stream.bootstrap.servers=${kafka.bootstrap.servers}</jvm.args>
 	</properties>
 
 	<dependencies>
@@ -35,18 +33,6 @@
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
-		</dependency>
-		<!--
-			THIS DEPENDENCY SHOULD BE DECLARED IN THE user-h2 PROFILE, BUT QUARKUS SEEMS NOT TO ACCEPT IT.
-			See https://github.com/quarkusio/quarkus/issues/3702 and https://github.com/quarkusio/quarkus/issues/4147
-		-->
-		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-jdbc-h2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-jdbc-postgresql</artifactId>
 		</dependency>
 
 		<!-- PROJECT -->
@@ -111,10 +97,6 @@
 		<profile>
 			<id>user-h2</id>
 			<dependencies>
-				<!--
-					THIS DEPENDENCY HAS NO EFFECT YET, DUE TO https://github.com/quarkusio/quarkus/issues/3702
-					AND https://github.com/quarkusio/quarkus/issues/4147
-				-->
 				<dependency>
 					<groupId>io.quarkus</groupId>
 					<artifactId>quarkus-jdbc-h2</artifactId>
@@ -125,10 +107,6 @@
 		<profile>
 			<id>user-postgres</id>
 			<dependencies>
-				<!--
-					THIS DEPENDENCY HAS NO EFFECT YET, DUE TO https://github.com/quarkusio/quarkus/issues/3702
-					AND https://github.com/quarkusio/quarkus/issues/4147
-				-->
 				<dependency>
 					<groupId>io.quarkus</groupId>
 					<artifactId>quarkus-jdbc-postgresql</artifactId>

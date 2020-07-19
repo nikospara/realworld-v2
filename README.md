@@ -15,8 +15,42 @@ or placed in a local Maven profile in `~/.m2/settings.xml`.
 - `database.user.url`, `database.article.url`: The JDBC URL of the database for the respective microservice
 - `database.user.username`, `database.article.username`: The DB user name
 - `database.user.password`, `database.article.password`: The DB password
+- `kafka.bootstrap.servers`: The Kafka bootstrap servers for that environment
 - **(TODO)** `db.env` (default: `dev`): Needed only by Liquibase to indicate which environment-specific [contexts](https://www.liquibase.org/documentation/contexts.html)
 will it activate; e.g. `dev` will activate the `data-dev` context
+
+Example:
+
+```xml
+		<profile>
+			<id>realworld-v2-local-postgres</id>
+			<properties>
+				<database.article.url>jdbc:postgresql://localhost/rwlv2</database.article.url>
+				<database.article.username>rwlv2_article</database.article.username>
+				<database.article.password>rwlv2_article</database.article.password>
+				<database.user.url>jdbc:postgresql://localhost/rwlv2</database.user.url>
+				<database.user.username>rwlv2_user</database.user.username>
+				<database.user.password>rwlv2_user</database.user.password>
+				<kafka.bootstrap.servers>localhost:9094</kafka.bootstrap.servers>
+			</properties>
+		</profile>
+		<profile>
+			<id>realworld-v2-docker-postgres</id>
+			<properties>
+				<database.article.url>jdbc:postgresql://postgres/rwlv2</database.article.url>
+				<database.article.username>rwlv2_article</database.article.username>
+				<database.article.password>rwlv2_article</database.article.password>
+				<database.user.url>jdbc:postgresql://postgres/rwlv2</database.user.url>
+				<database.user.username>rwlv2_user</database.user.username>
+				<database.user.password>rwlv2_user</database.user.password>
+				<kafka.bootstrap.servers>kafka:9092</kafka.bootstrap.servers>
+			</properties>
+		</profile>
+```
+
+Both profiles use Postgresql. One is to run the entire application through `docker-compose`, in which case Kafka and
+Postgresql are in the `kafka` and `postgres` hosts - see `realworld-v2-docker/docker-compose/docker-compose-postgres.yml`.
+The other is to run only the peripherals in Docker - see `realworld-v2-docker/docker-compose/docker-compose-peripherals-postgres.yml`.
 
 ### Build profiles
 
@@ -31,10 +65,13 @@ will it activate; e.g. `dev` will activate the `data-dev` context
 
 The versions of all dependencies are controlled by Maven properties in the form `version.<uniqueId>`,
 where `<uniqueId>` is a unique identifier for the dependency, preferably the artifact id, but anything
-unique and sufficiently descriptive will do. As such, detecting updates is as simple as running:
+unique and sufficiently descriptive will do. All version properties are defined in the parent pom.
+As such, detecting updates is as simple as running (`-N` for non-recursive build, since all version properties are
+in the parent pom):
 
 ```shell
-mvn versions:display-property-updates
+mvn -N versions:display-property-updates
+mvn -N versions:display-plugin-updates
 ```
 
 If a dependency is left behind for a reason, please add a comment in the parent pom.
@@ -57,6 +94,7 @@ Assuming that the properties are defined through a Maven profile, e.g. like the 
                                 <database.user.url>jdbc:h2:/home/myuser/h2/user</database.user.url>
                                 <database.user.username>sa</database.user.username>
                                 <database.user.password>sa</database.user.password>
+                                <kafka.bootstrap.servers>localhost:9094</kafka.bootstrap.servers>
                         </properties>
                 </profile>
 ```
