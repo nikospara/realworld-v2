@@ -40,9 +40,9 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 	private static final EnumSet<EventType> INTERESTING_EVENT_TYPES = EnumSet.of(REGISTER, UPDATE_EMAIL, UPDATE_PROFILE);
 	private static final EnumSet<OperationType> INTERESTING_ADMIN_OP_TYPES = EnumSet.of(OperationType.CREATE, OperationType.DELETE, OperationType.UPDATE);
 
-	private KeycloakSession session;
-	private Producer<String, String> producer;
-	private String topicName;
+	private final KeycloakSession session;
+	private final Producer<String, String> producer;
+	private final String topicName;
 
 	RealworldEventListenerProvider(KeycloakSession session, Producer<String, String> producer, String topicName) {
 		this.session = session;
@@ -65,11 +65,11 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 					copyEmail(user, userUpdateDataBuilder);
 				}
 
-				JsonObjectBuilder userModificationEventBuilder = Json.createObjectBuilder();
-				userModificationEventBuilder.add("initiatingUserId", user.getId());
-				userModificationEventBuilder.add("timestamp", event.getTime());
-				userModificationEventBuilder.add("type", event.getType() == REGISTER ? "CREATE" : "UPDATE");
-				userModificationEventBuilder.add("payload", userUpdateDataBuilder);
+				JsonObjectBuilder userModificationEventBuilder = Json.createObjectBuilder()
+						.add("initiatingUserId", user.getId())
+						.add("timestamp", event.getTime())
+						.add("type", event.getType() == REGISTER ? "CREATE" : "UPDATE")
+						.add("payload", userUpdateDataBuilder);
 
 				producer.send(new ProducerRecord<>(topicName, user.getId(), userModificationEventBuilder.build().toString())).get();
 				success = true;
@@ -157,21 +157,16 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 	}
 
 	private Optional<JsonValue> getJsonValue(JsonObject jobj, String name) {
-		if( jobj == null || !jobj.containsKey(name) || jobj.isNull(name) ) {
-			return Optional.empty();
-		}
-		else {
-			return Optional.of(jobj.get(name));
-		}
+		return Optional.of(jobj)
+				.filter(jo -> jo.containsKey(name))
+				.filter(jo -> !jo.isNull(name))
+				.map(jo -> jo.get(name));
 	}
 
 	private Optional<JsonValue> first(JsonArray arr) {
-		if( arr.size() > 0 ) {
-			return Optional.of(arr.get(0));
-		}
-		else {
-			return Optional.empty();
-		}
+		return Optional.of(arr)
+				.filter(a -> a.size() > 0)
+				.map(a -> a.get(0));
 	}
 
 	@Override

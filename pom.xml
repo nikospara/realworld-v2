@@ -43,7 +43,7 @@
 		<version.junit.jupiter>5.6.2</version.junit.jupiter>
 		<version.kafka>2.5.0</version.kafka>
 		<version.kafka.scala>2.13</version.kafka.scala>
-		<version.keycloak>8.0.1</version.keycloak>
+		<version.keycloak>11.0.0</version.keycloak>
 		<version.liquibase>3.8.1</version.liquibase>
 		<version.mockito>3.4.4</version.mockito>
 		<version.nimbus-jose-jwt>8.19</version.nimbus-jose-jwt>

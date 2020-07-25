@@ -184,3 +184,11 @@ mvn process-classes quarkus:dev -Puser-quarkus-dev,user-h2,realworld-v2-local-h2
 Note that it requires the `process-classes` goal, not just `compile`. The reason is that some modules
 need to be indexed by Jandex, and the Jandex goal runs in the `process-classes` phase, which is right after `compile`
 [by default](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html).
+
+## Using
+
+Assuming you have started the `docker-compose-postgres` variant:
+
+### Register a user to Keycloak
+
+Go to http://localhost:8580/auth/realms/realworld/account and enter the data for a user.

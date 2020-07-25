@@ -24,6 +24,7 @@ services:
       - "10499:10499"
     depends_on:
       - postgres
+      - kafka
   postgres:
     image: 'rwlv2-postgres:latest'
     environment:
@@ -37,6 +38,7 @@ services:
     image: rwlv2-user:latest
     depends_on:
       - postgres
+      - kafka
     ports:
       - "8180:8180/tcp"
     env_file:
@@ -45,6 +47,7 @@ services:
     image: rwlv2-article:latest
     depends_on:
       - postgres
+      - kafka
     ports:
       - "8280:8280/tcp"
     env_file:
