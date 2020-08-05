@@ -42,6 +42,8 @@ spec:
           env:
             - name: DB_ADDR
               value: rwlv2-postgres
+            - name: KAFKA_BOOTSTRAP_HOST
+              value: rwlv2-kafka-int
           ports:
             - containerPort: 8580
               name: http

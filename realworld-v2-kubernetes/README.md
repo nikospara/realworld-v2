@@ -51,12 +51,19 @@ Kubernetes resources and instructions
       - deployment-postgres.yaml
       - statefulset-zookeeper.yaml
       - statefulset-kafka.yaml
+      - deployment-keycloak.yaml
     ```
 
 4. Run:
 
     ```shell script
     kubectl apply -k ./
+    ```
+   
+    Or apply each file by hand, preferably in the order same as above, e.g.:
+   
+    ```shell script
+    kubectl apply -f deployment-postgres.yaml
     ```
 
 Database
@@ -70,6 +77,11 @@ Zookeeper/Kafka
 The service name _rwlv2-kafka-ext_ is exposed on port 30094 on the Kubernetes node.
 Inside the cluster, Zookeeper is exposed under _rwlv2-zk-cs_ and Kafka as _rwlv2-kafka-int_.
 
+Keycloak
+--------
+
+The service _rwlv2-keycloak_ is exposed on port 30580 on the Kubernetes node.
+Access the UI at http://localhost:30580/auth/realms/realworld/account
 
 Destroying
 ----------
@@ -94,3 +106,22 @@ microk8s.ctr image import myimage.tar
 ```
 
 Verify with `microk8s.ctr images ls`.
+
+Move images from local Docker to remote Kubernetes
+--------------------------------------------------
+
+There is a file `images.txt` in the folder `realworld-v2-docker/docker-compose`.
+This file contains the names of all relevant images.
+Cd to the folder and run:
+
+```shell script
+cat images.txt | xargs -t -I {} docker tag {} {}:local
+cat images.txt | xargs -t -I {} docker image save -o ../../../{}.tar {}:local
+scp ../../../*.tar user@kubernetes-host:/desired/path/
+```
+
+And then from the Kubernetes host:
+
+```shell script
+cat images.txt | xargs -t -I {} microk8s.ctr image import /desired/path/{}.tar
+```

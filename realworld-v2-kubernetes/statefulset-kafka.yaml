@@ -9,7 +9,7 @@ spec:
   ports:
     - port: 9092
       name: server-int
-  clusterIP: None
+#  clusterIP: None
   selector:
     app: rwlv2-kafka
 ---
