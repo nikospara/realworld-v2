@@ -57,7 +57,7 @@ The other is to run only the peripherals in Docker - see `realworld-v2-docker/do
 - `article-h2`, `user-h2`: Activate the H2 database for the server and Liquibase for the respective microservice (currently `h2` and `postgres` are the only DB options)
 - `article-dbupdate`, `user-dbupdate`: Execute Liquibase to bring the respective database up-to-date (in the case of embedded H2 it will create it if it doesn't exist; just make sure that the directory exists)
 - `test-h2`: This will activate the DAO tests, using an in-memory H2 database (currently `h2` is the only DB option)
-- `article-quarkus-dev`, `user-quarkus-dev`: Activate `quarkus:dev` for the respective microservice; no not use together in the same command
+- `article-quarkus-dev`, `user-quarkus-dev`: Activate `quarkus:dev` for the respective microservice; do not use together in the same command
   (naturally there is no problem running them in parallel, as long as they run from different shells)
 - `docker`: Activating the Docker image build
 
