@@ -66,7 +66,7 @@ public class UserDaoImplTest {
 
 		assertEquals(ID, result.getId());
 
-		User u = em.find(User.class, ID);
+		UserEntity u = em.find(UserEntity.class, ID);
 		assertNotNull(u);
 		assertEquals(USERNAME, u.getUsername());
 		assertEquals(EMAIL, u.getEmail());
@@ -138,7 +138,7 @@ public class UserDaoImplTest {
 
 		assertEquals(1, statistics.getPrepareStatementCount());
 
-		User u = em.find(User.class, userid);
+		UserEntity u = em.find(UserEntity.class, userid);
 		assertNotNull(u);
 		assertEquals(USERNAME, u.getUsername());
 		assertEquals(EMAIL, u.getEmail());
@@ -161,7 +161,7 @@ public class UserDaoImplTest {
 
 		assertEquals(2, statistics.getPrepareStatementCount());
 
-		User u = em.find(User.class, userid);
+		UserEntity u = em.find(UserEntity.class, userid);
 		assertNotNull(u);
 		assertEquals(UPDATED_USERNAME, u.getUsername());
 		assertEquals(UPDATED_EMAIL, u.getEmail());

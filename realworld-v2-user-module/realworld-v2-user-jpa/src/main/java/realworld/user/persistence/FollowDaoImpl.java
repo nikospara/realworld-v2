@@ -43,16 +43,16 @@ public class FollowDaoImpl implements FollowDao {
 	@Override
 	public boolean exists(String followerId, String followedId) {
 		FollowId followId = new FollowId(followerId, followedId);
-		return em.find(Follow.class, followId) != null;
+		return em.find(FollowEntity.class, followId) != null;
 	}
 
 	@Override
 	public void create(String followerId, String followedId) {
 		FollowId followId = new FollowId(followerId, followedId);
-		if( em.find(Follow.class, followId) == null ) {
-			Follow follow = new Follow();
-			User follower = em.getReference(User.class, followerId);
-			User followed = em.getReference(User.class, followedId);
+		if( em.find(FollowEntity.class, followId) == null ) {
+			FollowEntity follow = new FollowEntity();
+			UserEntity follower = em.getReference(UserEntity.class, followerId);
+			UserEntity followed = em.getReference(UserEntity.class, followedId);
 			follow.setFollower(follower);
 			follow.setFollowed(followed);
 			em.persist(follow);
@@ -62,9 +62,9 @@ public class FollowDaoImpl implements FollowDao {
 	@Override
 	public int delete(String followerId, String followedId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaDelete<Follow> criteriaDelete = cb.createCriteriaDelete(Follow.class);
-		Root<Follow> followRoot = criteriaDelete.from(Follow.class);
-		criteriaDelete.where(cb.and(cb.equal(followRoot.get(Follow_.follower).get(User_.id),followerId),cb.equal(followRoot.get(Follow_.followed).get(User_.id),followedId)));
+		CriteriaDelete<FollowEntity> criteriaDelete = cb.createCriteriaDelete(FollowEntity.class);
+		Root<FollowEntity> followRoot = criteriaDelete.from(FollowEntity.class);
+		criteriaDelete.where(cb.and(cb.equal(followRoot.get(FollowEntity_.follower).get(UserEntity_.id),followerId),cb.equal(followRoot.get(FollowEntity_.followed).get(UserEntity_.id),followedId)));
 		return em.createQuery(criteriaDelete).executeUpdate();
 	}
 
@@ -72,9 +72,9 @@ public class FollowDaoImpl implements FollowDao {
 	public List<String> findAllFollowed(String userId) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> query = cb.createQuery(String.class);
-		Root<Follow> followRoot = query.from(Follow.class);
-		query.select(followRoot.get(Follow_.followed).get(User_.username))
-				.where(cb.equal(followRoot.get(Follow_.follower).get(User_.id), userId));
+		Root<FollowEntity> followRoot = query.from(FollowEntity.class);
+		query.select(followRoot.get(FollowEntity_.followed).get(UserEntity_.username))
+				.where(cb.equal(followRoot.get(FollowEntity_.follower).get(UserEntity_.id), userId));
 		return em.createQuery(query).getResultList();
 	}
 
@@ -82,11 +82,11 @@ public class FollowDaoImpl implements FollowDao {
 	public Map<String, Boolean> checkAllFollowed(String userId, List<String> userNames) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> query = cb.createQuery(String.class);
-		Root<Follow> followRoot = query.from(Follow.class);
-		query.select(followRoot.get(Follow_.followed).get(User_.username))
+		Root<FollowEntity> followRoot = query.from(FollowEntity.class);
+		query.select(followRoot.get(FollowEntity_.followed).get(UserEntity_.username))
 				.where(cb.and(
-						cb.equal(followRoot.get(Follow_.follower).get(User_.id), userId),
-						followRoot.get(Follow_.followed).get(User_.username).in(userNames)
+						cb.equal(followRoot.get(FollowEntity_.follower).get(UserEntity_.id), userId),
+						followRoot.get(FollowEntity_.followed).get(UserEntity_.username).in(userNames)
 				));
 		Map<String, Boolean> result = userNames.stream().collect(Collectors.toMap(Function.identity(), x -> false));
 		em.createQuery(query).getResultStream().forEach(username -> result.put(username, true));

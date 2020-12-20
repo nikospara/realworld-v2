@@ -60,12 +60,12 @@ public class FollowDaoImplTest {
 	@Order(1)
 	void testCreate() {
 		em.getTransaction().begin();
-		User u1 = new User();
+		UserEntity u1 = new UserEntity();
 		u1.setId(USER_ID1);
 		u1.setUsername(USERNAME1);
 		u1.setEmail(EMAIL1);
 		em.persist(u1);
-		User u2 = new User();
+		UserEntity u2 = new UserEntity();
 		u2.setId(USER_ID2);
 		u2.setUsername(USERNAME2);
 		u2.setEmail(EMAIL2);
@@ -81,7 +81,7 @@ public class FollowDaoImplTest {
 		assertEquals(0, statistics.getEntityLoadCount());
 
 		em.clear();
-		Follow f = em.find(Follow.class, new FollowId(USER_ID1, USER_ID2));
+		FollowEntity f = em.find(FollowEntity.class, new FollowId(USER_ID1, USER_ID2));
 		assertNotNull(f);
 	}
 

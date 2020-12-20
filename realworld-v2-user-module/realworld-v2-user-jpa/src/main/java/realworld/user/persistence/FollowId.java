@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Id class of the {@link Follow} entity.
+ * Id class of the {@link FollowEntity} entity.
  */
 @Embeddable
 public class FollowId implements Serializable {

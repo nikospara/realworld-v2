@@ -15,31 +15,31 @@ import javax.persistence.Table;
 @Entity
 @IdClass(FollowId.class)
 @Table(name = "RWL_USER_FOLLOW")
-public class Follow {
+public class FollowEntity {
 
 	@Id
 	@ManyToOne(fetch = LAZY, optional = false)
 	@JoinColumn(name = "user_id")
-	private User follower;
+	private UserEntity follower;
 
 	@Id
 	@ManyToOne(fetch = LAZY, optional = false)
 	@JoinColumn(name = "follows_id")
-	private User followed;
+	private UserEntity followed;
 
-	public User getFollower() {
+	public UserEntity getFollower() {
 		return follower;
 	}
 
-	public void setFollower(User follower) {
+	public void setFollower(UserEntity follower) {
 		this.follower = follower;
 	}
 
-	public User getFollowed() {
+	public UserEntity getFollowed() {
 		return followed;
 	}
 
-	public void setFollowed(User followed) {
+	public void setFollowed(UserEntity followed) {
 		this.followed = followed;
 	}
 }

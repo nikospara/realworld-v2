@@ -56,7 +56,7 @@ public class BiographyDaoImplTest {
 	@Order(1)
 	void testCreate() {
 		em.getTransaction().begin();
-		User u = new User();
+		UserEntity u = new UserEntity();
 		u.setId(USER_ID);
 		u.setUsername(USERNAME);
 		u.setEmail(EMAIL);
@@ -72,7 +72,7 @@ public class BiographyDaoImplTest {
 		assertEquals(0, statistics.getEntityLoadCount());
 
 		em.clear();
-		Biography b = em.find(Biography.class, USER_ID);
+		BiographyEntity b = em.find(BiographyEntity.class, USER_ID);
 		assertNotNull(b);
 		assertEquals(BIO, b.getBio());
 	}
@@ -94,7 +94,7 @@ public class BiographyDaoImplTest {
 		assertEquals(0, statistics.getEntityLoadCount());
 
 		em.clear();
-		Biography b = em.find(Biography.class, USER_ID);
+		BiographyEntity b = em.find(BiographyEntity.class, USER_ID);
 		assertNotNull(b);
 		assertEquals(BIO2, b.getBio());
 	}
@@ -109,7 +109,7 @@ public class BiographyDaoImplTest {
 		assertEquals(0, statistics.getEntityLoadCount());
 
 		em.clear();
-		Biography b = em.find(Biography.class, USER_ID);
+		BiographyEntity b = em.find(BiographyEntity.class, USER_ID);
 		assertNotNull(b);
 		assertEquals(BIO3, b.getBio());
 	}

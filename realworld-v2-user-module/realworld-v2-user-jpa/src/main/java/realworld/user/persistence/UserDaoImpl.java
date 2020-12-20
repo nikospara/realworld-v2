@@ -16,7 +16,7 @@ import realworld.user.model.ImmutableUserData;
 import realworld.user.model.UserData;
 
 /**
- * DAO for the {@link User} entity.
+ * DAO for the {@link UserEntity} entity.
  */
 @ApplicationScoped
 class UserDaoImpl implements UserDao {
@@ -42,7 +42,7 @@ class UserDaoImpl implements UserDao {
 
 	@Override
 	public UserData create(UserData user) {
-		User u = new User();
+		UserEntity u = new UserEntity();
 		u.setId(user.getId());
 		u.setUsername(user.getUsername());
 		u.setEmail(user.getEmail());
@@ -53,20 +53,20 @@ class UserDaoImpl implements UserDao {
 
 	@Override
 	public boolean usernameExists(String username) {
-		return unique((cb, root) -> cb.equal(root.get(User_.username), username));
+		return unique((cb, root) -> cb.equal(root.get(UserEntity_.username), username));
 	}
 
 	@Override
 	public boolean emailExists(String email) {
-		return unique((cb, root) -> cb.equal(cb.lower(root.get(User_.email)), email.toLowerCase()));
+		return unique((cb, root) -> cb.equal(cb.lower(root.get(UserEntity_.email)), email.toLowerCase()));
 	}
 
 	@Override
 	public Optional<UserData> findByUserName(String username) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<User> query = cb.createQuery(User.class);
-		Root<User> root = query.from(User.class);
-		query.where(cb.equal(root.get(User_.username), username));
+		CriteriaQuery<UserEntity> query = cb.createQuery(UserEntity.class);
+		Root<UserEntity> root = query.from(UserEntity.class);
+		query.where(cb.equal(root.get(UserEntity_.username), username));
 		return em.createQuery(query).setMaxResults(1).getResultStream()
 				.findFirst()
 				.map(this::fromUser);
@@ -74,7 +74,7 @@ class UserDaoImpl implements UserDao {
 
 	@Override
 	public Optional<UserData> findByUserId(String id) {
-		return Optional.ofNullable(em.find(User.class, id)).map(this::fromUser);
+		return Optional.ofNullable(em.find(UserEntity.class, id)).map(this::fromUser);
 	}
 
 	@Override
@@ -82,16 +82,16 @@ class UserDaoImpl implements UserDao {
 		return new UserUpdateOperationImpl(em);
 	}
 
-	private boolean unique(BiFunction<CriteriaBuilder, Root<User>, Expression<Boolean>> callback) {
+	private boolean unique(BiFunction<CriteriaBuilder, Root<UserEntity>, Expression<Boolean>> callback) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> query = cb.createQuery(String.class);
-		Root<User> root = query.from(User.class);
-		query.select(root.get(User_.username));
+		Root<UserEntity> root = query.from(UserEntity.class);
+		query.select(root.get(UserEntity_.username));
 		query.where(callback.apply(cb, root));
 		return !em.createQuery(query).setMaxResults(1).getResultList().isEmpty();
 	}
 
-	private UserData fromUser(User u) {
+	private UserData fromUser(UserEntity u) {
 		return ImmutableUserData.builder().id(u.getId()).username(u.getUsername()).email(u.getEmail()).imageUrl(u.getImageUrl()).build();
 	}
 }

@@ -17,7 +17,7 @@ import java.util.Optional;
 import realworld.user.dao.BiographyDao;
 
 /**
- * DAO for the {@link Biography} entity.
+ * DAO for the {@link BiographyEntity} entity.
  */
 @ApplicationScoped
 public class BiographyDaoImpl implements BiographyDao {
@@ -43,8 +43,8 @@ public class BiographyDaoImpl implements BiographyDao {
 
 	@Override
 	public void create(String userId, String content) {
-		Biography b = new Biography();
-		b.setUser(em.getReference(User.class, userId));
+		BiographyEntity b = new BiographyEntity();
+		b.setUser(em.getReference(UserEntity.class, userId));
 		b.setBio(content);
 		em.persist(b);
 	}
@@ -52,18 +52,18 @@ public class BiographyDaoImpl implements BiographyDao {
 	@Override
 	public void updateById(String userId, String content) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<Biography> updateQuery = cb.createCriteriaUpdate(Biography.class);
-		Root<Biography> biographyRoot = updateQuery.from(Biography.class);
-		updateQuery.set(Biography_.bio, content).where(cb.equal(biographyRoot.get(Biography_.userId), userId));
+		CriteriaUpdate<BiographyEntity> updateQuery = cb.createCriteriaUpdate(BiographyEntity.class);
+		Root<BiographyEntity> biographyRoot = updateQuery.from(BiographyEntity.class);
+		updateQuery.set(BiographyEntity_.bio, content).where(cb.equal(biographyRoot.get(BiographyEntity_.userId), userId));
 		em.createQuery(updateQuery).executeUpdate();
 	}
 
 	@Override
 	public void updateByUserName(String username, String content) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<Biography> updateQuery = cb.createCriteriaUpdate(Biography.class);
-		Root<Biography> biographyRoot = updateQuery.from(Biography.class);
-		updateQuery.set(Biography_.bio, content).where(cb.equal(biographyRoot.get(Biography_.userId), userIdByNameSubquery(cb,updateQuery,username)));
+		CriteriaUpdate<BiographyEntity> updateQuery = cb.createCriteriaUpdate(BiographyEntity.class);
+		Root<BiographyEntity> biographyRoot = updateQuery.from(BiographyEntity.class);
+		updateQuery.set(BiographyEntity_.bio, content).where(cb.equal(biographyRoot.get(BiographyEntity_.userId), userIdByNameSubquery(cb,updateQuery,username)));
 		em.createQuery(updateQuery).executeUpdate();
 	}
 
@@ -71,8 +71,8 @@ public class BiographyDaoImpl implements BiographyDao {
 	public Optional<String> findByUserName(String username) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> query = cb.createQuery(String.class);
-		Root<Biography> b = query.from(Biography.class);
-		query.select(b.get(Biography_.bio)).where(cb.equal(b.get(Biography_.userId), userIdByNameSubquery(cb,query,username)));
+		Root<BiographyEntity> b = query.from(BiographyEntity.class);
+		query.select(b.get(BiographyEntity_.bio)).where(cb.equal(b.get(BiographyEntity_.userId), userIdByNameSubquery(cb,query,username)));
 		try {
 			return Optional.of(em.createQuery(query).getSingleResult());
 		}
@@ -83,8 +83,8 @@ public class BiographyDaoImpl implements BiographyDao {
 
 	private Expression<String> userIdByNameSubquery(CriteriaBuilder cb, CommonAbstractCriteria query, String username) {
 		Subquery<String> subquery = query.subquery(String.class);
-		Root<User> userRoot = subquery.from(User.class);
-		subquery.select(userRoot.get(User_.id)).where(cb.equal(userRoot.get(User_.username),username));
+		Root<UserEntity> userRoot = subquery.from(UserEntity.class);
+		subquery.select(userRoot.get(UserEntity_.id)).where(cb.equal(userRoot.get(UserEntity_.username),username));
 		return subquery;
 	}
 }

@@ -15,12 +15,12 @@ import javax.persistence.Table;
  * The user biography entity.
  *
  * <p>Its purpose is to keep the, potentially long, biography
- * field separated from the main {@link User} entity and loaded on demand for better
+ * field separated from the main {@link UserEntity} entity and loaded on demand for better
  * performance.</p>
  */
 @Entity
 @Table(name = "RWL_USER_BIO")
-public class Biography {
+public class BiographyEntity {
 
 	@Id
 	private String userId;
@@ -28,7 +28,7 @@ public class Biography {
 	@MapsId
 	@OneToOne(fetch = LAZY)
 	@JoinColumn(name = "user_id")
-	private User user;
+	private UserEntity user;
 
 	@Lob
 	@Column(name = "bio")
@@ -40,10 +40,10 @@ public class Biography {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public User getUser() {
+	public UserEntity getUser() {
 		return user;
 	}
-	public void setUser(User user) {
+	public void setUser(UserEntity user) {
 		this.user = user;
 	}
 	public String getBio() {

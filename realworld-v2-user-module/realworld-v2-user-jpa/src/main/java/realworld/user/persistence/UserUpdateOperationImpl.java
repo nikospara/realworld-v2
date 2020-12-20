@@ -17,8 +17,8 @@ class UserUpdateOperationImpl implements UserUpdateOperation {
 
 	private EntityManager em;
 	private CriteriaBuilder cb;
-	private CriteriaUpdate<User> updateQuery;
-	private Root<User> userRoot;
+	private CriteriaUpdate<UserEntity> updateQuery;
+	private Root<UserEntity> userRoot;
 	private boolean hasAnyChange = false;
 
 	/**
@@ -29,14 +29,14 @@ class UserUpdateOperationImpl implements UserUpdateOperation {
 	UserUpdateOperationImpl(EntityManager em) {
 		this.em = em;
 		cb = em.getCriteriaBuilder();
-		updateQuery = cb.createCriteriaUpdate(User.class);
-		userRoot = updateQuery.from(User.class);
+		updateQuery = cb.createCriteriaUpdate(UserEntity.class);
+		userRoot = updateQuery.from(UserEntity.class);
 	}
 
 	@Override
 	public UserUpdateOperation setUsername(boolean reallySet, String newValue) {
 		if( reallySet ) {
-			updateQuery.set(User_.username, newValue);
+			updateQuery.set(UserEntity_.username, newValue);
 			hasAnyChange = true;
 		}
 		return this;
@@ -45,7 +45,7 @@ class UserUpdateOperationImpl implements UserUpdateOperation {
 	@Override
 	public UserUpdateOperation setEmail(boolean reallySet, String newValue) {
 		if( reallySet ) {
-			updateQuery.set(User_.email, newValue);
+			updateQuery.set(UserEntity_.email, newValue);
 			hasAnyChange = true;
 		}
 		return this;
@@ -54,7 +54,7 @@ class UserUpdateOperationImpl implements UserUpdateOperation {
 	@Override
 	public UserUpdateOperation setImageUrl(boolean reallySet, String newValue) {
 		if( reallySet ) {
-			updateQuery.set(User_.imageUrl, newValue);
+			updateQuery.set(UserEntity_.imageUrl, newValue);
 			hasAnyChange = true;
 		}
 		return this;
@@ -63,7 +63,7 @@ class UserUpdateOperationImpl implements UserUpdateOperation {
 	@Override
 	public void executeForId(String id) {
 		if( hasAnyChange ) {
-			updateQuery.where(cb.equal(userRoot.get(User_.id), id));
+			updateQuery.where(cb.equal(userRoot.get(UserEntity_.id), id));
 			int count = em.createQuery(updateQuery).executeUpdate();
 			if( count < 1 ) {
 				throw new EntityDoesNotExistException();

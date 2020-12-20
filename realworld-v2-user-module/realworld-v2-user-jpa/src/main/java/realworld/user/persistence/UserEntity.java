@@ -10,7 +10,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "RWL_USER")
-public class User {
+public class UserEntity {
 
 	@Id
 	@Column(name = "id")
