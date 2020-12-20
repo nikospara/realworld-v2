@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "RWL_ARTICLE_TAG")
-public class Tag {
+public class TagEntity {
 	@Id
 	@Column(name = "name")
 	private String name;
@@ -15,7 +15,7 @@ public class Tag {
 	/**
 	 * Default constructor.
 	 */
-	public Tag() {
+	public TagEntity() {
 		// NOOP
 	}
 
@@ -24,7 +24,7 @@ public class Tag {
 	 *
 	 * @param name The name
 	 */
-	public Tag(String name) {
+	public TagEntity(String name) {
 		this.name = name;
 	}
 

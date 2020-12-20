@@ -93,16 +93,16 @@ public class ArticleDaoImplTest {
 	@Order(1)
 	void testCreate() {
 		em.getTransaction().begin();
-		Tag tag1 = new Tag("tag1");
+		TagEntity tag1 = new TagEntity("tag1");
 		em.persist(tag1);
-		User user = new User(AUTHOR_ID, AUTHOR_NAME);
+		UserEntity user = new UserEntity(AUTHOR_ID, AUTHOR_NAME);
 		em.persist(user);
 		em.flush();
 		ArticleCreationData creationData = makeCreationData();
 		String id = sut.create(creationData, SLUG, CREATED_AT);
 		em.getTransaction().commit();
 
-		Article a = em.find(Article.class, id);
+		ArticleEntity a = em.find(ArticleEntity.class, id);
 		assertNotNull(a);
 	}
 
@@ -136,15 +136,15 @@ public class ArticleDaoImplTest {
 		String id = sut.update(SLUG_FOR_UPDATE, d, UPDATED_AT);
 		em.getTransaction().commit();
 
-		Article a = em.find(Article.class, id);
+		ArticleEntity a = em.find(ArticleEntity.class, id);
 		assertNotNull(a);
 		assertEquals(SLUG_FOR_UPDATE, a.getSlug());
 		assertEquals(UPDATED_AUTHOR_ID, a.getAuthorId());
 		assertEquals(UPDATED_UPDATED_AT, a.getUpdatedAt());
 		assertEquals(UPDATED_CREATED_AT, a.getCreatedAt());
-		assertEquals(UPDATED_BODY, em.find(ArticleBody.class, a.getId()).getBody());
+		assertEquals(UPDATED_BODY, em.find(ArticleBodyEntity.class, a.getId()).getBody());
 		assertEquals(UPDATED_DESCRIPTION, a.getDescription());
-		assertEquals(new HashSet<>(Arrays.asList("tag4", "tag5")), a.getTags().stream().map(Tag::getName).collect(Collectors.toSet()));
+		assertEquals(new HashSet<>(Arrays.asList("tag4", "tag5")), a.getTags().stream().map(TagEntity::getName).collect(Collectors.toSet()));
 		assertEquals(UPDATED_TITLE, a.getTitle());
 	}
 
@@ -152,7 +152,7 @@ public class ArticleDaoImplTest {
 	@Order(3)
 	void testDelete() {
 		em.getTransaction().begin();
-		ArticleFavorite fav = new ArticleFavorite();
+		ArticleFavoriteEntity fav = new ArticleFavoriteEntity();
 		fav.setArticleId(sut.findArticleIdBySlug(SLUG_FOR_UPDATE));
 		fav.setUserId(AUTHOR_ID);
 		em.persist(fav);
@@ -249,9 +249,9 @@ public class ArticleDaoImplTest {
 	@Order(100) // keep me last
 	void testFind() {
 		em.getTransaction().begin();
-		Article a1 = createArticle("ar1", AUTHOR_ID);
-		Article a2 = createArticle("ar2", "y", "tag1");
-		Article a3 = createArticle("ar3", "z", "tag2");
+		ArticleEntity a1 = createArticle("ar1", AUTHOR_ID);
+		ArticleEntity a2 = createArticle("ar2", "y", "tag1");
+		ArticleEntity a3 = createArticle("ar3", "z", "tag2");
 		favoriteArticle(a1, "u");
 		favoriteArticle(a3, "u");
 		em.getTransaction().commit();
@@ -291,21 +291,21 @@ public class ArticleDaoImplTest {
 		// TODO Authors!!!
 	}
 
-	private Article createArticle(String slug, String authorId, String... tags) {
-		Article a = new Article();
+	private ArticleEntity createArticle(String slug, String authorId, String... tags) {
+		ArticleEntity a = new ArticleEntity();
 		a.setId(UUID.randomUUID().toString());
 		a.setSlug(slug);
 		a.setTitle(slug + " TITLE");
 		a.setDescription(slug + " DESCR");
 		a.setAuthorId(authorId);
 		a.setCreatedAt(LocalDateTime.now());
-		a.setTags(Arrays.stream(tags).map(t -> em.getReference(Tag.class, t)).collect(toSet()));
+		a.setTags(Arrays.stream(tags).map(t -> em.getReference(TagEntity.class, t)).collect(toSet()));
 		em.persist(a);
 		return a;
 	}
 
-	private void favoriteArticle(Article a, String userId) {
-		ArticleFavorite f = new ArticleFavorite();
+	private void favoriteArticle(ArticleEntity a, String userId) {
+		ArticleFavoriteEntity f = new ArticleFavoriteEntity();
 		f.setArticleId(a.getId());
 		f.setUserId(userId);
 		em.persist(f);

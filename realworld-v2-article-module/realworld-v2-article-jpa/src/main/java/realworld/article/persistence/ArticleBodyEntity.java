@@ -15,11 +15,11 @@ import javax.persistence.Table;
  * The article body entity.
  *
  * <p>Its purpose is to keep the body of an article, which is normally long and not always needed,
- * separated from the main {@link Article} entity and loaded on demand for better performance.</p>
+ * separated from the main {@link ArticleEntity} entity and loaded on demand for better performance.</p>
  */
 @Entity
 @Table(name = "RWL_ARTICLE_BODY")
-public class ArticleBody {
+public class ArticleBodyEntity {
 
 	@Id
 	private String articleId;
@@ -27,7 +27,7 @@ public class ArticleBody {
 	@MapsId
 	@OneToOne(fetch = LAZY)
 	@JoinColumn(name = "article_id")
-	private Article article;
+	private ArticleEntity article;
 
 	@Column(name = "body")
 	@Lob
@@ -39,10 +39,10 @@ public class ArticleBody {
 	public void setArticleId(String articleId) {
 		this.articleId = articleId;
 	}
-	public Article getArticle() {
+	public ArticleEntity getArticle() {
 		return article;
 	}
-	public void setArticle(Article article) {
+	public void setArticle(ArticleEntity article) {
 		this.article = article;
 	}
 	public String getBody() {

@@ -17,7 +17,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "RWL_ARTICLE")
-public class Article {
+public class ArticleEntity {
 
 	@Id
 	@Column(name = "id")
@@ -47,7 +47,7 @@ public class Article {
 			joinColumns = @JoinColumn(name = "article_id", nullable = false),
 			inverseJoinColumns = @JoinColumn(name = "tag_name", nullable = false)
 	)
-	private Set<Tag> tags = new HashSet<>();
+	private Set<TagEntity> tags = new HashSet<>();
 
 	public String getId() {
 		return id;
@@ -105,11 +105,11 @@ public class Article {
 		this.authorId = authorId;
 	}
 
-	public Set<Tag> getTags() {
+	public Set<TagEntity> getTags() {
 		return tags;
 	}
 
-	public void setTags(Set<Tag> tags) {
+	public void setTags(Set<TagEntity> tags) {
 		this.tags = tags;
 	}
 }

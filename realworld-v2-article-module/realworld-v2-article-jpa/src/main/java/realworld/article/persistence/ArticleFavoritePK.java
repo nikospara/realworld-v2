@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * JPA PK class for the {@link ArticleFavorite}.
+ * JPA PK class for the {@link ArticleFavoriteEntity}.
  */
 public class ArticleFavoritePK implements Serializable {
 

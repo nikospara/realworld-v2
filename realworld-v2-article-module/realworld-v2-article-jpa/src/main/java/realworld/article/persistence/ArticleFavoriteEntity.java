@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "RWL_ARTICLE_FAV")
 @IdClass(ArticleFavoritePK.class)
-public class ArticleFavorite {
+public class ArticleFavoriteEntity {
 
 	@Id
 	@Column(name = "article_id")

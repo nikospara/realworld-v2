@@ -10,7 +10,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "RWL_USER")
-public class User {
+public class UserEntity {
 
 	@Id
 	@Column(name = "id")
@@ -22,7 +22,7 @@ public class User {
 	/**
 	 * Default constructor.
 	 */
-	public User() {
+	public UserEntity() {
 		// NOOP
 	}
 
@@ -32,7 +32,7 @@ public class User {
 	 * @param id       The id
 	 * @param username The user name
 	 */
-	public User(String id, String username) {
+	public UserEntity(String id, String username) {
 		this.id = id;
 		this.username = username;
 	}

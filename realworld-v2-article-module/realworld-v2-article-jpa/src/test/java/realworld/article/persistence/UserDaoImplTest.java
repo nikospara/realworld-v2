@@ -58,7 +58,7 @@ public class UserDaoImplTest {
 		em.getTransaction().commit();
 		em.clear();
 
-		User u = em.find(User.class, ID);
+		UserEntity u = em.find(UserEntity.class, ID);
 		assertNotNull(u);
 		assertEquals(USERNAME, u.getUsername());
 		assertEquals(1L, statistics.getEntityInsertCount());
@@ -89,7 +89,7 @@ public class UserDaoImplTest {
 		em.getTransaction().commit();
 		em.clear();
 
-		User u = em.find(User.class, ID);
+		UserEntity u = em.find(UserEntity.class, ID);
 		assertNotNull(u);
 		assertEquals(UPDATED_USERNAME, u.getUsername());
 

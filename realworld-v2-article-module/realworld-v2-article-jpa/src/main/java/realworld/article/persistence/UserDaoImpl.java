@@ -40,7 +40,7 @@ class UserDaoImpl implements UserDao {
 
 	@Override
 	public void add(String id, String username) {
-		User u = new User();
+		UserEntity u = new UserEntity();
 		u.setId(id);
 		u.setUsername(username);
 		em.persist(u);
@@ -49,10 +49,10 @@ class UserDaoImpl implements UserDao {
 	@Override
 	public void updateUsername(String id, String username) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<User> updateQuery = cb.createCriteriaUpdate(User.class);
-		Root<User> userRoot = updateQuery.from(User.class);
-		updateQuery.set(User_.username, username);
-		updateQuery.where(cb.equal(userRoot.get(User_.id), id));
+		CriteriaUpdate<UserEntity> updateQuery = cb.createCriteriaUpdate(UserEntity.class);
+		Root<UserEntity> userRoot = updateQuery.from(UserEntity.class);
+		updateQuery.set(UserEntity_.username, username);
+		updateQuery.where(cb.equal(userRoot.get(UserEntity_.id), id));
 		int count = em.createQuery(updateQuery).executeUpdate();
 		if( count < 1 ) {
 			throw new EntityDoesNotExistException();
@@ -62,16 +62,16 @@ class UserDaoImpl implements UserDao {
 	@Override
 	public Optional<String> findByUserName(String username) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<User> query = cb.createQuery(User.class);
-		Root<User> root = query.from(User.class);
-		query.where(cb.equal(root.get(User_.username), username));
+		CriteriaQuery<UserEntity> query = cb.createQuery(UserEntity.class);
+		Root<UserEntity> root = query.from(UserEntity.class);
+		query.where(cb.equal(root.get(UserEntity_.username), username));
 		return em.createQuery(query).setMaxResults(1).getResultStream()
 				.findFirst()
-				.map(User::getId);
+				.map(UserEntity::getId);
 	}
 
 	@Override
 	public Optional<String> findByUserId(String id) {
-		return Optional.ofNullable(em.find(User.class, id)).map(User::getUsername);
+		return Optional.ofNullable(em.find(UserEntity.class, id)).map(UserEntity::getUsername);
 	}
 }
