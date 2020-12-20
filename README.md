@@ -12,9 +12,9 @@ The build system is Maven and is configured by a set of properties and profiles,
 The following properties are local to an environment; they can be specified as `-Dpropname=propvalue` command line arguments,
 or placed in a local Maven profile in `~/.m2/settings.xml`.
 
-- `database.user.url`, `database.article.url`: The JDBC URL of the database for the respective microservice
-- `database.user.username`, `database.article.username`: The DB user name
-- `database.user.password`, `database.article.password`: The DB password
+- `database.user.url`, `database.article.url`, `database.comments.url`: The JDBC URL of the database for the respective microservice
+- `database.user.username`, `database.article.username`, `database.comments.username`: The DB user name
+- `database.user.password`, `database.article.password`, `database.comments.password`: The DB password
 - `kafka.bootstrap.servers`: The Kafka bootstrap servers for that environment
 - **(TODO)** `db.env` (default: `dev`): Needed only by Liquibase to indicate which environment-specific [contexts](https://www.liquibase.org/documentation/contexts.html)
 will it activate; e.g. `dev` will activate the `data-dev` context
@@ -31,6 +31,9 @@ Example:
 				<database.user.url>jdbc:postgresql://localhost/rwlv2</database.user.url>
 				<database.user.username>rwlv2_user</database.user.username>
 				<database.user.password>rwlv2_user</database.user.password>
+				<database.comments.url>jdbc:postgresql://localhost/rwlv2</database.comments.url>
+				<database.comments.username>rwlv2_user</database.comments.username>
+				<database.comments.password>rwlv2_user</database.comments.password>
 				<kafka.bootstrap.servers>localhost:9094</kafka.bootstrap.servers>
 			</properties>
 		</profile>
@@ -43,6 +46,9 @@ Example:
 				<database.user.url>jdbc:postgresql://postgres/rwlv2</database.user.url>
 				<database.user.username>rwlv2_user</database.user.username>
 				<database.user.password>rwlv2_user</database.user.password>
+				<database.comments.url>jdbc:postgresql://postgres/rwlv2</database.comments.url>
+				<database.comments.username>rwlv2_user</database.comments.username>
+				<database.comments.password>rwlv2_user</database.comments.password>
 				<kafka.bootstrap.servers>kafka:9092</kafka.bootstrap.servers>
 			</properties>
 		</profile>
@@ -54,10 +60,10 @@ The other is to run only the peripherals in Docker - see `realworld-v2-docker/do
 
 ### Build profiles
 
-- `article-h2`, `user-h2`: Activate the H2 database for the server and Liquibase for the respective microservice (currently `h2` and `postgres` are the only DB options)
-- `article-dbupdate`, `user-dbupdate`: Execute Liquibase to bring the respective database up-to-date (in the case of embedded H2 it will create it if it doesn't exist; just make sure that the directory exists)
+- `article-h2`, `user-h2`, `comments-h2`: Activate the H2 database for the server and Liquibase for the respective microservice (currently `h2` and `postgres` are the only DB options)
+- `article-dbupdate`, `user-dbupdate`, `comments-dbupdate`: Execute Liquibase to bring the respective database up-to-date (in the case of embedded H2 it will create it if it doesn't exist; just make sure that the directory exists)
 - `test-h2`: This will activate the DAO tests, using an in-memory H2 database (currently `h2` is the only DB option)
-- `article-quarkus-dev`, `user-quarkus-dev`: Activate `quarkus:dev` for the respective microservice; do not use together in the same command
+- `article-quarkus-dev`, `user-quarkus-dev`, `comments-quarkus-dev`: Activate `quarkus:dev` for the respective microservice; do not use together in the same command
   (naturally there is no problem running them in parallel, as long as they run from different shells)
 - `docker`: Activating the Docker image build
 
@@ -94,15 +100,18 @@ Assuming that the properties are defined through a Maven profile, e.g. like the 
                                 <database.user.url>jdbc:h2:/home/myuser/h2/user</database.user.url>
                                 <database.user.username>sa</database.user.username>
                                 <database.user.password>sa</database.user.password>
+                                <database.comments.url>jdbc:h2:/home/myuser/h2/comments</database.comments.url>
+                                <database.comments.username>sa</database.comments.username>
+                                <database.comments.password>sa</database.comments.password>
                                 <kafka.bootstrap.servers>localhost:9094</kafka.bootstrap.servers>
                         </properties>
                 </profile>
 ```
 
-Then make sure that the directory `/home/myuser/h2` exists and run:
+Then make sure that the directory `/home/myuser/h2`, as specified in the `database.xxx.url` above, exists and run:
 
 ```shell
-mvn process-resources -Particle-h2,user-h2,article-dbupdate,user-dbupdate,realworld-v2-local-h2
+mvn process-resources -Particle-h2,user-h2,article-dbupdate,user-dbupdate,comments-dbupdate,realworld-v2-local-h2
 ```
 
 Otherwise, you have to specify the properties by command line:
@@ -114,7 +123,7 @@ mvn process-resources -Particle-h2,user-h2,article-dbupdate,user-dbupdate -Ddata
 ### Building the JAR artifacts
 
 ```shell
-mvn clean package -Puser-h2,article-h2,test-h2
+mvn clean package -Puser-h2,article-h2,comments-h2,test-h2
 ```
 
 You can omit `test-h2` to skip the DB tests.
@@ -136,7 +145,7 @@ mvn ... package -Pdocker,...
 E.g.
 
 ```shell
-mvn clean package -Pdocker,user-h2,article-h2,test-h2
+mvn clean package -Puser-h2,article-h2,comments-h2,test-h2,docker
 ```
 
 #### Docker compose

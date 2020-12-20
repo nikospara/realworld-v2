@@ -10,7 +10,7 @@
 	<artifactId>realworld-v2-article-services</artifactId>
 
 	<name>Realworld-v2: Article services</name>
-	<description>Realworld-v2: Article module: Article or the Domain in Hexagonal Architecture</description>
+	<description>Realworld-v2: Article module: Services or the Domain in Hexagonal Architecture</description>
 
 	<packaging>jar</packaging>
 

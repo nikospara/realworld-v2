@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>realworld-v2-comments-module</artifactId>
+		<groupId>realworld.example</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>realworld-v2-comments-model</artifactId>
+
+	<name>Realworld-v2: Comments model</name>
+	<description>Realworld-v2: Comments module: Model</description>
+
+	<packaging>jar</packaging>
+
+	<dependencies>
+		<!-- SPECS -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+
+		<!-- PROJECT -->
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-types</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<!--  OTHER -->
+		<dependency>
+			<groupId>org.immutables</groupId>
+			<artifactId>value</artifactId>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jboss.jandex</groupId>
+				<artifactId>jandex-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>make-index</id>
+						<goals>
+							<goal>jandex</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

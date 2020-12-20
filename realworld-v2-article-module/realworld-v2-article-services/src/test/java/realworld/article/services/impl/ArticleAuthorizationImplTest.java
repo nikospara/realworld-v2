@@ -42,16 +42,13 @@ public class ArticleAuthorizationImplTest {
 	private static final String USER_ID = "USER_ID";
 	private static final String AUTHOR_ID = "AUTHOR_ID";
 
-	@Produces
-	@Mock
+	@Produces @Mock
 	private AuthenticationContext authenticationContext;
 
-	@Produces
-	@Mock
+	@Produces @Mock
 	private ArticleDao articleDao;
 
-	@Produces
-	@Mock
+	@Produces @Mock
 	private Authorization authorization;
 
 	@Inject

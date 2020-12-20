@@ -25,5 +25,12 @@
 			<groupId>javax.persistence</groupId>
 			<artifactId>javax.persistence-api</artifactId>
 		</dependency>
+
+		<!-- PROJECT -->
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-types</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>

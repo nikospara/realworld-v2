@@ -32,7 +32,7 @@
 			<properties>
 				<database.article.db-kind>h2</database.article.db-kind>
 				<database.article.driver>org.h2.Driver</database.article.driver>
-				<database.article.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.article.hibernate.dialect><!-- OBSOLETE -->
+				<!--<database.article.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.article.hibernate.dialect> OBSOLETE -->
 				<database.article.driver.groupId>com.h2database</database.article.driver.groupId>
 				<database.article.driver.artifactId>h2</database.article.driver.artifactId>
 				<database.article.driver.version>${version.h2}</database.article.driver.version>
@@ -55,7 +55,7 @@
 			<properties>
 				<database.article.db-kind>postgresql</database.article.db-kind>
 				<database.article.driver>org.postgresql.Driver</database.article.driver>
-				<database.article.hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</database.article.hibernate.dialect><!-- OBSOLETE -->
+				<!--<database.article.hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</database.article.hibernate.dialect> OBSOLETE -->
 				<database.article.driver.groupId>org.postgresql</database.article.driver.groupId>
 				<database.article.driver.artifactId>postgresql</database.article.driver.artifactId>
 				<database.article.driver.version>${version.postgres}</database.article.driver.version>

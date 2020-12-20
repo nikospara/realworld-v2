@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>realworld-v2-comments-module</artifactId>
+		<groupId>realworld.example</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>realworld-v2-comments-migrations</artifactId>
+
+	<name>Realworld-v2: Comments migrations</name>
+	<description>Realworld-v2: Comments module db migration scripts</description>
+
+	<packaging>jar</packaging>
+
+	<profiles>
+		<profile>
+			<id>comments-dbupdate</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.liquibase</groupId>
+						<artifactId>liquibase-maven-plugin</artifactId>
+						<version>${version.liquibase}</version>
+						<configuration>
+							<changeLogFile>src/main/resources/db.changelog.xml</changeLogFile>
+							<promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+							<driver>${database.comments.driver}</driver>
+							<url>${database.comments.url}</url>
+							<username>${database.comments.username}</username>
+							<password>${database.comments.password}</password>
+						</configuration>
+						<executions>
+							<execution>
+								<id>liquibase-update</id>
+								<phase>process-resources</phase>
+								<goals>
+									<goal>update</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>comments-h2</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>comments-postgres</id>
+			<dependencies>
+				<dependency>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+</project>

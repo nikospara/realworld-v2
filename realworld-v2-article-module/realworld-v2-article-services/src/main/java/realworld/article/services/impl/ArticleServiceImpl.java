@@ -27,7 +27,7 @@ import realworld.authentication.AuthenticationContext;
 import realworld.services.DateTimeService;
 
 /**
- * Implementation of the
+ * Implementation of the {@link ArticleService}.
  */
 @ApplicationScoped
 @Transactional(dontRollbackOn = EntityDoesNotExistException.class)
