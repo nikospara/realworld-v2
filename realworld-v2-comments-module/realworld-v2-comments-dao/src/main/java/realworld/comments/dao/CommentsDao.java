@@ -51,9 +51,9 @@ public interface CommentsDao {
 	/**
 	 * Find the comments for an article, optionally sorted and paged.
 	 *
-	 * @param articleId The article for which to fetch the comments
+	 * @param slug      The slug of the article for which to fetch the comments
 	 * @param paging    Paging instructions (if {@code null}, the default is fetch all, sort by creation date descending)
 	 * @return The page of results
 	 */
-	List<Comment> findCommentsForArticlePaged(String articleId, Paging<CommentOrderBy> paging);
+	List<Comment> findCommentsForArticlePaged(String slug, Paging<CommentOrderBy> paging);
 }

@@ -47,8 +47,8 @@ class CommentsServiceAuthorizerImpl implements CommentsServiceAuthorizer {
 	}
 
 	@Override
-	public SearchResult<Comment> findCommentsForArticle(String articleId, Paging<CommentOrderBy> paging, BiFunction<String, Paging<CommentOrderBy>, SearchResult<Comment>> delegate) {
-		return delegate.apply(articleId, paging);
+	public SearchResult<Comment> findCommentsForArticle(String slug, Paging<CommentOrderBy> paging, BiFunction<String, Paging<CommentOrderBy>, SearchResult<Comment>> delegate) {
+		return delegate.apply(slug, paging);
 	}
 
 	@Override

@@ -22,6 +22,7 @@ will it activate; e.g. `dev` will activate the `data-dev` context
 Example:
 
 ```xml
+<settings>
 		<profile>
 			<id>realworld-v2-local-postgres</id>
 			<properties>
@@ -52,6 +53,7 @@ Example:
 				<kafka.bootstrap.servers>kafka:9092</kafka.bootstrap.servers>
 			</properties>
 		</profile>
+</settings>
 ```
 
 Both profiles use Postgresql. One is to run the entire application through `docker-compose`, in which case Kafka and

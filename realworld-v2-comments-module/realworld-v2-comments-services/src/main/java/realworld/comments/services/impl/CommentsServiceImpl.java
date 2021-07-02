@@ -72,9 +72,9 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	@Override
-	public SearchResult<Comment> findCommentsForArticle(String outerArticleId, Paging<CommentOrderBy> outerPaging) {
-		return authorizer.findCommentsForArticle(outerArticleId, outerPaging, (articleId, paging) -> {
-			List<Comment> results = dao.findCommentsForArticlePaged(articleId, paging);
+	public SearchResult<Comment> findCommentsForArticle(String outerSlug, Paging<CommentOrderBy> outerPaging) {
+		return authorizer.findCommentsForArticle(outerSlug, outerPaging, (slug, paging) -> {
+			List<Comment> results = dao.findCommentsForArticlePaged(slug, paging);
 			if( paging == null || paging.getLimit() == null ) {
 				return new SearchResult<>(results.size(), results);
 			}
@@ -82,7 +82,7 @@ public class CommentsServiceImpl implements CommentsService {
 				return new SearchResult<>((paging.getOffset() != null ? paging.getOffset() : 0) + results.size(), results);
 			}
 			else {
-				return new SearchResult<>(dao.countCommentsForArticle(articleId), results);
+				return new SearchResult<>(dao.countCommentsForArticle(slug), results);
 			}
 		});
 	}

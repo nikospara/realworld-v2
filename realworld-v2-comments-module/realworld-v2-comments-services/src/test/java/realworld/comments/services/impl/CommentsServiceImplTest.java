@@ -9,7 +9,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static realworld.OrderByDirection.ASC;
-import static realworld.comments.model.CommentOrderBy.CREATION_DATE;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
@@ -45,6 +44,7 @@ import realworld.services.DateTimeService;
 public class CommentsServiceImplTest {
 
 	private static final String ARTICLE_ID = "article_id";
+	private static final String ARTICLE_SLUG = "slug";
 	private static final String BODY = "Body";
 	private static final LocalDateTime CREATION_DATE = LocalDateTime.now();
 	private static final String USER_ID = "user_id";
@@ -102,7 +102,7 @@ public class CommentsServiceImplTest {
 
 	@Test
 	void testFindCommentsForArticleNullPaging() {
-		SearchResult<Comment> result = executeFind(ARTICLE_ID, null, 5);
+		SearchResult<Comment> result = executeFind(ARTICLE_SLUG, null, 5);
 		assertEquals(5L, result.getCount());
 		assertEquals(5, result.getResults().size());
 		verify(dao).findCommentsForArticlePaged(any(), any());
@@ -111,7 +111,7 @@ public class CommentsServiceImplTest {
 
 	@Test
 	void testFindCommentsForArticleNoLimit() {
-		SearchResult<Comment> result = executeFind(ARTICLE_ID, paging(30, null, CommentOrderBy.CREATION_DATE, ASC), 5);
+		SearchResult<Comment> result = executeFind(ARTICLE_SLUG, paging(30, null, CommentOrderBy.CREATION_DATE, ASC), 5);
 		assertEquals(5L, result.getCount());
 		assertEquals(5, result.getResults().size());
 		verify(dao).findCommentsForArticlePaged(any(), any());
@@ -120,7 +120,7 @@ public class CommentsServiceImplTest {
 
 	@Test
 	void testFindCommentsForArticleResultSizeLessThanLimit() {
-		SearchResult<Comment> result = executeFind(ARTICLE_ID, paging(40, 20, CommentOrderBy.CREATION_DATE, ASC), 5);
+		SearchResult<Comment> result = executeFind(ARTICLE_SLUG, paging(40, 20, CommentOrderBy.CREATION_DATE, ASC), 5);
 		assertEquals(45L, result.getCount());
 		assertEquals(5, result.getResults().size());
 		verify(dao).findCommentsForArticlePaged(any(), any());
@@ -129,22 +129,22 @@ public class CommentsServiceImplTest {
 
 	@Test
 	void testFindCommentsForArticle() {
-		when(dao.countCommentsForArticle(ARTICLE_ID)).thenReturn(60L);
-		SearchResult<Comment> result = executeFind(ARTICLE_ID, paging(40, 20, CommentOrderBy.CREATION_DATE, ASC), 20);
+		when(dao.countCommentsForArticle(ARTICLE_SLUG)).thenReturn(60L);
+		SearchResult<Comment> result = executeFind(ARTICLE_SLUG, paging(40, 20, CommentOrderBy.CREATION_DATE, ASC), 20);
 		assertEquals(60L, result.getCount());
 		assertEquals(20, result.getResults().size());
 		verify(dao).findCommentsForArticlePaged(any(), any());
 		verifyNoMoreInteractions(dao);
 	}
 
-	private SearchResult<Comment> executeFind(String articleId, Paging<CommentOrderBy> paging, int numberOfResults) {
+	private SearchResult<Comment> executeFind(String slug, Paging<CommentOrderBy> paging, int numberOfResults) {
 		List<Comment> results = new ArrayList<>();
 		for( int i=0; i < numberOfResults; i++ ) {
 			results.add(mock(Comment.class));
 		}
 		when(dao.findCommentsForArticlePaged(any(), any())).thenReturn(results);
 		when(authorizer.findCommentsForArticle(any(), any(), any())).thenAnswer(iom -> ((BiFunction<?,?,?>) iom.getArgument(2)).apply(iom.getArgument(0), iom.getArgument(1)));
-		return sut.findCommentsForArticle(articleId, paging);
+		return sut.findCommentsForArticle(slug, paging);
 	}
 
 	private Paging<CommentOrderBy> paging(Integer offset, Integer limit, CommentOrderBy orderByField, OrderByDirection direction) {

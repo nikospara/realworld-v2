@@ -8,6 +8,7 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
@@ -99,11 +100,16 @@ public class CommentsDaoImpl implements CommentsDao {
 	}
 
 	@Override
-	public List<Comment> findCommentsForArticlePaged(String articleId, Paging<CommentOrderBy> paging) {
+	public List<Comment> findCommentsForArticlePaged(String slug, Paging<CommentOrderBy> paging) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CommentEntity> query = cb.createQuery(CommentEntity.class);
 		Root<CommentEntity> commentEntity = query.from(CommentEntity.class);
-		query.where(cb.equal(commentEntity.get(CommentEntity_.articleId), articleId));
+		Subquery<String> articleIdSubquery = query.subquery(String.class);
+		Root<ArticleEntity> articleEntity = articleIdSubquery.from(ArticleEntity.class);
+		articleIdSubquery
+				.select(articleEntity.get(ArticleEntity_.id))
+				.where(cb.equal(articleEntity.get(ArticleEntity_.slug), slug));
+		query.where(cb.equal(commentEntity.get(CommentEntity_.articleId), articleIdSubquery));
 		TypedQuery<CommentEntity> typedQuery = helper.applyPaging(cb, query, paging, makeOrderByMapper(commentEntity));
 		return typedQuery.getResultList().stream().map(this::toComment).collect(Collectors.toList());
 	}

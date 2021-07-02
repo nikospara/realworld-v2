@@ -21,11 +21,11 @@ public interface CommentsService {
 	/**
 	 * Find the comments for an article, optionally sorted and paged.
 	 *
-	 * @param articleId The article for which to fetch the comments
+	 * @param slug      The slug of the article for which to fetch the comments
 	 * @param paging    Paging instructions (if {@code null}, the default is fetch all, sort by creation date descending)
 	 * @return The search results
 	 */
-	SearchResult<Comment> findCommentsForArticle(String articleId, Paging<CommentOrderBy> paging);
+	SearchResult<Comment> findCommentsForArticle(String slug, Paging<CommentOrderBy> paging);
 
 	/**
 	 * Delete the comment with the specified id.

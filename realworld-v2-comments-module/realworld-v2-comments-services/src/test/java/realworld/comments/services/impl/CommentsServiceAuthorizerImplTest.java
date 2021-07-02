@@ -38,6 +38,7 @@ import realworld.comments.model.CommentOrderBy;
 public class CommentsServiceAuthorizerImplTest {
 
 	private static final String ARTICLE_ID = "a971c13-1d";
+	private static final String ARTICLE_SLUG = "slug";
 	private static final String COMMENT_ID = "c066347-1d";
 	private static final String BODY = "Some body text";
 
@@ -76,8 +77,8 @@ public class CommentsServiceAuthorizerImplTest {
 		@SuppressWarnings("unchecked")
 		SearchResult<Comment> mockResult = mock(SearchResult.class);
 		Paging<CommentOrderBy> paging = new Paging<>();
-		when(mockDelegate.apply(ARTICLE_ID, paging)).thenReturn(mockResult);
-		var result = sut.findCommentsForArticle(ARTICLE_ID, paging, mockDelegate);
+		when(mockDelegate.apply(ARTICLE_SLUG, paging)).thenReturn(mockResult);
+		var result = sut.findCommentsForArticle(ARTICLE_SLUG, paging, mockDelegate);
 		assertSame(mockResult, result);
 		verifyNoInteractions(authorization);
 	}

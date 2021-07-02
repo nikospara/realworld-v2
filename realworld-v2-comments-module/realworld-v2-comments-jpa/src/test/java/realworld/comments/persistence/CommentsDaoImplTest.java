@@ -47,25 +47,26 @@ public class CommentsDaoImplTest {
 	private static final String BODY = "Body";
 	private static final String ARTICLE_ID = UUID.randomUUID().toString();
 	private static final String OTHER_ARTICLE_ID = UUID.randomUUID().toString();
+	private static final String ARTICLE_SLUG = "slug1";
+	private static final String OTHER_ARTICLE_SLUG = "slug2";
 	private static final String AUTHOR_ID = UUID.randomUUID().toString();
 	private static final LocalDateTime CREATED_AT = LocalDateTime.now().minus(1, ChronoUnit.HOURS);
 	private static final LocalDateTime UPDATED_AT = LocalDateTime.now();
 
 	private EntityManager em;
-	private JpaHelper helper;
 	private CommentsDaoImpl sut;
 
 	@BeforeEach
 	void init(EntityManager em) {
 		this.em = em;
-		helper = new JpaHelperImpl(em);
-		sut = new CommentsDaoImpl(em, helper);
+		sut = new CommentsDaoImpl(em, new JpaHelperImpl(em));
 	}
 
 	@Test
 	@Order(1)
 	void testCreate() {
 		em.getTransaction().begin();
+		article(ARTICLE_ID, ARTICLE_SLUG);
 		Comment comment = comment(COMMENT_ID, ARTICLE_ID, CREATED_AT);
 		String commentId = sut.create(comment);
 		em.getTransaction().commit();
@@ -90,6 +91,8 @@ public class CommentsDaoImplTest {
 	void testDeleteAllForArticle() {
 		em.getTransaction().begin();
 		String randomArticleId = UUID.randomUUID().toString();
+		article(randomArticleId, "random slug");
+		article(OTHER_ARTICLE_ID, OTHER_ARTICLE_SLUG);
 		String id1 = UUID.randomUUID().toString();
 		String id2 = UUID.randomUUID().toString();
 		String id3 = UUID.randomUUID().toString();
@@ -127,16 +130,16 @@ public class CommentsDaoImplTest {
 	@Test
 	@Order(5)
 	void testFindCommentsForArticlePaged() {
-		assertEquals(1, sut.findCommentsForArticlePaged(ARTICLE_ID, null).size());
-		assertEquals(1, sut.findCommentsForArticlePaged(ARTICLE_ID, new Paging<>()).size());
+		assertEquals(1, sut.findCommentsForArticlePaged(ARTICLE_SLUG, null).size());
+		assertEquals(1, sut.findCommentsForArticlePaged(ARTICLE_SLUG, new Paging<>()).size());
 		Paging<CommentOrderBy> paging = new Paging<>();
 		paging.setLimit(1);
 		paging.setOffset(0);
 		paging.setOrderBy(new OrderBy<>(CommentOrderBy.CREATION_DATE, OrderByDirection.ASC));
-		List<Comment> results1 = sut.findCommentsForArticlePaged(OTHER_ARTICLE_ID, paging);
+		List<Comment> results1 = sut.findCommentsForArticlePaged(OTHER_ARTICLE_SLUG, paging);
 		assertEquals(1, results1.size());
 		paging.setOffset(1);
-		List<Comment> results2 = sut.findCommentsForArticlePaged(OTHER_ARTICLE_ID, paging);
+		List<Comment> results2 = sut.findCommentsForArticlePaged(OTHER_ARTICLE_SLUG, paging);
 		assertEquals(1, results2.size());
 		assertNotEquals(results1.get(0).getId(), results2.get(0).getId());
 		assertTrue(results2.get(0).getCreatedAt().isAfter(results1.get(0).getCreatedAt()));
@@ -148,6 +151,14 @@ public class CommentsDaoImplTest {
 		sut.delete(COMMENT_ID);
 		assertNull(em.find(CommentEntity.class, COMMENT_ID));
 		assertThrows(EntityDoesNotExistException.class, () -> sut.delete(COMMENT_ID));
+	}
+
+	private ArticleEntity article(String id, String slug) {
+		ArticleEntity a = new ArticleEntity();
+		a.setId(id);
+		a.setSlug(slug);
+		em.persist(a);
+		return a;
 	}
 
 	private Comment comment(String id, String articleId, LocalDateTime createdAt) {

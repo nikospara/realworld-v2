@@ -25,12 +25,12 @@ public interface CommentsServiceAuthorizer {
 	/**
 	 * Authorization logic for {@link realworld.comments.services.CommentsService#findCommentsForArticle(String, Paging)}.
 	 *
-	 * @param articleId Passthrough input
+	 * @param slug      Passthrough input
 	 * @param paging    Passthrough input
 	 * @param delegate  The delegate
 	 * @return The return value of the delegate
 	 */
-	SearchResult<Comment> findCommentsForArticle(String articleId, Paging<CommentOrderBy> paging, BiFunction<String,Paging<CommentOrderBy>, SearchResult<Comment>> delegate);
+	SearchResult<Comment> findCommentsForArticle(String slug, Paging<CommentOrderBy> paging, BiFunction<String,Paging<CommentOrderBy>, SearchResult<Comment>> delegate);
 
 	/**
 	 * Authorization logic for {@link realworld.comments.services.CommentsService#delete(String)}.
