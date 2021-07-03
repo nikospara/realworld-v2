@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.SearchResult;
 import realworld.comments.jaxrs.CommentsResource;
 import realworld.comments.model.Comment;
+import realworld.comments.model.CommentCreationData;
 import realworld.comments.model.ImmutableComment;
 import realworld.comments.services.CommentsService;
 import realworld.jaxrs.sys.ObjectMapperProvider;
@@ -56,7 +57,7 @@ public class CommentsResourceImplTest {
 	private static final String ARTICLE_ID = UUID.randomUUID().toString();
 	private static final String COMMENT_ID = UUID.randomUUID().toString();
 	private static final String AUTHOR_ID = UUID.randomUUID().toString();
-	private static final String BODY = "Body";
+	private static final String BODY = "The content Body";
 	private static final LocalDateTime CREATED_AT = LocalDateTime.of(2019, Month.MARCH, 11, 16, 45, 55);
 	private static final LocalDateTime UPDATED_AT = LocalDateTime.of(2019, Month.MARCH, 12, 16, 45, 55);
 
@@ -83,14 +84,7 @@ public class CommentsResourceImplTest {
 		MockHttpRequest request = MockHttpRequest.get(APPLICATION_PATH + "/articles/" + SLUG + "/comments")
 				.accept(MediaType.APPLICATION_JSON);
 
-		Comment comment = ImmutableComment.builder()
-				.id(COMMENT_ID)
-				.articleId(ARTICLE_ID)
-				.authorId(AUTHOR_ID)
-				.body(BODY)
-				.createdAt(CREATED_AT)
-				.updatedAt(UPDATED_AT)
-				.build();
+		Comment comment = stockComment();
 		SearchResult<Comment> result = new SearchResult<>(1L, Collections.singletonList(comment));
 		when(commentsService.findCommentsForArticle(eq(SLUG), any())).thenReturn(result);
 
@@ -105,5 +99,29 @@ public class CommentsResourceImplTest {
 				.assertUpdatedAt("2019-03-12T16:45:55.000Z")
 				.assertAuthorId(AUTHOR_ID)
 				.assertArticleId(ARTICLE_ID);
+	}
+
+	@Test
+	void testCreate() throws Exception {
+		MockHttpRequest request = MockHttpRequest.post(APPLICATION_PATH + "/articles/" + SLUG + "/comments")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(("{\"body\": \"" + BODY + "\"}").getBytes());
+
+		when(commentsService.createForCurrentUser(eq(SLUG), any(CommentCreationData.class))).thenReturn(stockComment());
+
+		dispatcher.invoke(request, response);
+
+		assertEquals(201, response.getStatus());
+	}
+
+	private Comment stockComment() {
+		return ImmutableComment.builder()
+				.id(COMMENT_ID)
+				.articleId(ARTICLE_ID)
+				.authorId(AUTHOR_ID)
+				.body(BODY)
+				.createdAt(CREATED_AT)
+				.updatedAt(UPDATED_AT)
+				.build();
 	}
 }

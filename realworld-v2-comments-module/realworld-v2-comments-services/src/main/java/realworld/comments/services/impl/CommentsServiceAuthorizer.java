@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import realworld.Paging;
 import realworld.SearchResult;
 import realworld.comments.model.Comment;
+import realworld.comments.model.CommentCreationData;
 import realworld.comments.model.CommentOrderBy;
 
 /**
@@ -15,12 +16,12 @@ public interface CommentsServiceAuthorizer {
 	/**
 	 * Authorization logic for {@link realworld.comments.services.CommentsService#createForCurrentUser(String, String)}.
 	 *
-	 * @param articleId Passthrough input
-	 * @param body      Passthrough input
+	 * @param slug      Passthrough input
+	 * @param comment   Passthrough input
 	 * @param delegate  The delegate
 	 * @return The return value of the delegate
 	 */
-	Comment createForCurrentUser(String articleId, String body, BiFunction<String, String, Comment> delegate);
+	Comment createForCurrentUser(String slug, CommentCreationData comment, BiFunction<String, CommentCreationData, Comment> delegate);
 
 	/**
 	 * Authorization logic for {@link realworld.comments.services.CommentsService#findCommentsForArticle(String, Paging)}.

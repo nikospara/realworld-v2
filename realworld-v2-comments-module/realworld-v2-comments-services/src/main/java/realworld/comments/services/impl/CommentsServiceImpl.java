@@ -4,14 +4,16 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
+import realworld.EntityDoesNotExistException;
 import realworld.Paging;
 import realworld.SearchResult;
 import realworld.authentication.AuthenticationContext;
 import realworld.comments.dao.CommentsDao;
 import realworld.comments.model.Comment;
+import realworld.comments.model.CommentCreationData;
 import realworld.comments.model.ImmutableComment;
 import realworld.comments.model.CommentOrderBy;
 import realworld.comments.services.CommentsService;
@@ -57,17 +59,21 @@ public class CommentsServiceImpl implements CommentsService {
 	}
 
 	@Override
-	public Comment createForCurrentUser(String outerArticleId, String outerBody) {
-		return authorizer.createForCurrentUser(outerArticleId, outerBody, (articleId, body) -> {
-			Comment comment = ImmutableComment.builder()
-					.id(UUID.randomUUID().toString())
-					.body(body)
-					.createdAt(dateTimeService.getNow())
-					.authorId(authenticationContext.getUserPrincipal().getUniqueId())
-					.articleId(articleId)
-					.build();
-			dao.create(comment);
-			return comment;
+	public Comment createForCurrentUser(String outerSlug, CommentCreationData outerComment) {
+		return authorizer.createForCurrentUser(outerSlug, outerComment, (slug, commentCreationData) -> {
+			LocalDateTime now = dateTimeService.getNow();
+			ImmutableComment comment = dao.findArticleIdForSlug(slug)
+					.map(articleId -> ImmutableComment.builder()
+							.body(commentCreationData.getBody())
+							.createdAt(now)
+							.updatedAt(now)
+							.authorId(authenticationContext.getUserPrincipal().getUniqueId())
+							.articleId(articleId)
+							.build()
+					)
+					.orElseThrow(() -> new EntityDoesNotExistException("article with slug: " + slug));
+			String id = dao.create(comment);
+			return comment.withId(id);
 		});
 	}
 

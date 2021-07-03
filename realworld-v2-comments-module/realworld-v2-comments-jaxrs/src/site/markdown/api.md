@@ -30,9 +30,7 @@ No authentication required, returns list of comments.
 
 ### Create Comment (POST /articles/:slug/comments)
 
-Authentication required, returns 201 "Created" on success and a `Location` header pointing to the new resource
+Authentication required, returns 201 "Created" on success.
 
-All Comment fields can be specified.
-From the author, only the user name is required, the rest are discarded.
-Normal users can only specify themselves as authors, otherwise they get a 403 error.
-Also `createdAt` and `updatedAt` are disregarded for normal users, the system will fill-in the correct values.
+Post an object that contains a single property, for the comment body.
+The intention is to extend this object to include more comment properties, but only allow administrators to use the other properties.

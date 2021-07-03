@@ -1,6 +1,7 @@
 package realworld.comments.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import realworld.Paging;
 import realworld.comments.model.Comment;
@@ -56,4 +57,12 @@ public interface CommentsDao {
 	 * @return The page of results
 	 */
 	List<Comment> findCommentsForArticlePaged(String slug, Paging<CommentOrderBy> paging);
+
+	/**
+	 * Find the article id given the slug.
+	 *
+	 * @param slug The slug
+	 * @return The article id, if found, or an empty {@code Optional}
+	 */
+	Optional<String> findArticleIdForSlug(String slug);
 }

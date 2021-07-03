@@ -9,6 +9,7 @@ import realworld.Paging;
 import realworld.SearchResult;
 import realworld.authorization.service.Authorization;
 import realworld.comments.model.Comment;
+import realworld.comments.model.CommentCreationData;
 import realworld.comments.model.CommentOrderBy;
 
 /**
@@ -41,9 +42,9 @@ class CommentsServiceAuthorizerImpl implements CommentsServiceAuthorizer {
 	}
 
 	@Override
-	public Comment createForCurrentUser(String articleId, String body, BiFunction<String, String, Comment> delegate) {
+	public Comment createForCurrentUser(String slug, CommentCreationData comment, BiFunction<String, CommentCreationData, Comment> delegate) {
 		authorization.requireLogin();
-		return delegate.apply(articleId, body);
+		return delegate.apply(slug, comment);
 	}
 
 	@Override

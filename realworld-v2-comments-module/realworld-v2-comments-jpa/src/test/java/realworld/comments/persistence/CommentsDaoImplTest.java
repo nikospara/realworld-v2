@@ -146,6 +146,13 @@ public class CommentsDaoImplTest {
 	}
 
 	@Test
+	@Order(6)
+	void testFindArticleIdForSlug() {
+		assertEquals(ARTICLE_ID, sut.findArticleIdForSlug(ARTICLE_SLUG).orElseThrow());
+		assertTrue(sut.findArticleIdForSlug("does not exist").isEmpty());
+	}
+
+	@Test
 	@Order(100) // keep me last
 	void testDelete() {
 		sut.delete(COMMENT_ID);

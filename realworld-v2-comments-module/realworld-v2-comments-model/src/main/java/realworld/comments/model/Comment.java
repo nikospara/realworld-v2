@@ -15,6 +15,7 @@ public interface Comment {
 	 *
 	 * @return The id.
 	 */
+	@Nullable
 	String getId();
 
 	/**

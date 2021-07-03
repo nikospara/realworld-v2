@@ -10,6 +10,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -111,7 +112,17 @@ public class CommentsDaoImpl implements CommentsDao {
 				.where(cb.equal(articleEntity.get(ArticleEntity_.slug), slug));
 		query.where(cb.equal(commentEntity.get(CommentEntity_.articleId), articleIdSubquery));
 		TypedQuery<CommentEntity> typedQuery = helper.applyPaging(cb, query, paging, makeOrderByMapper(commentEntity));
-		return typedQuery.getResultList().stream().map(this::toComment).collect(Collectors.toList());
+		return typedQuery.getResultStream().map(this::toComment).collect(Collectors.toList());
+	}
+
+	@Override
+	public Optional<String> findArticleIdForSlug(String slug) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> query = cb.createQuery(String.class);
+		Root<ArticleEntity> article = query.from(ArticleEntity.class);
+		query.select(article.get(ArticleEntity_.id)).where(cb.equal(article.get(ArticleEntity_.slug), slug));
+		TypedQuery<String> typedQuery = em.createQuery(query);
+		return typedQuery.getResultStream().findFirst();
 	}
 
 	private Function<CommentOrderBy,Expression<?>> makeOrderByMapper(Root<CommentEntity> commentEntity) {

@@ -3,6 +3,7 @@ package realworld.comments.services;
 import realworld.Paging;
 import realworld.SearchResult;
 import realworld.comments.model.Comment;
+import realworld.comments.model.CommentCreationData;
 import realworld.comments.model.CommentOrderBy;
 
 /**
@@ -12,11 +13,11 @@ public interface CommentsService {
 	/**
 	 * Create a comment on behalf of the current with the default data.
 	 *
-	 * @param articleId The article this comment is about
-	 * @param body      The body of the comment
+	 * @param slug      The slug of the article this comment is about
+	 * @param comment   The comment
 	 * @return The created {@code Comment} object
 	 */
-	Comment createForCurrentUser(String articleId, String body);
+	Comment createForCurrentUser(String slug, CommentCreationData comment);
 
 	/**
 	 * Find the comments for an article, optionally sorted and paged.

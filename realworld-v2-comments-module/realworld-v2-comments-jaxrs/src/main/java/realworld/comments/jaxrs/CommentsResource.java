@@ -1,15 +1,20 @@
 package realworld.comments.jaxrs;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.ResponseHeader;
 import realworld.SearchResult;
 import realworld.comments.model.Comment;
 
@@ -35,5 +40,18 @@ public interface CommentsResource {
 			@ApiParam(value = "Offset/skip number of articles.")
 			@QueryParam("offset")
 			Integer offset
+	);
+
+	@POST
+	@ApiOperation(value="Comment on a specific article.", tags=TAG)
+	@ApiResponses(
+			@ApiResponse(code=201, message="Successfully created", responseHeaders=@ResponseHeader(name="Location", description="The location of the article containing the newly created comment"))
+	)
+	Response create(
+			@ApiParam(value = "The slug of the article to comment.", required = true)
+			@PathParam("slug")
+			String slug,
+			@ApiParam(value = "Content of a comment", required = true)
+			CommentCreationParam comment
 	);
 }

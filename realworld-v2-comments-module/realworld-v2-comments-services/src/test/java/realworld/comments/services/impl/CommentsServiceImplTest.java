@@ -1,7 +1,6 @@
 package realworld.comments.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -16,6 +15,7 @@ import javax.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -33,6 +33,7 @@ import realworld.authentication.AuthenticationContext;
 import realworld.authentication.User;
 import realworld.comments.dao.CommentsDao;
 import realworld.comments.model.Comment;
+import realworld.comments.model.CommentCreationData;
 import realworld.comments.model.CommentOrderBy;
 import realworld.services.DateTimeService;
 
@@ -67,17 +68,22 @@ public class CommentsServiceImplTest {
 
 	@Test
 	void testCreateForCurrentUser() {
-		when(authorizer.createForCurrentUser(eq(ARTICLE_ID), eq(BODY), any())).thenAnswer(iom -> ((BiFunction<?,?,?>) iom.getArgument(2)).apply(iom.getArgument(0), iom.getArgument(1)));
+		when(authorizer.createForCurrentUser(eq(ARTICLE_SLUG), any(CommentCreationData.class), any())).thenAnswer(iom -> ((BiFunction<?,?,?>) iom.getArgument(2)).apply(iom.getArgument(0), iom.getArgument(1)));
+		when(dao.findArticleIdForSlug(ARTICLE_SLUG)).thenReturn(Optional.of(ARTICLE_ID));
+		when(dao.create(any())).thenReturn(COMMENT_ID);
 		when(dateTimeService.getNow()).thenReturn(CREATION_DATE);
 		User mockUser = mock(User.class);
 		when(mockUser.getUniqueId()).thenReturn(USER_ID);
 		when(authenticationContext.getUserPrincipal()).thenReturn(mockUser);
-		Comment result = sut.createForCurrentUser(ARTICLE_ID, BODY);
-		assertNotNull(result.getId());
+		CommentCreationData commentCreationData = mock(CommentCreationData.class);
+		when(commentCreationData.getBody()).thenReturn(BODY);
+		Comment result = sut.createForCurrentUser(ARTICLE_SLUG, commentCreationData);
+		assertEquals(COMMENT_ID, result.getId());
 		assertEquals(ARTICLE_ID, result.getArticleId());
 		assertEquals(BODY, result.getBody());
 		assertEquals(USER_ID, result.getAuthorId());
 		assertEquals(CREATION_DATE, result.getCreatedAt());
+		assertEquals(CREATION_DATE, result.getUpdatedAt());
 	}
 
 	@Test

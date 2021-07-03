@@ -28,6 +28,7 @@ import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.NotAuthorizedException;
 import realworld.authorization.service.Authorization;
 import realworld.comments.model.Comment;
+import realworld.comments.model.CommentCreationData;
 import realworld.comments.model.CommentOrderBy;
 
 /**
@@ -55,18 +56,20 @@ public class CommentsServiceAuthorizerImplTest {
 	void testCreateForCurrentUserWithoutLogin() {
 		doThrow(NotAuthenticatedException.class).when(authorization).requireLogin();
 		@SuppressWarnings("unchecked")
-		BiFunction<String, String, Comment> mockDelegate = mock(BiFunction.class);
-		expectNotAuthenticatedException(() -> sut.createForCurrentUser(ARTICLE_ID, BODY, mockDelegate));
+		BiFunction<String, CommentCreationData, Comment> mockDelegate = mock(BiFunction.class);
+		CommentCreationData commentCreationData = mock(CommentCreationData.class);
+		expectNotAuthenticatedException(() -> sut.createForCurrentUser(ARTICLE_SLUG, commentCreationData, mockDelegate));
 	}
 
 	@Test
 	void testCreateForCurrentUserWithLogin() {
 		doNothing().when(authorization).requireLogin();
 		@SuppressWarnings("unchecked")
-		BiFunction<String, String, Comment> mockDelegate = mock(BiFunction.class);
+		BiFunction<String, CommentCreationData, Comment> mockDelegate = mock(BiFunction.class);
+		CommentCreationData commentCreationData = mock(CommentCreationData.class);
 		Comment mockResult = mock(Comment.class);
-		when(mockDelegate.apply(ARTICLE_ID, BODY)).thenReturn(mockResult);
-		var result = sut.createForCurrentUser(ARTICLE_ID, BODY, mockDelegate);
+		when(mockDelegate.apply(ARTICLE_SLUG, commentCreationData)).thenReturn(mockResult);
+		var result = sut.createForCurrentUser(ARTICLE_SLUG, commentCreationData, mockDelegate);
 		assertSame(mockResult, result);
 	}
 
