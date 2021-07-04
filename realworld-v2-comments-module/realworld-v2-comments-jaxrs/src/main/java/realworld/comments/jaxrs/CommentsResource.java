@@ -1,5 +1,6 @@
 package realworld.comments.jaxrs;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -53,5 +54,20 @@ public interface CommentsResource {
 			String slug,
 			@ApiParam(value = "Content of a comment", required = true)
 			CommentCreationParam comment
+	);
+
+	@DELETE
+	@Path("{id}")
+	@ApiOperation(value="Delete comment.", tags=TAG)
+	@ApiResponses(
+			@ApiResponse(code=204, message="Successfully deleted")
+	)
+	Response delete(
+			@ApiParam(value = "The slug of the article containing the comment to delete.", required = true)
+			@PathParam("slug")
+			String slug,
+			@ApiParam(value = "The id of the comment to delete.", required = true)
+			@PathParam("id")
+			String id
 	);
 }

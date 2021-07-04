@@ -34,3 +34,7 @@ Authentication required, returns 201 "Created" on success.
 
 Post an object that contains a single property, for the comment body.
 The intention is to extend this object to include more comment properties, but only allow administrators to use the other properties.
+
+### Delete Comment (DELETE /articles/:slug/comments/:id)
+
+Authentication required. Returns 204 "No Content" on success.

@@ -30,4 +30,10 @@ public class CommentsResourceImpl implements CommentsResource {
 		commentsService.createForCurrentUser(slug, comment);
 		return Response.status(Response.Status.CREATED).build();
 	}
+
+	@Override
+	public Response delete(String slug, String id) {
+		commentsService.delete(id);
+		return Response.noContent().build();
+	}
 }

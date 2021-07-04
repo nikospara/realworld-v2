@@ -3,6 +3,7 @@ package realworld.comments.jaxrs.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static realworld.comments.jaxrs.impl.CommentsSearchResultsDtoAssertions.commentsSearchResultsDto;
 
@@ -30,6 +31,7 @@ import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.SearchResult;
@@ -112,6 +114,18 @@ public class CommentsResourceImplTest {
 		dispatcher.invoke(request, response);
 
 		assertEquals(201, response.getStatus());
+	}
+
+	@Test
+	void testDelete() throws Exception {
+		MockHttpRequest request = MockHttpRequest.delete(APPLICATION_PATH + "/articles/" + SLUG + "/comments/" + COMMENT_ID);
+
+		dispatcher.invoke(request, response);
+
+		assertEquals(204, response.getStatus());
+		ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+		verify(commentsService).delete(captor.capture());
+		assertEquals(COMMENT_ID, captor.getValue());
 	}
 
 	private Comment stockComment() {
