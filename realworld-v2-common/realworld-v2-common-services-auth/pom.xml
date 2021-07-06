@@ -10,7 +10,7 @@
 
 	<artifactId>realworld-v2-common-services-auth</artifactId>
 
-	<name>Realworld-v2: Auth</name>
+	<name>Realworld-v2: Authn/authz common infrastructure</name>
 	<description>Realworld-v2: Authentication/Authorization logic</description>
 
 	<packaging>jar</packaging>
