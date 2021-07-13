@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
@@ -22,8 +21,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
@@ -69,9 +66,6 @@ public class ArticleServiceImplTest {
 	private static final LocalDateTime NOW = LocalDateTime.now();
 
 	@Produces @Mock
-	private ArticleServiceAuthorizer authorizer;
-
-	@Produces @Mock
 	private ArticleDao articleDao;
 
 	@Produces @Mock @Slugifier
@@ -95,7 +89,6 @@ public class ArticleServiceImplTest {
 		catch( NullPointerException expected ) {
 			// expected
 		}
-		verifyNoInteractions(authorizer);
 	}
 
 	@Test
@@ -109,7 +102,6 @@ public class ArticleServiceImplTest {
 		catch( SimpleValidationException expected ) {
 			// expected
 		}
-		verify(authorizer).create(eq(creationData), any());
 	}
 
 	@Test
@@ -126,7 +118,6 @@ public class ArticleServiceImplTest {
 		assertEquals(CREATED_AT, result.getCreatedAt());
 		assertNull(result.getUpdatedAt());
 		verify(articleDao).create(eq(creationData), eq(SLUG), eq(CREATED_AT));
-		verify(authorizer).create(eq(creationData), any());
 	}
 
 	@Test
@@ -138,7 +129,6 @@ public class ArticleServiceImplTest {
 		catch( NullPointerException expected ) {
 			// expected
 		}
-		verifyNoInteractions(authorizer);
 	}
 
 	@Test
@@ -146,7 +136,6 @@ public class ArticleServiceImplTest {
 		ArticleUpdateData updateData = mock(ArticleUpdateData.class);
 		when(dateTimeService.getNow()).thenReturn(NOW);
 		when(articleDao.update(eq(SLUG), any(), eq(NOW))).thenReturn(ARTICLE_ID);
-		when(authorizer.update(eq(SLUG), any(), any())).thenAnswer(iom -> ((BiFunction<?,?,?>) iom.getArgument(2)).apply(iom.getArgument(0),iom.getArgument(1)));
 		String result = sut.update(SLUG, updateData);
 		assertEquals(ARTICLE_ID, result);
 		ArgumentCaptor<ArticleUpdateData> captor = ArgumentCaptor.forClass(ArticleUpdateData.class);
@@ -157,10 +146,6 @@ public class ArticleServiceImplTest {
 	@Test
 	void testDelete() {
 		sut.delete(SLUG);
-		@SuppressWarnings("unchecked")
-		ArgumentCaptor<Consumer<String>> delegateCaptor = ArgumentCaptor.forClass(Consumer.class);
-		verify(authorizer).delete(eq(SLUG), delegateCaptor.capture());
-		delegateCaptor.getValue().accept(SLUG);
 		verify(articleDao).delete(SLUG);
 	}
 
@@ -172,7 +157,6 @@ public class ArticleServiceImplTest {
 		when(creationData.getBody()).thenReturn(BODY);
 		when(creationData.getDescription()).thenReturn(DESCRIPTION);
 		when(creationData.getTitle()).thenReturn(TITLE);
-		when(authorizer.create(eq(creationData), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		return creationData;
 	}
 
@@ -183,13 +167,11 @@ public class ArticleServiceImplTest {
 		when(authenticationContext.getUserPrincipal()).thenReturn(u);
 		when(articleDao.findFullDataBySlug(USER_ID, SLUG)).thenReturn(makeArticleCombinedFullData());
 		when(articleDao.findTags(ARTICLE_ID)).thenReturn(TAG_LIST);
-		when(authorizer.findFullDataBySlug(eq(SLUG), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		ArticleCombinedFullData res = sut.findFullDataBySlug(SLUG);
 		assertNotNull(res);
 		assertEquals(ARTICLE_ID, res.getArticle().getId());
 		assertEquals(TAG_LIST, res.getTagList());
 		verify(articleDao).findFullDataBySlug(USER_ID, SLUG);
-		verify(authorizer).findFullDataBySlug(eq(SLUG), any());
 	}
 
 	@Test
@@ -197,13 +179,11 @@ public class ArticleServiceImplTest {
 		when(authenticationContext.getUserPrincipal()).thenReturn(null);
 		when(articleDao.findFullDataBySlug(null, SLUG)).thenReturn(makeArticleCombinedFullData());
 		when(articleDao.findTags(ARTICLE_ID)).thenReturn(TAG_LIST);
-		when(authorizer.findFullDataBySlug(eq(SLUG), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		ArticleCombinedFullData res = sut.findFullDataBySlug(SLUG);
 		assertNotNull(res);
 		assertEquals(ARTICLE_ID, res.getArticle().getId());
 		assertEquals(TAG_LIST, res.getTagList());
 		verify(articleDao).findFullDataBySlug(null, SLUG);
-		verify(authorizer).findFullDataBySlug(eq(SLUG), any());
 	}
 
 	private ArticleCombinedFullData makeArticleCombinedFullData() {
@@ -222,7 +202,6 @@ public class ArticleServiceImplTest {
 				.addAuthors("a")
 				.favoritedBy("b")
 				.build();
-		when(authorizer.find(any(ArticleSearchCriteria.class), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		SearchResult<ArticleSearchResult> daoResult = new SearchResult<>();
 		when(articleDao.find(anyString(), any())).thenReturn(daoResult);
 		SearchResult<ArticleSearchResult> result = sut.find(criteria);

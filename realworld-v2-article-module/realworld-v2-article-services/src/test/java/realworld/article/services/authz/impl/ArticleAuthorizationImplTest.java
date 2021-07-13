@@ -1,4 +1,4 @@
-package realworld.article.services.impl;
+package realworld.article.services.authz.impl;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;

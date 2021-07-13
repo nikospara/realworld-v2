@@ -1,4 +1,4 @@
-package realworld.article.services.impl;
+package realworld.article.services.authz.impl;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,6 +10,7 @@ import realworld.EntityDoesNotExistException;
 import realworld.article.dao.ArticleDao;
 import realworld.article.model.ArticleCombinedFullData;
 import realworld.article.model.ArticleUpdateData;
+import realworld.article.services.authz.ArticleAuthorization;
 import realworld.authentication.AuthenticationContext;
 import realworld.authentication.User;
 import realworld.authorization.NotAuthorizedException;

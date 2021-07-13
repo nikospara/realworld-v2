@@ -24,8 +24,6 @@ import realworld.article.services.UserService;
 @Transactional(dontRollbackOn = EntityDoesNotExistException.class)
 class UserServiceImpl implements UserService {
 
-	private UserServiceAuthorizer authorizer;
-
 	private UserDao userDao;
 
 	/**
@@ -39,32 +37,30 @@ class UserServiceImpl implements UserService {
 	/**
 	 * Injection constructor.
 	 *
-	 * @param authorizer The authorizer
 	 * @param userDao    The user DAO
 	 */
 	@Inject
-	public UserServiceImpl(UserServiceAuthorizer authorizer, UserDao userDao) {
-		this.authorizer = authorizer;
+	public UserServiceImpl(UserDao userDao) {
 		this.userDao = userDao;
 	}
 
 	@Override
 	public void add(String id, String username) {
-		authorizer.add(id, username, userDao::add);
+		userDao.add(id, username);
 	}
 
 	@Override
 	public void updateUsername(String id, String username) {
-		authorizer.updateUsername(id, username, userDao::updateUsername);
+		userDao.updateUsername(id, username);
 	}
 
 	@Override
 	public Optional<String> findByUserName(String username) {
-		return authorizer.findByUserName(username, userDao::findByUserName);
+		return userDao.findByUserName(username);
 	}
 
 	@Override
 	public Optional<String> findByUserId(String id) {
-		return authorizer.findByUserId(id, userDao::findByUserId);
+		return userDao.findByUserId(id);
 	}
 }

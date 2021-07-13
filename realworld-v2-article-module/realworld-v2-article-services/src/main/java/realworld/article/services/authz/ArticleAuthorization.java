@@ -1,4 +1,4 @@
-package realworld.article.services.impl;
+package realworld.article.services.authz;
 
 import realworld.article.model.ArticleUpdateData;
 import realworld.authorization.AppSecurityException;

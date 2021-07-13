@@ -35,8 +35,6 @@ class ArticleServiceImpl implements ArticleService {
 
 	private static final ArticleSearchCriteria DEFAULT_CRITERIA = ImmutableArticleSearchCriteria.builder().limit(20).offset(0).build();
 
-	private ArticleServiceAuthorizer authorizer;
-
 	private ArticleDao articleDao;
 
 	private Function<String,String> slugifier;
@@ -56,15 +54,13 @@ class ArticleServiceImpl implements ArticleService {
 	/**
 	 * Injection constructor.
 	 *
-	 * @param authorizer            The authorizer
 	 * @param articleDao            The DAO
 	 * @param slugifier             The service to turn a title to slug
 	 * @param dateTimeService       The date/time service
 	 * @param authenticationContext The authentication context to get connected user data
 	 */
 	@Inject
-	public ArticleServiceImpl(ArticleServiceAuthorizer authorizer, ArticleDao articleDao, @Slugifier Function<String,String> slugifier, DateTimeService dateTimeService, AuthenticationContext authenticationContext) {
-		this.authorizer = authorizer;
+	public ArticleServiceImpl(ArticleDao articleDao, @Slugifier Function<String,String> slugifier, DateTimeService dateTimeService, AuthenticationContext authenticationContext) {
 		this.articleDao = articleDao;
 		this.slugifier = slugifier;
 		this.dateTimeService = dateTimeService;
@@ -72,48 +68,44 @@ class ArticleServiceImpl implements ArticleService {
 	}
 
 	@Override
-	public ArticleBase create(ArticleCreationData outerCreationData) {
-		Objects.requireNonNull(outerCreationData, "creationData cannot be null");
-		return authorizer.create(outerCreationData, creationData -> {
-			String slug = slugifier.apply(creationData.getTitle());
-			if (articleDao.slugExists(slug)) {
-				throw new SimpleValidationException(Collections.singletonList(new SimpleConstraintViolation("slug", "duplicate slug")));
-			}
-			LocalDateTime createdAt = dateTimeService.getNow();
-			String id = articleDao.create(creationData, slug, createdAt);
-			return ImmutableArticleBase.builder()
-					.id(id)
-					.slug(slug)
-					.title(creationData.getTitle())
-					.description(creationData.getDescription())
-					.createdAt(createdAt)
-					.build();
-		});
+	public ArticleBase create(ArticleCreationData creationData) {
+		Objects.requireNonNull(creationData, "creationData cannot be null");
+		String slug = slugifier.apply(creationData.getTitle());
+		if (articleDao.slugExists(slug)) {
+			throw new SimpleValidationException(Collections.singletonList(new SimpleConstraintViolation("slug", "duplicate slug")));
+		}
+		LocalDateTime createdAt = dateTimeService.getNow();
+		String id = articleDao.create(creationData, slug, createdAt);
+		return ImmutableArticleBase.builder()
+				.id(id)
+				.slug(slug)
+				.title(creationData.getTitle())
+				.description(creationData.getDescription())
+				.createdAt(createdAt)
+				.build();
 	}
 
 	@Override
-	public String update(String outerSlug, ArticleUpdateData outerUpdateData) {
-		Objects.requireNonNull(outerUpdateData, "updateData cannot be null");
-		return authorizer.update(outerSlug, outerUpdateData, (slug, updateData) -> articleDao.update(slug, updateData, dateTimeService.getNow()));
+	public String update(String slug, ArticleUpdateData updateData) {
+		Objects.requireNonNull(updateData, "updateData cannot be null");
+		return articleDao.update(slug, updateData, dateTimeService.getNow());
 	}
 
 	@Override
 	public void delete(String slug) {
-		authorizer.delete(slug, articleDao::delete);
+		articleDao.delete(slug);
 	}
 
 	@Override
-	public ArticleCombinedFullData findFullDataBySlug(String outerSlug) {
-		return authorizer.findFullDataBySlug(outerSlug, slug -> {
-			ArticleCombinedFullData result = articleDao.findFullDataBySlug(authenticationContext.getUserPrincipal() != null ? authenticationContext.getUserPrincipal().getUniqueId() : null, slug);
-			result.setTagList(articleDao.findTags(result.getArticle().getId()));
-			return result;
-		});
+	public ArticleCombinedFullData findFullDataBySlug(String slug) {
+		ArticleCombinedFullData result = articleDao.findFullDataBySlug(authenticationContext.getUserPrincipal() != null ? authenticationContext.getUserPrincipal().getUniqueId() : null, slug);
+		result.setTagList(articleDao.findTags(result.getArticle().getId()));
+		return result;
 	}
 
 	@Override
-	public SearchResult<ArticleSearchResult> find(ArticleSearchCriteria outerCriteria) {
-		return authorizer.find(outerCriteria, criteria -> articleDao.find(authenticationContext.getUserPrincipal().getUniqueId(), mergeArticleSearchCriteria(DEFAULT_CRITERIA, criteria)));
+	public SearchResult<ArticleSearchResult> find(ArticleSearchCriteria criteria) {
+		return articleDao.find(authenticationContext.getUserPrincipal().getUniqueId(), mergeArticleSearchCriteria(DEFAULT_CRITERIA, criteria));
 	}
 
 	private ArticleSearchCriteria mergeArticleSearchCriteria(ArticleSearchCriteria defaultCriteria, ArticleSearchCriteria criteria) {
