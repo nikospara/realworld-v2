@@ -5,9 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -16,19 +13,15 @@ import static org.mockito.Mockito.when;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.EntityDoesNotExistException;
 import realworld.SimpleValidationException;
 import realworld.authentication.AuthenticationContext;
-import realworld.authentication.User;
 import realworld.user.dao.UserDao;
 import realworld.user.dao.UserUpdateOperation;
 import realworld.user.model.ImmutableUserData;
@@ -56,9 +49,6 @@ public class UserServiceImplTest {
 	private static final String NON_EXISTING_USER_ID = "NON_EXISTING_USER_ID";
 
 	@Produces @Mock
-	private UserServiceAuthorizer authorizer;
-
-	@Produces @Mock
 	private UserDao userDao;
 
 	@Produces @Mock
@@ -72,29 +62,24 @@ public class UserServiceImplTest {
 
 	@Test
 	void testRegisterWithExistingUsername() {
-		when(authorizer.register(any(), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		UserUpdateData registrationData = mock(UserUpdateData.class);
 		when(registrationData.getUsername()).thenReturn(USERNAME1);
 		when(userDao.usernameExists(USERNAME1)).thenReturn(true);
 
 		assertDuplicateUsername(() -> sut.register(registrationData));
-		verify(authorizer).register(eq(registrationData), any());
 	}
 
 	@Test
 	void testRegisterWithExistingEmail() {
-		when(authorizer.register(any(), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		UserUpdateData registrationData = mock(UserUpdateData.class);
 		when(registrationData.getEmail()).thenReturn(EMAIL1);
 		when(userDao.emailExists(EMAIL1)).thenReturn(true);
 
 		assertDuplicateEmail(() -> sut.register(registrationData));
-		verify(authorizer).register(eq(registrationData), any());
 	}
 
 	@Test
 	void testRegister() {
-		when(authorizer.register(any(), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		UserUpdateData registrationData = new UserUpdateData();
 		registrationData.setId(USERID1);
 		registrationData.setUsername(USERNAME1);
@@ -110,12 +95,10 @@ public class UserServiceImplTest {
 		assertEquals(EMAIL1, result.getEmail());
 		assertEquals(IMAGE_URL1, result.getImageUrl());
 		verify(biographyService).create(USERID1, BIO1);
-		verify(authorizer).register(eq(registrationData), any());
 	}
 
 	@Test
 	void testFindByNameForNonExistingUser() {
-		when(authorizer.findByUserName(anyString(), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		when(userDao.findByUserName(USERNAME1)).thenReturn(Optional.empty());
 		try {
 			sut.findByUserName(USERNAME1);
@@ -124,29 +107,18 @@ public class UserServiceImplTest {
 		catch( EntityDoesNotExistException e ) {
 			assertEquals(USERNAME1, e.getMessage());
 		}
-		verify(authorizer).findByUserName(eq(USERNAME1), any());
 	}
 
 	@Test
 	void testFindByName() {
-		when(authorizer.findByUserName(anyString(), any())).thenAnswer(iom -> ((Function<?,?>) iom.getArgument(1)).apply(iom.getArgument(0)));
 		UserData userData = mock(UserData.class);
 		when(userDao.findByUserName(USERNAME1)).thenReturn(Optional.of(userData));
 		UserData result = sut.findByUserName(USERNAME1);
 		assertSame(userData, result);
-		verify(authorizer).findByUserName(eq(USERNAME1), any());
-	}
-
-	private void mockUpdate() {
-		doAnswer(iom -> {
-			((Consumer<?>) iom.getArgument(1)).accept(iom.getArgument(0));
-			return null;
-		}).when(authorizer).update(any(), any());
 	}
 
 	@Test
 	void testUpdateNonExistingUser() {
-		mockUpdate();
 		when(userDao.findByUserId(NON_EXISTING_USER_ID)).thenReturn(Optional.empty());
 
 		UserUpdateData userUpdateData = mock(UserUpdateData.class);
@@ -159,12 +131,10 @@ public class UserServiceImplTest {
 		catch( EntityDoesNotExistException e ) {
 			// expected
 		}
-		verify(authorizer).update(eq(userUpdateData), any());
 	}
 
 	@Test
 	void testUpdateWithExistingUsername() {
-		mockUpdate();
 		UserData cu = mockCurrentUser();
 		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 
@@ -175,12 +145,10 @@ public class UserServiceImplTest {
 		when(userDao.usernameExists(USERNAME2)).thenReturn(true);
 
 		assertDuplicateUsername(() -> sut.update(userUpdateData));
-		verify(authorizer).update(eq(userUpdateData), any());
 	}
 
 	@Test
 	void testUpdateWithSameUsername() {
-		mockUpdate();
 		UserData cu = mockCurrentUser();
 		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 		UserUpdateOperation updateOp = mockUserUpdateOperation();
@@ -195,12 +163,10 @@ public class UserServiceImplTest {
 
 		verify(updateOp).executeForId(USERID1);
 		verify(biographyService, never()).updateById(any(), any());
-		verify(authorizer).update(eq(userUpdateData), any());
 	}
 
 	@Test
 	void testUpdateWithExistingEmail() {
-		mockUpdate();
 		UserData cu = mockCurrentUser();
 		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 
@@ -212,12 +178,10 @@ public class UserServiceImplTest {
 		when(userDao.emailExists(EMAIL2)).thenReturn(true);
 
 		assertDuplicateEmail(() -> sut.update(userUpdateData));
-		verify(authorizer).update(eq(userUpdateData), any());
 	}
 
 	@Test
 	void testUpdateWithSameEmail() {
-		mockUpdate();
 		UserData cu = mockCurrentUser();
 		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 		UserUpdateOperation updateOp = mockUserUpdateOperation();
@@ -233,12 +197,10 @@ public class UserServiceImplTest {
 
 		verify(updateOp).executeForId(USERID1);
 		verify(biographyService, never()).updateById(any(), any());
-		verify(authorizer).update(eq(userUpdateData), any());
 	}
 
 	@Test
 	void testUpdate() {
-		mockUpdate();
 		UserData cu = mockCurrentUser();
 		when(userDao.findByUserId(USERID1)).thenReturn(Optional.of(cu));
 		UserUpdateOperation updateOp = mockUserUpdateOperation();
@@ -259,7 +221,6 @@ public class UserServiceImplTest {
 		verify(updateOp).setImageUrl(true, IMAGE_URL2);
 		verify(updateOp).executeForId(USERID1);
 		verify(biographyService).updateById(USERID1, BIO2);
-		verify(authorizer).update(eq(userUpdateData), any());
 	}
 
 	private void assertDuplicateUsername(Runnable f) {

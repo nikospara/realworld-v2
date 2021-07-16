@@ -13,13 +13,12 @@ import realworld.user.services.BiographyService;
 @ApplicationScoped
 public class BiographyServiceImpl implements BiographyService {
 
-	private BiographyServiceAuthorizer authorizer;
-
 	private BiographyDao biographyDao;
 
 	/**
 	 * Default constructor for the frameworks.
 	 */
+	@SuppressWarnings("unused")
 	BiographyServiceImpl() {
 		// NOOP
 	}
@@ -27,38 +26,30 @@ public class BiographyServiceImpl implements BiographyService {
 	/**
 	 * Constructor for injection.
 	 *
-	 * @param authorizer   The authorizer
 	 * @param biographyDao The Biography DAO
 	 */
 	@Inject
-	public BiographyServiceImpl(BiographyServiceAuthorizer authorizer, BiographyDao biographyDao) {
-		this.authorizer = authorizer;
+	public BiographyServiceImpl(BiographyDao biographyDao) {
 		this.biographyDao = biographyDao;
 	}
 
 	@Override
-	public void create(String outerUserId, String outerContent) {
-		authorizer.create(outerUserId, outerContent, (userId, content) -> {
-			biographyDao.create(userId, content);
-		});
+	public void create(String userId, String content) {
+		biographyDao.create(userId, content);
 	}
 
 	@Override
-	public String findByUserName(String outerUsername) {
-		return authorizer.findByUserName(outerUsername, username-> biographyDao.findByUserName(username).orElseThrow(EntityDoesNotExistException::new));
+	public String findByUserName(String username) {
+		return biographyDao.findByUserName(username).orElseThrow(() -> new EntityDoesNotExistException(username));
 	}
 
 	@Override
-	public void updateByUserName(String outerUsername, String outerContent) {
-		authorizer.updateByUserName(outerUsername, outerContent, (username, content) -> {
-			biographyDao.updateByUserName(username, content);
-		});
+	public void updateByUserName(String username, String content) {
+		biographyDao.updateByUserName(username, content);
 	}
 
 	@Override
-	public void updateById(String outerUserId, String outerContent) {
-		authorizer.updateById(outerUserId, outerContent, (userId, content) -> {
-			biographyDao.updateById(userId, content);
-		});
+	public void updateById(String userId, String content) {
+		biographyDao.updateById(userId, content);
 	}
 }
