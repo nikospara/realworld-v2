@@ -2,7 +2,6 @@ package realworld.comments.services.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -11,18 +10,14 @@ import static realworld.OrderByDirection.ASC;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import org.jboss.weld.junit5.auto.EnableAutoWeld;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.OrderBy;
@@ -52,9 +47,6 @@ public class CommentsServiceImplTest {
 	private static final String COMMENT_ID = "comment_id";
 
 	@Produces @Mock
-	private CommentsServiceAuthorizer authorizer;
-
-	@Produces @Mock
 	private DateTimeService dateTimeService;
 
 	@Produces @Mock
@@ -68,7 +60,6 @@ public class CommentsServiceImplTest {
 
 	@Test
 	void testCreateForCurrentUser() {
-		when(authorizer.createForCurrentUser(eq(ARTICLE_SLUG), any(CommentCreationData.class), any())).thenAnswer(iom -> ((BiFunction<?,?,?>) iom.getArgument(2)).apply(iom.getArgument(0), iom.getArgument(1)));
 		when(dao.findArticleIdForSlug(ARTICLE_SLUG)).thenReturn(Optional.of(ARTICLE_ID));
 		when(dao.create(any())).thenReturn(COMMENT_ID);
 		when(dateTimeService.getNow()).thenReturn(CREATION_DATE);
@@ -89,20 +80,12 @@ public class CommentsServiceImplTest {
 	@Test
 	void testDelete() {
 		sut.delete(COMMENT_ID);
-		@SuppressWarnings("unchecked")
-		ArgumentCaptor<Consumer<String>> delegateCaptor = ArgumentCaptor.forClass(Consumer.class);
-		verify(authorizer).delete(eq(COMMENT_ID), delegateCaptor.capture());
-		delegateCaptor.getValue().accept(COMMENT_ID);
 		verify(dao).delete(COMMENT_ID);
 	}
 
 	@Test
 	void testDeleteAllForArticle() {
 		sut.deleteAllForArticle(ARTICLE_ID);
-		@SuppressWarnings("unchecked")
-		ArgumentCaptor<Consumer<String>> delegateCaptor = ArgumentCaptor.forClass(Consumer.class);
-		verify(authorizer).deleteAllForArticle(eq(ARTICLE_ID), delegateCaptor.capture());
-		delegateCaptor.getValue().accept(ARTICLE_ID);
 		verify(dao).deleteAllForArticle(ARTICLE_ID);
 	}
 
@@ -149,7 +132,6 @@ public class CommentsServiceImplTest {
 			results.add(mock(Comment.class));
 		}
 		when(dao.findCommentsForArticlePaged(any(), any())).thenReturn(results);
-		when(authorizer.findCommentsForArticle(any(), any(), any())).thenAnswer(iom -> ((BiFunction<?,?,?>) iom.getArgument(2)).apply(iom.getArgument(0), iom.getArgument(1)));
 		return sut.findCommentsForArticle(slug, paging);
 	}
 

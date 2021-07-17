@@ -1,4 +1,4 @@
-package realworld.comments.services.impl;
+package realworld.comments.services.authz.impl;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -8,6 +8,7 @@ import realworld.authorization.NotAuthorizedException;
 import realworld.authorization.service.Authorization;
 import realworld.comments.dao.CommentsDao;
 import realworld.comments.model.Comment;
+import realworld.comments.services.authz.CommentsAuthorization;
 
 /**
  * Implementation of the {@link CommentsAuthorization}.

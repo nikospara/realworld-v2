@@ -1,4 +1,4 @@
-package realworld.comments.services.impl;
+package realworld.comments.services.authz;
 
 /**
  * Comments module-specific methods for authorizing the access to comments services.

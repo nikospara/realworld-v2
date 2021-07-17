@@ -1,4 +1,4 @@
-package realworld.comments.services.impl;
+package realworld.comments.services.authz.impl;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -24,6 +24,7 @@ import realworld.authorization.NotAuthenticatedException;
 import realworld.authorization.service.Authorization;
 import realworld.comments.dao.CommentsDao;
 import realworld.comments.model.Comment;
+import realworld.comments.services.authz.impl.CommentsAuthorizationImpl;
 
 /**
  * Tests for the {@link CommentsAuthorizationImpl}.
