@@ -30,6 +30,10 @@ services:
     image: rwlv2-article:latest
     ports:
       - "8280:8280/tcp"
+  comments:
+    image: rwlv2-comments:latest
+    ports:
+      - "8380:8380/tcp"
 
 volumes:
   data_kafka:

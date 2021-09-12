@@ -1,5 +1,6 @@
 package realworld.comments.persistence;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -26,6 +27,7 @@ import realworld.persistence.jpa.JpaHelper;
 /**
  * Implementation of the {@link CommentsDao}.
  */
+@ApplicationScoped
 public class CommentsDaoImpl implements CommentsDao {
 
 	private EntityManager em;

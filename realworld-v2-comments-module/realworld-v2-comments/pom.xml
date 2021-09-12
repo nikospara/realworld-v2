@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>realworld-v2-comments-module</artifactId>
+		<groupId>realworld.example</groupId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>realworld-v2-comments</artifactId>
+
+	<name>Realworld-v2: Comments microservice</name>
+	<description>Realworld-v2: Comments module: The microservice WAR</description>
+
+	<properties>
+		<jvm.args>-Dquarkus.datasource.jdbc.url=${database.comments.url} -Dquarkus.datasource.username=${database.comments.username} -Dquarkus.datasource.password=${database.comments.password} -Dmp.messaging.incoming.users-stream.bootstrap.servers=${kafka.bootstrap.servers}</jvm.args>
+	</properties>
+
+	<dependencies>
+		<!-- QUARKUS -->
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-orm</artifactId>
+		</dependency>
+		<dependency><!-- This dependency would be included anyway from quarkus-resteasy-jackson, declaring explicitly for completeness. -->
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy-jackson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
+		</dependency>
+
+		<!-- PROJECT -->
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-jpa</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-web</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-comments-jaxrs</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-comments-jpa</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-comments-services</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!--
+		<dependency>
+			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-user-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		-->
+	</dependencies>
+
+	<build>
+		<finalName>${project.artifactId}</finalName>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/docker</directory>
+				<filtering>true</filtering>
+				<targetPath>../docker</targetPath>
+			</resource>
+		</resources>
+
+		<plugins>
+			<plugin>
+				<groupId>io.quarkus</groupId>
+				<artifactId>quarkus-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>comments-h2</id>
+			<dependencies>
+				<dependency>
+					<groupId>io.quarkus</groupId>
+					<artifactId>quarkus-jdbc-h2</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>comments-postgres</id>
+			<dependencies>
+				<dependency>
+					<groupId>io.quarkus</groupId>
+					<artifactId>quarkus-jdbc-postgresql</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+
+		<profile>
+			<id>comments-quarkus-dev</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.quarkus</groupId>
+						<artifactId>quarkus-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>dev</goal>
+								</goals>
+								<phase>process-classes</phase>
+							</execution>
+						</executions>
+						<configuration>
+							<debug>5305</debug>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>docker</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<extensions>true</extensions>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>build</goal>
+								</goals>
+								<configuration>
+									<images>
+										<image>
+											<name>rwlv2-comments</name>
+											<build>
+												<contextDir>${project.basedir}</contextDir>
+												<dockerFile>src/main/docker/Dockerfile</dockerFile>
+											</build>
+										</image>
+									</images>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>

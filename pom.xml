@@ -62,8 +62,8 @@
 		<dependencies>
 			<!-- QUARKUS  -->
 			<dependency>
-				<groupId>io.quarkus</groupId>
-				<artifactId>quarkus-universe-bom</artifactId>
+				<groupId>io.quarkus.platform</groupId>
+				<artifactId>quarkus-bom</artifactId>
 				<version>${version.quarkus}</version>
 				<type>pom</type>
 				<scope>import</scope>

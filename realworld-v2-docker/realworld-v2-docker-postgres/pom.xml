@@ -20,6 +20,12 @@
 		</dependency>
 		<dependency>
 			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-comments-migrations</artifactId>
+			<version>${project.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
 			<artifactId>realworld-v2-user-migrations</artifactId>
 			<version>${project.version}</version>
 			<scope>provided</scope>
@@ -112,6 +118,19 @@
 									<artifactId>realworld-v2-article-migrations</artifactId>
 									<version>${project.version}</version>
 									<outputFileName>migrations-article.jar</outputFileName>
+								</configuration>
+							</execution>
+							<execution>
+								<id>download-migrations-comments</id>
+								<phase>package</phase>
+								<goals>
+									<goal>artifact</goal>
+								</goals>
+								<configuration>
+									<groupId>realworld.example</groupId>
+									<artifactId>realworld-v2-comments-migrations</artifactId>
+									<version>${project.version}</version>
+									<outputFileName>migrations-comments.jar</outputFileName>
 								</configuration>
 							</execution>
 						</executions>

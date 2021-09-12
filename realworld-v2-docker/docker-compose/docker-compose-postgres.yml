@@ -52,6 +52,14 @@ services:
       - "8280:8280/tcp"
     env_file:
       - env-article
+  comments:
+    image: rwlv2-comments:latest
+    depends_on:
+      - postgres
+    ports:
+      - "8380:8380/tcp"
+    env_file:
+      - env-comments
 
 volumes:
   data_db:

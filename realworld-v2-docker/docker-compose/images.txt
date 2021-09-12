@@ -1,7 +1,7 @@
 rwlv2-article
+rwlv2-comments
 rwlv2-user
 rwlv2-postgres
 rwlv2-keycloak
 rwlv2-kafka
 rwlv2-k8s-zookeeper
-

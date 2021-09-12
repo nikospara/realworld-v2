@@ -23,6 +23,7 @@
 		<module>realworld-v2-comments-services</module>
 		<module>realworld-v2-comments-dao</module>
 		<module>realworld-v2-comments-jaxrs</module>
+		<module>realworld-v2-comments</module>
 	</modules>
 
 	<profiles>

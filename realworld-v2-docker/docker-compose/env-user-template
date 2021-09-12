@@ -1,8 +1,8 @@
 # This is a template to demonstrate how to configure properties for docker-compose files.
-# This file is for the container of the user application.
-# Rename it to "env-user" and fill-in the correct values.
+# This file is for the container of the comments application.
+# Rename it to "env-comments" and fill-in the correct values.
 # Docker-compose files are designed to pick it up.
-# The Maven build will generate the env-user file in realworld-v2-user/target/docker.
+# The Maven build will generate the env-comments file in realworld-v2-comments/target/docker.
 
 QUARKUS_DATASOURCE_JDBC_URL=
 QUARKUS_DATASOURCE_USERNAME=

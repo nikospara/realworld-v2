@@ -113,13 +113,13 @@ Assuming that the properties are defined through a Maven profile, e.g. like the 
 Then make sure that the directory `/home/myuser/h2`, as specified in the `database.xxx.url` above, exists and run:
 
 ```shell
-mvn process-resources -Particle-h2,user-h2,article-dbupdate,user-dbupdate,comments-dbupdate,realworld-v2-local-h2
+mvn process-resources -Particle-h2,user-h2,comments-h2,article-dbupdate,user-dbupdate,comments-dbupdate,realworld-v2-local-h2
 ```
 
 Otherwise, you have to specify the properties by command line:
 
 ```shell
-mvn process-resources -Particle-h2,user-h2,article-dbupdate,user-dbupdate -Ddatabase.article.url=... -Ddatabase.article.username=... -Ddatabase.article.password=... -D...
+mvn process-resources -Particle-h2,user-h2,comments-h2,article-dbupdate,user-dbupdate -Ddatabase.article.url=... -Ddatabase.article.username=... -Ddatabase.article.password=... -D...
 ```
 
 ### Building the JAR artifacts
@@ -155,6 +155,12 @@ mvn clean package -Puser-h2,article-h2,comments-h2,test-h2,docker
 There is a `docker-compose` file under `realworld-v2-docker/docker-compose` that can be used to start the collaborating
 applications: Zookeeper, Kafka and Keycloak with a predefined domain.
 Make sure the images are built first!
+
+Docker compose needs some environment properties files, one per microservice (`env-article`, `env-comments`, `env-user`).
+Place these files under the `realworld-v2-docker/docker-compose` directory.
+The corresponding template files (e.g. `env-article-template`) provide instructions on how to create the env files by hand.
+For convenience, these files are created when building the docker images, under the `target/docker/` directory of the corresponding
+microservice project (e.g. `cp realworld-v2-comments-module/realworld-v2-comments/target/docker/env-comments realworld-v2-docker/docker-compose/`).
 
 There are several flavors of the docker-compose file:
 
