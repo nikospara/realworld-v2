@@ -69,6 +69,15 @@ The other is to run only the peripherals in Docker - see `realworld-v2-docker/do
   (naturally there is no problem running them in parallel, as long as they run from different shells)
 - `docker`: Activating the Docker image build
 
+The build is modular with respect to the DB type to use. Check out the various `pom.xml` files, search for the `<project>-<dbtype>` profiles,
+it should not be hard to add more DB types.
+
+To avoid repeating them in the command line, you can have them active by default in `settings.xml`.
+
+All properties, except the db type (`quarkus.datasource.db-kind`) are set to dummy values in the configuration files
+and overridden at runtime by command-line arguments. For the Quarkus dev mode, check out the `jvm.args` property
+in each of the microservice `pom.xml` files. For running in Docker, check out the `env-<project>` files in `docker-compose/`.
+
 ### Updating dependencies
 
 The versions of all dependencies are controlled by Maven properties in the form `version.<uniqueId>`,
