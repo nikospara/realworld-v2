@@ -14,7 +14,7 @@ import realworld.comments.services.authz.CommentsAuthorization;
  * Implementation of the {@link CommentsAuthorization}.
  */
 @ApplicationScoped
-class CommentsAuthorizationImpl implements CommentsAuthorization {
+public class CommentsAuthorizationImpl implements CommentsAuthorization {
 
 	private AuthenticationContext authenticationContext;
 

@@ -21,7 +21,7 @@ import realworld.comments.services.authz.CommentsAuthorization;
  */
 @Decorator
 @Priority(APPLICATION)
-class CommentsServiceAuthorizerImpl implements CommentsService {
+public class CommentsServiceAuthorizerImpl implements CommentsService {
 
 	private CommentsService delegate;
 

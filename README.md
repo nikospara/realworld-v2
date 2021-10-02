@@ -191,25 +191,28 @@ docker-compose -f docker-compose-postgres.yml -p rwl down -v  # to remove the co
 
 ## Launching
 
-You have to build first! At least `mvn ... package` is required.
+You have to build first! At least `mvn ... install` is required.
 
 Development launch, assuming the profile `realworld-v2-local-h2` is defined in `settings.xml` as above:
 
 ```shell
 cd realworld-v2-article-module/realworld-v2-article
-mvn process-classes quarkus:dev -Particle-quarkus-dev,article-h2,realworld-v2-local-h2
+mvn quarkus:dev -Particle-quarkus-dev,article-h2,realworld-v2-local-h2
 ```
 
 Likewise for user:
 
 ```shell
 cd realworld-v2-user-module/realworld-v2-user
-mvn process-classes quarkus:dev -Puser-quarkus-dev,user-h2,realworld-v2-local-h2
+mvn quarkus:dev -Puser-quarkus-dev,user-h2,realworld-v2-local-h2
 ```
 
-Note that it requires the `process-classes` goal, not just `compile`. The reason is that some modules
-need to be indexed by Jandex, and the Jandex goal runs in the `process-classes` phase, which is right after `compile`
-[by default](https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html).
+## Launching through IDE
+
+When launching through IDE make sure to:
+
+1. Activate the profiles as above
+2. Let the IDE "Resolve Workspace Artifacts" (this is IntelliJ - what about Eclipse, Netbeans?) - this way you no longer need to `mvn install`, just `mvn package`
 
 ## Using
 

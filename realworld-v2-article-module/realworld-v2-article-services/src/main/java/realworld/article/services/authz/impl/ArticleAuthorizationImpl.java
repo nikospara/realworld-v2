@@ -20,7 +20,7 @@ import realworld.authorization.service.Authorization;
  * Implementation of the {@link ArticleAuthorization}.
  */
 @ApplicationScoped
-class ArticleAuthorizationImpl implements ArticleAuthorization {
+public class ArticleAuthorizationImpl implements ArticleAuthorization {
 
 	private AuthenticationContext authenticationContext;
 

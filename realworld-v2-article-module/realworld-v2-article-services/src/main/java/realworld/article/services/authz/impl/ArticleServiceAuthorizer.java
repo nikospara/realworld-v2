@@ -23,7 +23,7 @@ import realworld.authorization.service.Authorization;
  */
 @Decorator
 @Priority(APPLICATION)
-class ArticleServiceAuthorizer implements ArticleService {
+public class ArticleServiceAuthorizer implements ArticleService {
 
 	private ArticleService delegate;
 
