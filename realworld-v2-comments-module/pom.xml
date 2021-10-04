@@ -26,51 +26,22 @@
 		<module>realworld-v2-comments</module>
 	</modules>
 
-	<profiles>
-		<profile>
-			<id>comments-h2</id>
+	<properties>
+		<database.comments.db-kind>postgresql</database.comments.db-kind>
+		<database.comments.driver>org.postgresql.Driver</database.comments.driver>
+		<!--<database.user.hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</database.user.hibernate.dialect> OBSOLETE -->
+		<database.comments.driver.groupId>org.postgresql</database.comments.driver.groupId>
+		<database.comments.driver.artifactId>postgresql</database.comments.driver.artifactId>
+		<database.comments.driver.version>${version.postgres}</database.comments.driver.version>
+	</properties>
 
-			<properties>
-				<database.comments.db-kind>h2</database.comments.db-kind>
-				<database.comments.driver>org.h2.Driver</database.comments.driver>
-				<!--<database.comments.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.comments.hibernate.dialect> OBSOLETE -->
-				<database.comments.driver.groupId>com.h2database</database.comments.driver.groupId>
-				<database.comments.driver.artifactId>h2</database.comments.driver.artifactId>
-				<database.comments.driver.version>${version.h2}</database.comments.driver.version>
-			</properties>
-
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>com.h2database</groupId>
-						<artifactId>h2</artifactId>
-						<version>${version.h2}</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-
-		<profile>
-			<id>comments-postgres</id>
-
-			<properties>
-				<database.comments.db-kind>postgresql</database.comments.db-kind>
-				<database.comments.driver>org.postgresql.Driver</database.comments.driver>
-				<!--<database.user.hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</database.user.hibernate.dialect> OBSOLETE -->
-				<database.comments.driver.groupId>org.postgresql</database.comments.driver.groupId>
-				<database.comments.driver.artifactId>postgresql</database.comments.driver.artifactId>
-				<database.comments.driver.version>${version.postgres}</database.comments.driver.version>
-			</properties>
-
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.postgresql</groupId>
-						<artifactId>postgresql</artifactId>
-						<version>${version.postgres}</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-	</profiles>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${version.postgres}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

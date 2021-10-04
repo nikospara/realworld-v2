@@ -22,6 +22,10 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-hibernate-orm</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-jdbc-postgresql</artifactId>
+		</dependency>
 		<dependency><!-- This dependency would be included anyway from quarkus-resteasy-jackson, declaring explicitly for completeness. -->
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy</artifactId>
@@ -94,26 +98,6 @@
 	</build>
 
 	<profiles>
-		<profile>
-			<id>user-h2</id>
-			<dependencies>
-				<dependency>
-					<groupId>io.quarkus</groupId>
-					<artifactId>quarkus-jdbc-h2</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-
-		<profile>
-			<id>user-postgres</id>
-			<dependencies>
-				<dependency>
-					<groupId>io.quarkus</groupId>
-					<artifactId>quarkus-jdbc-postgresql</artifactId>
-				</dependency>
-			</dependencies>
-		</profile>
-
 		<profile>
 			<id>user-quarkus-dev</id>
 			<build>

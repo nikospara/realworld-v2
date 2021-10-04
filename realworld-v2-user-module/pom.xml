@@ -25,51 +25,22 @@
 		<module>realworld-v2-user-services</module>
 	</modules>
 
-	<profiles>
-		<profile>
-			<id>user-h2</id>
+		<properties>
+			<database.user.db-kind>postgresql</database.user.db-kind>
+			<database.user.driver>org.postgresql.Driver</database.user.driver>
+			<!--<database.user.hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</database.user.hibernate.dialect> OBSOLETE -->
+			<database.user.driver.groupId>org.postgresql</database.user.driver.groupId>
+			<database.user.driver.artifactId>postgresql</database.user.driver.artifactId>
+			<database.user.driver.version>${version.postgres}</database.user.driver.version>
+		</properties>
 
-			<properties>
-				<database.user.db-kind>h2</database.user.db-kind>
-				<database.user.driver>org.h2.Driver</database.user.driver>
-				<!--<database.user.hibernate.dialect>org.hibernate.dialect.H2Dialect</database.user.hibernate.dialect> OBSOLETE -->
-				<database.user.driver.groupId>com.h2database</database.user.driver.groupId>
-				<database.user.driver.artifactId>h2</database.user.driver.artifactId>
-				<database.user.driver.version>${version.h2}</database.user.driver.version>
-			</properties>
-
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>com.h2database</groupId>
-						<artifactId>h2</artifactId>
-						<version>${version.h2}</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-
-		<profile>
-			<id>user-postgres</id>
-
-			<properties>
-				<database.user.db-kind>postgresql</database.user.db-kind>
-				<database.user.driver>org.postgresql.Driver</database.user.driver>
-				<!--<database.user.hibernate.dialect>org.hibernate.dialect.PostgreSQL82Dialect</database.user.hibernate.dialect> OBSOLETE -->
-				<database.user.driver.groupId>org.postgresql</database.user.driver.groupId>
-				<database.user.driver.artifactId>postgresql</database.user.driver.artifactId>
-				<database.user.driver.version>${version.postgres}</database.user.driver.version>
-			</properties>
-
-			<dependencyManagement>
-				<dependencies>
-					<dependency>
-						<groupId>org.postgresql</groupId>
-						<artifactId>postgresql</artifactId>
-						<version>${version.postgres}</version>
-					</dependency>
-				</dependencies>
-			</dependencyManagement>
-		</profile>
-	</profiles>
+		<dependencyManagement>
+			<dependencies>
+				<dependency>
+					<groupId>org.postgresql</groupId>
+					<artifactId>postgresql</artifactId>
+					<version>${version.postgres}</version>
+				</dependency>
+			</dependencies>
+		</dependencyManagement>
 </project>

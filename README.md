@@ -17,42 +17,42 @@ or placed in a local Maven profile in `~/.m2/settings.xml`.
 - `database.user.password`, `database.article.password`, `database.comments.password`: The DB password
 - `kafka.bootstrap.servers`: The Kafka bootstrap servers for that environment
 - **(TODO)** `db.env` (default: `dev`): Needed only by Liquibase to indicate which environment-specific [contexts](https://www.liquibase.org/documentation/contexts.html)
-will it activate; e.g. `dev` will activate the `data-dev` context
+  will it activate; e.g. `dev` will activate the `data-dev` context
 
 Example:
 
 ```xml
 <settings>
-		<profile>
-			<id>realworld-v2-local-postgres</id>
-			<properties>
-				<database.article.url>jdbc:postgresql://localhost/rwlv2</database.article.url>
-				<database.article.username>rwlv2_article</database.article.username>
-				<database.article.password>rwlv2_article</database.article.password>
-				<database.user.url>jdbc:postgresql://localhost/rwlv2</database.user.url>
-				<database.user.username>rwlv2_user</database.user.username>
-				<database.user.password>rwlv2_user</database.user.password>
-				<database.comments.url>jdbc:postgresql://localhost/rwlv2</database.comments.url>
-				<database.comments.username>rwlv2_user</database.comments.username>
-				<database.comments.password>rwlv2_user</database.comments.password>
-				<kafka.bootstrap.servers>localhost:9094</kafka.bootstrap.servers>
-			</properties>
-		</profile>
-		<profile>
-			<id>realworld-v2-docker-postgres</id>
-			<properties>
-				<database.article.url>jdbc:postgresql://postgres/rwlv2</database.article.url>
-				<database.article.username>rwlv2_article</database.article.username>
-				<database.article.password>rwlv2_article</database.article.password>
-				<database.user.url>jdbc:postgresql://postgres/rwlv2</database.user.url>
-				<database.user.username>rwlv2_user</database.user.username>
-				<database.user.password>rwlv2_user</database.user.password>
-				<database.comments.url>jdbc:postgresql://postgres/rwlv2</database.comments.url>
-				<database.comments.username>rwlv2_user</database.comments.username>
-				<database.comments.password>rwlv2_user</database.comments.password>
-				<kafka.bootstrap.servers>kafka:9092</kafka.bootstrap.servers>
-			</properties>
-		</profile>
+	<profile>
+		<id>realworld-v2-local-postgres</id>
+		<properties>
+			<database.article.url>jdbc:postgresql://localhost/rwlv2</database.article.url>
+			<database.article.username>rwlv2_article</database.article.username>
+			<database.article.password>rwlv2_article</database.article.password>
+			<database.user.url>jdbc:postgresql://localhost/rwlv2</database.user.url>
+			<database.user.username>rwlv2_user</database.user.username>
+			<database.user.password>rwlv2_user</database.user.password>
+			<database.comments.url>jdbc:postgresql://localhost/rwlv2</database.comments.url>
+			<database.comments.username>rwlv2_user</database.comments.username>
+			<database.comments.password>rwlv2_user</database.comments.password>
+			<kafka.bootstrap.servers>localhost:9094</kafka.bootstrap.servers>
+		</properties>
+	</profile>
+	<profile>
+		<id>realworld-v2-docker-postgres</id>
+		<properties>
+			<database.article.url>jdbc:postgresql://postgres/rwlv2</database.article.url>
+			<database.article.username>rwlv2_article</database.article.username>
+			<database.article.password>rwlv2_article</database.article.password>
+			<database.user.url>jdbc:postgresql://postgres/rwlv2</database.user.url>
+			<database.user.username>rwlv2_user</database.user.username>
+			<database.user.password>rwlv2_user</database.user.password>
+			<database.comments.url>jdbc:postgresql://postgres/rwlv2</database.comments.url>
+			<database.comments.username>rwlv2_user</database.comments.username>
+			<database.comments.password>rwlv2_user</database.comments.password>
+			<kafka.bootstrap.servers>kafka:9092</kafka.bootstrap.servers>
+		</properties>
+	</profile>
 </settings>
 ```
 
@@ -62,17 +62,11 @@ The other is to run only the peripherals in Docker - see `realworld-v2-docker/do
 
 ### Build profiles
 
-- `article-h2`, `user-h2`, `comments-h2`: Activate the H2 database for the server and Liquibase for the respective microservice (currently `h2` and `postgres` are the only DB options)
-- `article-dbupdate`, `user-dbupdate`, `comments-dbupdate`: Execute Liquibase to bring the respective database up-to-date (in the case of embedded H2 it will create it if it doesn't exist; just make sure that the directory exists)
+- `article-dbupdate`, `user-dbupdate`, `comments-dbupdate`: Execute Liquibase to bring the respective database up-to-date
 - `test-h2`: This will activate the DAO tests, using an in-memory H2 database (currently `h2` is the only DB option)
 - `article-quarkus-dev`, `user-quarkus-dev`, `comments-quarkus-dev`: Activate `quarkus:dev` for the respective microservice; do not use together in the same command
   (naturally there is no problem running them in parallel, as long as they run from different shells)
 - `docker`: Activating the Docker image build
-
-The build is modular with respect to the DB type to use. Check out the various `pom.xml` files, search for the `<project>-<dbtype>` profiles,
-it should not be hard to add more DB types.
-
-To avoid repeating them in the command line, you can have them active by default in `settings.xml`.
 
 All properties, except the db type (`quarkus.datasource.db-kind`) are set to dummy values in the configuration files
 and overridden at runtime by command-line arguments. For the Quarkus dev mode, check out the `jvm.args` property
@@ -102,39 +96,37 @@ Decide the database to use and make sure Maven picks up the corresponding proper
 Assuming that the properties are defined through a Maven profile, e.g. like the following in `~/.m2/settings.xml`:
 
 ```xml
-                <profile>
-                        <id>realworld-v2-local-h2</id>
-                        <properties>
-                                <database.article.url>jdbc:h2:/home/myuser/h2/article</database.article.url>
-                                <database.article.username>sa</database.article.username>
-                                <database.article.password>sa</database.article.password>
-                                <database.user.url>jdbc:h2:/home/myuser/h2/user</database.user.url>
-                                <database.user.username>sa</database.user.username>
-                                <database.user.password>sa</database.user.password>
-                                <database.comments.url>jdbc:h2:/home/myuser/h2/comments</database.comments.url>
-                                <database.comments.username>sa</database.comments.username>
-                                <database.comments.password>sa</database.comments.password>
-                                <kafka.bootstrap.servers>localhost:9094</kafka.bootstrap.servers>
-                        </properties>
-                </profile>
+	<profile>
+		<id>realworld-v2-local</id>
+		<properties>
+			<database.user.url>jdbc:postgresql://localhost/rwlv2</database.user.url>
+			<database.user.username>rwlv2_user</database.user.username>
+			<database.user.password>rwlv2_user</database.user.password>
+			<database.article.url>jdbc:postgresql://localhost/rwlv2</database.article.url>
+			<database.article.username>rwlv2_article</database.article.username>
+			<database.article.password>rwlv2_article</database.article.password>
+			<database.comments.url>jdbc:postgresql://localhost/rwlv2</database.comments.url>
+			<database.comments.username>rwlv2_comments</database.comments.username>
+			<database.comments.password>rwlv2_comments</database.comments.password>
+			<kafka.bootstrap.servers>localhost:9094</kafka.bootstrap.servers>
+		</properties>
+	</profile>
 ```
 
-Then make sure that the directory `/home/myuser/h2`, as specified in the `database.xxx.url` above, exists and run:
-
 ```shell
-mvn process-resources -Particle-h2,user-h2,comments-h2,article-dbupdate,user-dbupdate,comments-dbupdate,realworld-v2-local-h2
+mvn process-resources -Particle-dbupdate,user-dbupdate,comments-dbupdate,realworld-v2-local
 ```
 
 Otherwise, you have to specify the properties by command line:
 
 ```shell
-mvn process-resources -Particle-h2,user-h2,comments-h2,article-dbupdate,user-dbupdate -Ddatabase.article.url=... -Ddatabase.article.username=... -Ddatabase.article.password=... -D...
+mvn process-resources -Particle-dbupdate,user-dbupdate,comments-dbupdate -Ddatabase.article.url=... -Ddatabase.article.username=... -Ddatabase.article.password=... -D...
 ```
 
 ### Building the JAR artifacts
 
 ```shell
-mvn clean package -Puser-h2,article-h2,comments-h2,test-h2
+mvn clean package -Ptest-h2
 ```
 
 You can omit `test-h2` to skip the DB tests.
@@ -156,7 +148,7 @@ mvn ... package -Pdocker,...
 E.g.
 
 ```shell
-mvn clean package -Puser-h2,article-h2,comments-h2,test-h2,docker
+mvn clean package -Ptest-h2,docker
 ```
 
 #### Docker compose
@@ -173,8 +165,8 @@ microservice project (e.g. `cp realworld-v2-comments-module/realworld-v2-comment
 
 There are several flavors of the docker-compose file:
 
-- `docker-compose.yml`: Start everything, using embedded H2
-- `docker-compose-peripherals.yml`: Start only the peripheral applications (e.g. Kafka, Keycloak), using embedded H2
+- `docker-compose-h2.yml`: Start everything, using embedded H2 (DEPRECATED)
+- `docker-compose-h2-peripherals.yml`: Start only the peripheral applications (e.g. Kafka, Keycloak), using embedded H2 (DEPRECATED)
 - `docker-compose-postgres.yml`: Start everything, using a single separate Postgres instance as database
 - `docker-compose-postgres-peripherals.yml`: Start only the peripheral applications (e.g. Kafka, Keycloak), using a single separate Postgres instance as database
 
@@ -193,18 +185,18 @@ docker-compose -f docker-compose-postgres.yml -p rwl down -v  # to remove the co
 
 You have to build first! At least `mvn ... install` is required.
 
-Development launch, assuming the profile `realworld-v2-local-h2` is defined in `settings.xml` as above:
+Development launch, assuming the profile `realworld-v2-local` is defined in `settings.xml` as above:
 
 ```shell
 cd realworld-v2-article-module/realworld-v2-article
-mvn quarkus:dev -Particle-quarkus-dev,article-h2,realworld-v2-local-h2
+mvn quarkus:dev -Particle-quarkus-dev,realworld-v2-local
 ```
 
 Likewise for user:
 
 ```shell
 cd realworld-v2-user-module/realworld-v2-user
-mvn quarkus:dev -Puser-quarkus-dev,user-h2,realworld-v2-local-h2
+mvn quarkus:dev -Puser-quarkus-dev,realworld-v2-local
 ```
 
 ## Launching through IDE
