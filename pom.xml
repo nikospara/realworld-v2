@@ -55,6 +55,7 @@
 		<version.slf4j>1.7.32</version.slf4j>
 		<version.slugify>2.5</version.slugify>
 		<version.swagger-annotations>1.6.2</version.swagger-annotations>
+		<version.testcontainers>1.16.0</version.testcontainers>
 		<version.weld-junit5>2.0.2.Final</version.weld-junit5>
 	</properties>
 
@@ -190,6 +191,11 @@
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-core</artifactId>
+				<version>${version.liquibase}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>${version.slf4j}</version>
@@ -252,6 +258,73 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-junit-jupiter</artifactId>
 				<version>${version.mockito}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>testcontainers</artifactId>
+				<version>${version.testcontainers}</version>
+				<scope>test</scope>
+				<exclusions>
+					<exclusion>
+						<groupId>com.github.docker-java</groupId>
+						<artifactId>docker-java-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.github.docker-java</groupId>
+						<artifactId>docker-java-transport</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>com.github.docker-java</groupId>
+						<artifactId>docker-java-transport-zerodep</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- XXX The current version of testcontainers seems to depend on a wrong version of docker-java -->
+			<!-- XXX Adding these until it is fixed                                                          -->
+			<dependency>
+				<groupId>com.github.docker-java</groupId>
+				<artifactId>docker-java-api</artifactId>
+				<version>3.2.12</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.github.docker-java</groupId>
+				<artifactId>docker-java-transport</artifactId>
+				<version>3.2.12</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.github.docker-java</groupId>
+				<artifactId>docker-java-transport-zerodep</artifactId>
+				<version>3.2.12</version>
+				<scope>test</scope>
+			</dependency>
+			<!-- END WORKAROUND for docker-java -->
+			<!--
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>jdbc</artifactId>
+				<version>${version.testcontainers}</version>
+				<scope>test</scope>
+			</dependency>
+			-->
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>junit-jupiter</artifactId>
+				<version>${version.testcontainers}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>kafka</artifactId>
+				<version>${version.testcontainers}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${version.testcontainers}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>

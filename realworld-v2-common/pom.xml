@@ -23,5 +23,6 @@
 		<module>realworld-v2-common-types</module>
 		<module>realworld-v2-common-web</module>
 		<module>realworld-v2-common-json</module>
+		<module>realworld-v2-common-quarkustestutils</module>
 	</modules>
 </project>
