@@ -13,7 +13,7 @@ RUN apk add --no-cache bash \
 	&& ./liquibase --classpath=migrations-comments.jar --changeLogFile=db.changelog.xml --url=offline:postgresql --driver=org.postgresql.Driver --outputDefaultSchema=true --defaultSchemaName=rwlv2_comments updateSQL > 3-comments.sql \
 	&& ./liquibase --classpath=migrations-article.jar --changeLogFile=db.changelog.xml --url=offline:postgresql --driver=org.postgresql.Driver --outputDefaultSchema=true --defaultSchemaName=rwlv2_article updateSQL > 2-article.sql
 
-FROM postgres:12-alpine
+FROM postgres:14-alpine
 
 COPY src/main/resources/0-create-dbs.sql /docker-entrypoint-initdb.d/
 COPY --from=dbfiles /opt/liquibase/*.sql /docker-entrypoint-initdb.d/

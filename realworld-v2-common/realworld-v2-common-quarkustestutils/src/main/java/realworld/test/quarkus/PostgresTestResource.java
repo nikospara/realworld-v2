@@ -24,7 +24,7 @@ public class PostgresTestResource implements QuarkusTestResourceLifecycleManager
 
 	@Override
 	public Map<String, String> start() {
-		postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:12-alpine"));
+		postgres = new PostgreSQLContainer<>(DockerImageName.parse("postgres:14-alpine"));
 		postgres.start();
 		applyDbMigrations();
 		Map<String, String> sysprops = new HashMap<>();

@@ -68,7 +68,7 @@
 									<goal>wget</goal>
 								</goals>
 								<configuration>
-									<url>https://downloads.jboss.org/keycloak/${version.keycloak}/keycloak-${version.keycloak}.tar.gz</url>
+									<url>https://github.com/keycloak/keycloak/releases/download/${version.keycloak}/keycloak-${version.keycloak}.tar.gz</url>
 								</configuration>
 							</execution>
 							<execution>
