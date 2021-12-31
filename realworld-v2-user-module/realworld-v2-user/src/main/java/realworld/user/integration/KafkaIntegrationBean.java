@@ -50,52 +50,25 @@ public class KafkaIntegrationBean {
 	@Incoming("users-stream")
 	@SuppressWarnings("unused")
 	public CompletionStage<Void> onUsersEvent(IncomingKafkaRecord<String,String> message) {
-		return CompletableFuture.runAsync(() -> {
-			authenticationContextProducer.pushContext(AuthenticationContextImpl.system());
-			try {
-				UserModificationEvent event = objectMapperSupplier.get().readValue(message.getPayload(), UserModificationEvent.class);
-				LOG.info("Received user event from Kafka of type {}", event.getType());
-				switch (event.getType()) {
-					case CREATE:
-						userService.register(event.getPayload());
-						break;
-					case UPDATE:
-						userService.update(event.getPayload());
-						break;
-				}
+		authenticationContextProducer.pushContext(AuthenticationContextImpl.system());
+		try {
+			UserModificationEvent event = objectMapperSupplier.get().readValue(message.getPayload(), UserModificationEvent.class);
+			LOG.info("Received user event from Kafka of type {}", event.getType());
+			switch (event.getType()) {
+				case CREATE:
+					userService.register(event.getPayload());
+					break;
+				case UPDATE:
+					userService.update(event.getPayload());
+					break;
 			}
-			catch( Exception e ) {
-				LOG.error("Error while processing Kafka user event: " + message.getKey(), e);
-			}
-			finally {
-				authenticationContextProducer.popContext();
-			}
-		});
+		}
+		catch( Exception e ) {
+			LOG.error("Error while processing Kafka user event: " + message.getKey(), e);
+		}
+		finally {
+			authenticationContextProducer.popContext();
+		}
+		return message.ack();
 	}
-// The Subscriber does not work for some reason...
-//	public Subscriber<KafkaMessage<String,String>> onUsersEvent() {
-//		return ReactiveStreams.<KafkaMessage<String,String>>builder()
-//			.forEach(message -> {
-//				authenticationContextProducer.pushContext(AuthenticationContextImpl.system());
-//				try {
-//					UserModificationEvent event = objectMapperSupplier.get().readValue(message.getPayload(), UserModificationEvent.class);
-//					LOG.info("Received user event from Kafka of type {}", event.getType());
-//					switch (event.getType()) {
-//						case CREATE:
-//							userService.register(event.getPayload());
-//							break;
-//						case UPDATE:
-//							userService.update(event.getPayload());
-//							break;
-//					}
-//				}
-//				catch( Exception e ) {
-//					LOG.error("Error while processing Kafka user event: " + message.getKey(), e);
-//				}
-//				finally {
-//					authenticationContextProducer.popContext();
-//				}
-//			})
-//			.build();
-//	}
 }

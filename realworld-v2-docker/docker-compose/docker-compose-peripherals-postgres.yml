@@ -24,6 +24,7 @@ services:
       - "10499:10499"
     depends_on:
       - postgres
+      - kafka
   postgres:
     image: 'rwlv2-postgres:latest'
     environment:

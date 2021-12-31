@@ -48,26 +48,25 @@ public class KafkaIntegrationBean {
 	@Incoming("users-stream")
 	@SuppressWarnings("unused")
 	public CompletionStage<Void> onUsersEvent(IncomingKafkaRecord<String,String> message) {
-		return CompletableFuture.runAsync(() -> {
-			authenticationContextProducer.pushContext(AuthenticationContextImpl.system());
-			try {
-				UserModificationEvent event = objectMapperSupplier.get().readValue(message.getPayload(), UserModificationEvent.class);
-				LOG.info("Received user event from Kafka of type {}", event.getType());
-				switch (event.getType()) {
-					case CREATE:
-						userService.add(event.getPayload().getId(), event.getPayload().getUsername());
-						break;
-					case UPDATE:
-						userService.updateUsername(event.getPayload().getId(), event.getPayload().getUsername());
-						break;
-				}
+		authenticationContextProducer.pushContext(AuthenticationContextImpl.system());
+		try {
+			UserModificationEvent event = objectMapperSupplier.get().readValue(message.getPayload(), UserModificationEvent.class);
+			LOG.info("Received user event from Kafka of type {}", event.getType());
+			switch (event.getType()) {
+				case CREATE:
+					userService.add(event.getPayload().getId(), event.getPayload().getUsername());
+					break;
+				case UPDATE:
+					userService.updateUsername(event.getPayload().getId(), event.getPayload().getUsername());
+					break;
 			}
-			catch( Exception e ) {
-				LOG.error("Error while processing Kafka user event: " + message.getKey(), e);
-			}
-			finally {
-				authenticationContextProducer.popContext();
-			}
-		});
+		}
+		catch( Exception e ) {
+			LOG.error("Error while processing Kafka user event: " + message.getKey(), e);
+		}
+		finally {
+			authenticationContextProducer.popContext();
+		}
+		return message.ack();
 	}
 }

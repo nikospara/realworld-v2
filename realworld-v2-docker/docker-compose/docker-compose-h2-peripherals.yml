@@ -22,6 +22,8 @@ services:
     ports:
       - "8580:8580"
       - "10499:10499"
+    depends_on:
+      - kafka
 
 volumes:
   data_kafka:

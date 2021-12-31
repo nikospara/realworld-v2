@@ -13,9 +13,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.mockito.InjectMock;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.Test;
+import org.mockito.stubbing.Stubber;
 import org.testcontainers.containers.KafkaContainer;
 import realworld.article.services.UserService;
-import realworld.authentication.AuthenticationContextProducer;
 import realworld.test.quarkus.InjectKafka;
 import realworld.test.quarkus.KafkaTestResource;
 import realworld.test.quarkus.PostgresTestResource;
@@ -33,9 +33,6 @@ public class KafkaIntegrationBeanTest {
 
 	@InjectMock
 	UserService userService;
-
-	@InjectMock
-	AuthenticationContextProducer authenticationContextProducer;
 
 	@InjectKafka
 	KafkaContainer kafka;
@@ -63,16 +60,7 @@ public class KafkaIntegrationBeanTest {
 	public void testServiceThrows() throws Exception {
 		CompletableFuture<Void> mark = new CompletableFuture<>();
 		String userId = UUID.randomUUID().toString();
-		AtomicBoolean calledOnce = new AtomicBoolean(false);
-		doAnswer(a -> {
-			if( calledOnce.get() ) {
-				return null;
-			}
-			else {
-				calledOnce.set(true);
-				throw new RuntimeException("BOOM");
-			}
-		}).when(userService).add(userId, USERNAME1);
+		throwTheFirstTime().when(userService).add(userId, USERNAME1);
 		doAnswer(a -> {
 			mark.complete(null);
 			return null;
@@ -86,5 +74,18 @@ public class KafkaIntegrationBeanTest {
 		mark.get(5, TimeUnit.SECONDS);
 		verify(userService).add(userId, USERNAME1);
 		verify(userService).updateUsername(userId, USERNAME2);
+	}
+
+	private Stubber throwTheFirstTime() {
+		AtomicBoolean calledOnce = new AtomicBoolean(false);
+		return doAnswer(a -> {
+			if( calledOnce.get() ) {
+				return null;
+			}
+			else {
+				calledOnce.set(true);
+				throw new RuntimeException("BOOM");
+			}
+		});
 	}
 }
