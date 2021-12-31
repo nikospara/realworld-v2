@@ -141,7 +141,7 @@ public class RealworldEventListenerProviderTest {
 		when(session.users()).thenReturn(mock(UserProvider.class, withSettings().defaultAnswer(RETURNS_DEEP_STUBS)));
 		RealmModel realm = mock(RealmModel.class);
 		when(session.realms().getRealm(REALM_ID)).thenReturn(realm);
-		when(session.users().getUserById(USER_ID, realm)).thenReturn(user);
+		when(session.users().getUserById(realm, USER_ID)).thenReturn(user);
 		return event;
 	}
 

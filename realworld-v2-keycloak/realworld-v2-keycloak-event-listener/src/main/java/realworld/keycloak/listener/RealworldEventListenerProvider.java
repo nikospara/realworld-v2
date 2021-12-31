@@ -55,7 +55,7 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 		if( INTERESTING_EVENT_TYPES.contains(event.getType()) ) {
 			boolean success = false;
 			try {
-				UserModel user = session.users().getUserById(event.getUserId(), session.realms().getRealm(event.getRealmId()));
+				UserModel user = session.users().getUserById(session.realms().getRealm(event.getRealmId()), event.getUserId());
 				JsonObjectBuilder userUpdateDataBuilder = Json.createObjectBuilder();
 				userUpdateDataBuilder.add("id", user.getId());
 				if( event.getType() == REGISTER || event.getType() == UPDATE_PROFILE ) {
