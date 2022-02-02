@@ -19,7 +19,8 @@ public class KafkaTestResource implements QuarkusTestResourceLifecycleManager {
 
 	@Override
 	public Map<String, String> start() {
-		kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka"));
+		// see https://docs.confluent.io/platform/current/installation/versions-interoperability.html
+		kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:7.0.1"));
 		kafka.start();
 		return Collections.singletonMap("mp.messaging.incoming.users-stream.bootstrap.servers", kafka.getBootstrapServers());
 	}

@@ -42,7 +42,7 @@
 		<version.jaxb.impl>2.3.5</version.jaxb.impl>
 		<version.jboss-jaxrs-api_2.1_spec>2.0.1.Final</version.jboss-jaxrs-api_2.1_spec><!-- Defined in quarkus-universe-bom, jboss-jaxrs-api_2.1_spec -->
 		<version.junit.jupiter>5.8.2</version.junit.jupiter>
-		<version.kafka>2.8.1</version.kafka>
+		<version.kafka>3.0.0</version.kafka>
 		<version.kafka.scala>2.13</version.kafka.scala>
 		<version.keycloak>16.1.0</version.keycloak>
 		<version.liquibase>4.6.2</version.liquibase>
