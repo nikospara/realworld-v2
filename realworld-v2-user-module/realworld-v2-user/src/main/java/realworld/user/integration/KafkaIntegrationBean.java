@@ -7,6 +7,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.smallrye.reactive.messaging.annotations.Blocking;
 import io.smallrye.reactive.messaging.kafka.IncomingKafkaRecord;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 //import org.eclipse.microprofile.reactive.streams.operators.ReactiveStreams;
@@ -48,6 +49,7 @@ public class KafkaIntegrationBean {
 	}
 
 	@Incoming("users-stream")
+	@Blocking
 	@SuppressWarnings("unused")
 	public CompletionStage<Void> onUsersEvent(IncomingKafkaRecord<String,String> message) {
 		authenticationContextProducer.pushContext(AuthenticationContextImpl.system());
