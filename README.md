@@ -162,6 +162,8 @@ Place these files under the `realworld-v2-docker/docker-compose` directory.
 The corresponding template files (e.g. `env-article-template`) provide instructions on how to create the env files by hand.
 For convenience, these files are created when building the docker images, under the `target/docker/` directory of the corresponding
 microservice project (e.g. `cp realworld-v2-comments-module/realworld-v2-comments/target/docker/env-comments realworld-v2-docker/docker-compose/`).
+For even more convenience, run the script `update-env-files.sh` from within the `realworld-v2-docker/docker-compose` directory,
+after building the project and before executing `docker-compose up`.
 
 There are several flavors of the docker-compose file:
 
@@ -212,4 +214,4 @@ Assuming you have started the `docker-compose-postgres` variant:
 
 ### Register a user to Keycloak
 
-Go to http://localhost:8580/auth/realms/realworld/account and enter the data for a user.
+Go to http://localhost:8580/realms/realworld/account/ and enter the data for a user.

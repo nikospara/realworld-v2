@@ -5,30 +5,20 @@ ARG keycloak_version
 
 ADD target/keycloak-${keycloak_version}.tar.gz /opt
 
-COPY src/main/resources/create-realworld-provider.jboss-cli /opt/keycloak-${keycloak_version}/bin/
-COPY src/main/resources/no-file-log.jboss-cli /opt/keycloak-${keycloak_version}/bin/
-COPY src/main/resources/EXPORT /opt/keycloak-${keycloak_version}/bin/EXPORT
+COPY src/main/resources/EXPORT /opt/keycloak-${keycloak_version}/data/import
 COPY src/main/resources/start-keycloak.sh /opt/keycloak-${keycloak_version}/bin/
-COPY target/dependency/realworld-v2-keycloak-event-listener-${project_version}.jar /opt/keycloak-${keycloak_version}/standalone/deployments/
-COPY target/dependency/realworld-v2-keycloak-theme-${project_version}.jar /opt/keycloak-${keycloak_version}/standalone/deployments/
-COPY src/main/resources/module.xml /opt/keycloak-${keycloak_version}/modules/system/layers/base/org/postgresql/jdbc/main/
-COPY target/dbdriver.jar /opt/keycloak-${keycloak_version}/modules/system/layers/base/org/postgresql/jdbc/main/
-COPY src/main/resources/change-database.jboss-cli /opt/keycloak-${keycloak_version}/bin/
+COPY target/dependency/realworld-v2-keycloak-event-listener-${project_version}.jar /opt/keycloak-${keycloak_version}/providers/
+COPY target/dependency/realworld-v2-keycloak-theme-${project_version}.jar /opt/keycloak-${keycloak_version}/providers/
 
 WORKDIR /opt/keycloak-${keycloak_version}/bin
 ENV KEYCLOAK_VERSION ${keycloak_version}
+ENV KEYCLOAK_ADMIN admin
+ENV KEYCLOAK_ADMIN_PASSWORD admin
 
-RUN apk add --no-cache bash curl \
-	&& ./jboss-cli.sh --file=create-realworld-provider.jboss-cli \
-	&& rm -f create-realworld-provider.jboss-cli \
-	&& ./jboss-cli.sh --file=no-file-log.jboss-cli \
-	&& rm -f no-file-log.jboss-cli \
-	&& ./jboss-cli.sh --file=change-database.jboss-cli \
-	&& rm -f change-database.jboss-cli \
-	&& rm -rf ../standalone/configuration/standalone_xml_history \
+RUN apk add --no-cache bash \
 	&& chmod a+x /opt/keycloak-${KEYCLOAK_VERSION}/bin/start-keycloak.sh \
-	&& ./add-user-keycloak.sh -r master -u admin -p admin
+	&& ./kc.sh build --db postgres --spi-events-listener-realworld-topic-name users
 
-EXPOSE 8580 10499
+EXPOSE 8580
 
-CMD ["./start-keycloak.sh", "-Djboss.socket.binding.port-offset=500", "-b=0.0.0.0"]
+CMD ["./start-keycloak.sh", "--db", "postgres", "--db-url-host", "${DB_ADDR:-postgres}", "--db-url-database", "${DB_DATABASE:-rwlv2}", "--db-username", "${DB_USER:-keycloak}", "--db-password", "${DB_PASSWORD:-keycloak}", "--db-schema", "${DB_SCHEMA:-keycloak}", "--spi-events-listener-realworld-bootstrap-servers", "${KAFKA_BOOTSTRAP_SERVERS:-kafka:9092}",  "--spi-events-listener-realworld-topic-name", "users",  "--http-port", "8580"]

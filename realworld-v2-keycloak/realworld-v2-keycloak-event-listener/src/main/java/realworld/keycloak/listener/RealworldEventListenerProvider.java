@@ -55,6 +55,7 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 		if( INTERESTING_EVENT_TYPES.contains(event.getType()) ) {
 			boolean success = false;
 			try {
+				LOG.info("Received user event, type: " + event.getType() + ", for user id: " + event.getUserId());
 				UserModel user = session.users().getUserById(session.realms().getRealm(event.getRealmId()), event.getUserId());
 				JsonObjectBuilder userUpdateDataBuilder = Json.createObjectBuilder();
 				userUpdateDataBuilder.add("id", user.getId());
@@ -108,6 +109,7 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 				LOG.warning("includeRepresentation is false");
 			}
 			try {
+				LOG.info("Received admin user event, with operation: " + event.getOperationType());
 				if( event.getRepresentation() == null ) {
 					throw new IllegalArgumentException("representation is null");
 				}
@@ -121,6 +123,7 @@ class RealworldEventListenerProvider implements EventListenerProvider {
 
 				JsonObjectBuilder userUpdateDataBuilder = Json.createObjectBuilder();
 				String userId = jobj.getString("id");
+				LOG.info("The admin user event with operation: " + event.getOperationType() + " is for user id: " + userId);
 				userUpdateDataBuilder.add("id", userId);
 				userUpdateDataBuilder.add("username", jobj.getString("username"));
 

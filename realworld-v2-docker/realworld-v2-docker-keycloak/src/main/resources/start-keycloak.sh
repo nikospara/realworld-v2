@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ -f ./EXPORT/exported ]; then
-	exec ./standalone.sh $@
+	exec ./kc.sh --verbose start-dev $@
 else
 	touch ./EXPORT/exported
-	exec ./standalone.sh -Dkeycloak.import=EXPORT/realworld-realm.json $@
+	exec ./kc.sh --verbose start-dev --import-realm $@
 fi

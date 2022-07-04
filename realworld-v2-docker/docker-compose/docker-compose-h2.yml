@@ -21,7 +21,6 @@ services:
     image: rwlv2-keycloak:latest
     ports:
       - "8580:8580"
-      - "10499:10499"
   user:
     image: rwlv2-user:latest
     ports:

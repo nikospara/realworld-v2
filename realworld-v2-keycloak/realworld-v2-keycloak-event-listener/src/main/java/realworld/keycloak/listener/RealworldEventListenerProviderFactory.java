@@ -6,6 +6,7 @@ import static org.apache.kafka.clients.producer.ProducerConfig.KEY_SERIALIZER_CL
 import static org.apache.kafka.clients.producer.ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG;
 
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -22,6 +23,8 @@ import org.keycloak.models.KeycloakSessionFactory;
  */
 public class RealworldEventListenerProviderFactory implements EventListenerProviderFactory {
 
+	private static final Logger LOG = Logger.getLogger(RealworldEventListenerProviderFactory.class.getName());
+
 	private String topicName;
 	private Producer<String, String> producer;
 
@@ -33,8 +36,9 @@ public class RealworldEventListenerProviderFactory implements EventListenerProvi
 	@Override
 	public void init(Config.Scope config) {
 		topicName = config.get("topic-name");
-
 		String bootstrapServers = config.get("bootstrap-servers");
+		LOG.info("Initializing the RealworldEventListenerProviderFactory for topic: " + topicName + ", bootstrap servers: " + bootstrapServers);
+
 		Properties props = new Properties();
 		props.put(BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		props.put(ACKS_CONFIG, "all");
@@ -50,6 +54,7 @@ public class RealworldEventListenerProviderFactory implements EventListenerProvi
 
 	@Override
 	public EventListenerProvider create(KeycloakSession session) {
+		LOG.info("Creating the RealworldEventListenerProvider");
 		return new RealworldEventListenerProvider(session, producer, topicName);
 	}
 
