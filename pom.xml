@@ -21,7 +21,7 @@
 	</modules>
 	
 	<properties>
-		<version.java>11</version.java>
+		<version.java>17</version.java>
 
 		<database-test.active>false</database-test.active>
 		
@@ -362,6 +362,15 @@
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>3.0.0-M5</version>
+					<configuration>
+						<!--
+							This is needed because tests are using Weld through weld-junit and to be compatible with
+							Quarkus they need the 2.x CDI specification. Weld's implementation for CDI 2.x tries to
+							"open" closed modules and in Java 17 this is an error, not a warning anymore, unless
+							explicitly allowed like below.
+						 -->
+						<argLine>--add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-war-plugin</artifactId>

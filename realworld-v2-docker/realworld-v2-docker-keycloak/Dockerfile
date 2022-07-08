@@ -1,22 +1,28 @@
-FROM adoptopenjdk/openjdk11:alpine-jre
+FROM registry.access.redhat.com/ubi8/openjdk-17:1.11
 
 ARG project_version
 ARG keycloak_version
 
-ADD target/keycloak-${keycloak_version}.tar.gz /opt
+ADD --chown=185 target/keycloak-${keycloak_version}.tar.gz /opt
 
-COPY src/main/resources/EXPORT /opt/keycloak-${keycloak_version}/data/import
-COPY src/main/resources/start-keycloak.sh /opt/keycloak-${keycloak_version}/bin/
-COPY target/dependency/realworld-v2-keycloak-event-listener-${project_version}.jar /opt/keycloak-${keycloak_version}/providers/
-COPY target/dependency/realworld-v2-keycloak-theme-${project_version}.jar /opt/keycloak-${keycloak_version}/providers/
+# XXX For some reason ADD --chown is not working
+USER 0
+RUN (cd /opt; chown -R 185:185 keycloak-${keycloak_version})
+
+COPY --chown=185 src/main/resources/EXPORT /opt/keycloak-${keycloak_version}/data/import
+COPY --chown=185 src/main/resources/start-keycloak.sh /opt/keycloak-${keycloak_version}/bin/
+COPY --chown=185 target/dependency/realworld-v2-keycloak-event-listener-${project_version}.jar /opt/keycloak-${keycloak_version}/providers/
+COPY --chown=185 target/dependency/realworld-v2-keycloak-theme-${project_version}.jar /opt/keycloak-${keycloak_version}/providers/
 
 WORKDIR /opt/keycloak-${keycloak_version}/bin
 ENV KEYCLOAK_VERSION ${keycloak_version}
 ENV KEYCLOAK_ADMIN admin
 ENV KEYCLOAK_ADMIN_PASSWORD admin
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en'
 
-RUN apk add --no-cache bash \
-	&& chmod a+x /opt/keycloak-${KEYCLOAK_VERSION}/bin/start-keycloak.sh \
+USER 185
+
+RUN chmod a+x /opt/keycloak-${KEYCLOAK_VERSION}/bin/start-keycloak.sh \
 	&& ./kc.sh build --db postgres --spi-events-listener-realworld-topic-name users
 
 EXPOSE 8580

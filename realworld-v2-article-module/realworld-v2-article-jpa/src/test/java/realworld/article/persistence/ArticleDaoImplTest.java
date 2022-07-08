@@ -57,8 +57,8 @@ public class ArticleDaoImplTest {
 
 	private static final String AUTHOR_ID = UUID.randomUUID().toString();
 	private static final String AUTHOR_NAME = "AUTHOR NAME";
-	private static final LocalDateTime CREATED_AT = LocalDateTime.now().minus(1, ChronoUnit.DAYS);
-	private static final LocalDateTime UPDATED_AT = LocalDateTime.now().minus(12, ChronoUnit.HOURS);
+	private static final LocalDateTime CREATED_AT = LocalDateTime.now().minus(1, ChronoUnit.DAYS).withNano(0);
+	private static final LocalDateTime UPDATED_AT = LocalDateTime.now().minus(12, ChronoUnit.HOURS).withNano(0);
 	private static final String DESCRIPTION = "Description";
 	private static final String SLUG = "slug";
 	private static final String TITLE = "Title";
