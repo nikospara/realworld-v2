@@ -21,7 +21,7 @@ class SlugifierProducer {
 
 	@PostConstruct
 	void init() {
-		slugify = new Slugify();
+		slugify = Slugify.builder().lowerCase(true).build();
 		slugifier = slugify::slugify;
 	}
 
