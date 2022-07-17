@@ -1,6 +1,6 @@
 package realworld.v1.services;
 
-import java.util.Optional;
+import java.util.concurrent.CompletionStage;
 import javax.security.auth.login.LoginException;
 
 import realworld.OffsetAndLimit;
@@ -21,48 +21,47 @@ import realworld.v1.services.types.Credentials;
 import realworld.v1.services.types.UserRegistrationData;
 
 public interface Realworld2App {
-	// TODO Make asynchronous
-	AuthenticatedUser authenticate(Credentials credentials) throws LoginException;
+	CompletionStage<AuthenticatedUser> authenticate(Credentials credentials) throws LoginException;
 
-	AuthenticatedUser register(UserRegistrationData userRegistrationParam, Credentials credentials);
+	CompletionStage<AuthenticatedUser> register(UserRegistrationData userRegistrationParam, Credentials credentials);
 
-	void updateUser(AuthenticatedUser loggedInUser, User userToUpdate);
+	CompletionStage<Void> updateUser(AuthenticatedUser loggedInUser, User userToUpdate);
 
-	void updatePassword(Credentials credentials, String newPassword);
+	CompletionStage<Void> updatePassword(Credentials credentials, String newPassword);
 
-	User retrieveProfile(Username username);
+	CompletionStage<User> retrieveProfile(Username username);
 
-	void follow(AuthenticatedUser loggedInUser, UserId userToFollow);
+	CompletionStage<Void> follow(AuthenticatedUser loggedInUser, UserId userToFollow);
 
-	void unfollow(AuthenticatedUser loggedInUser, UserId userToUnfollow);
+	CompletionStage<Void> unfollow(AuthenticatedUser loggedInUser, UserId userToUnfollow);
 
-	SearchResult<ArticleSearchResult> listArticles(AuthenticatedUser loggedInUser, ArticleSearchCriteria criteria);
+	CompletionStage<SearchResult<ArticleSearchResult>> listArticles(AuthenticatedUser loggedInUser, ArticleSearchCriteria criteria);
 
-	SearchResult<ArticleSearchResult> listArticles(ArticleSearchCriteria criteria);
+	CompletionStage<SearchResult<ArticleSearchResult>> listArticles(ArticleSearchCriteria criteria);
 
-	SearchResult<ArticleSearchResult> feedArticles(AuthenticatedUser loggedInUser, OffsetAndLimit offsetAndLimit);
+	CompletionStage<SearchResult<ArticleSearchResult>> feedArticles(AuthenticatedUser loggedInUser, OffsetAndLimit offsetAndLimit);
 
-	Optional<ArticleSearchResult> fetchArticle(AuthenticatedUser loggedInUser, String slug);
+	CompletionStage<ArticleSearchResult> fetchArticle(AuthenticatedUser loggedInUser, String slug);
 
-	Optional<ArticleSearchResult> fetchArticle(String slug);
+	CompletionStage<ArticleSearchResult> fetchArticle(String slug);
 
-	Optional<ArticleSearchResult> createArticle(AuthenticatedUser loggedInUser, ArticleUpsertData articleData);
+	CompletionStage<ArticleSearchResult> createArticle(AuthenticatedUser loggedInUser, ArticleUpsertData articleData);
 
-	Optional<ArticleSearchResult> updateArticle(AuthenticatedUser loggedInUser, ArticleUpsertData articleData);
+	CompletionStage<ArticleSearchResult> updateArticle(AuthenticatedUser loggedInUser, ArticleUpsertData articleData);
 
-	void deleteArticle(AuthenticatedUser loggedInUser, String slug);
+	CompletionStage<Void> deleteArticle(AuthenticatedUser loggedInUser, String slug);
 
-	Optional<CommentSearchResult> commentOnArticle(AuthenticatedUser loggedInUser, ArticleId articleId, CommentCreationData commentCreationData);
+	CompletionStage<CommentSearchResult> commentOnArticle(AuthenticatedUser loggedInUser, ArticleId articleId, CommentCreationData commentCreationData);
 
-	SearchResult<CommentSearchResult> listCommentsForArticle(AuthenticatedUser loggedInUser, ArticleId articleId, OffsetAndLimit offsetAndLimit);
+	CompletionStage<SearchResult<CommentSearchResult>> listCommentsForArticle(AuthenticatedUser loggedInUser, ArticleId articleId, OffsetAndLimit offsetAndLimit);
 
-	SearchResult<CommentSearchResult> listCommentsForArticle(ArticleId articleId, OffsetAndLimit offsetAndLimit);
+	CompletionStage<SearchResult<CommentSearchResult>> listCommentsForArticle(ArticleId articleId, OffsetAndLimit offsetAndLimit);
 
-	void deleteComment(AuthenticatedUser loggedInUser, CommentId id);
+	CompletionStage<Void> deleteComment(AuthenticatedUser loggedInUser, CommentId id);
 
-	ArticleSearchResult favoriteArticle(AuthenticatedUser loggedInUser, String slug);
+	CompletionStage<ArticleSearchResult> favoriteArticle(AuthenticatedUser loggedInUser, String slug);
 
-	ArticleSearchResult unfavoriteArticle(AuthenticatedUser loggedInUser, String slug);
+	CompletionStage<ArticleSearchResult> unfavoriteArticle(AuthenticatedUser loggedInUser, String slug);
 
-	SearchResult<Tag> fetchTags(OffsetAndLimit offsetAndLimit);
+	CompletionStage<SearchResult<Tag>> fetchTags(OffsetAndLimit offsetAndLimit);
 }
