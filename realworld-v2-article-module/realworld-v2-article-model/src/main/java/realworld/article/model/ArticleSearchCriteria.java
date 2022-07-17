@@ -3,7 +3,7 @@ package realworld.article.model;
 import java.util.List;
 
 import org.immutables.value.Value;
-import realworld.article.model.Nullable;
+import realworld.Nullable;
 
 /**
  * Article search criteria.

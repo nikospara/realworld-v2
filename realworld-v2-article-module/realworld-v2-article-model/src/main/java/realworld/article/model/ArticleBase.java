@@ -3,6 +3,7 @@ package realworld.article.model;
 import java.time.LocalDateTime;
 
 import org.immutables.value.Value;
+import realworld.Nullable;
 
 /**
  * Base article, containing only its own fields, not related entities.

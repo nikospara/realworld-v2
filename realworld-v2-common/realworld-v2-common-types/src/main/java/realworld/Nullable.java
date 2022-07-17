@@ -1,4 +1,4 @@
-package realworld.article.model;
+package realworld;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;

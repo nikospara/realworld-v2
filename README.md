@@ -215,3 +215,11 @@ Assuming you have started the `docker-compose-postgres` variant:
 ### Register a user to Keycloak
 
 Go to http://localhost:8580/realms/realworld/account/ and enter the data for a user.
+
+## Site
+
+```shell
+mvn install # required to generate the dependency report
+mvn site
+mvn site:stage -DstagingDirectory=`pwd`/target/STAGING
+```

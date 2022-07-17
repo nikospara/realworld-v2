@@ -12,6 +12,7 @@
 	<packaging>pom</packaging>
 	
 	<modules>
+		<module>realworld-v2-architecture</module>
 		<module>realworld-v2-article-module</module>
 		<module>realworld-v2-comments-module</module>
 		<module>realworld-v2-common</module>
@@ -58,6 +59,14 @@
 		<version.testcontainers>1.17.3</version.testcontainers><!-- Also specified in quarkus-universe-bom, search for testcontainers, but can differ -->
 		<version.weld-junit5>2.0.2.Final</version.weld-junit5>
 	</properties>
+
+	<distributionManagement>
+		<!-- This is required for site:stage -->
+		<site>
+			<id>site.realworldv2</id>
+			<url>http://nowhere.com</url>
+		</site>
+	</distributionManagement>
 
 	<dependencyManagement>
 		<dependencies>
@@ -357,7 +366,16 @@
 				</plugin>
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.9.1</version>
+					<version>3.12.0</version>
+					<!-- we shall see about that...
+					<dependencies>
+						<dependency>
+							<groupId>io.github.devacfr.maven.skins</groupId>
+							<artifactId>reflow-velocity-tools</artifactId>
+							<version>2.3.0</version>
+						</dependency>
+					</dependencies>
+					-->
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
