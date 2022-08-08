@@ -8,3 +8,6 @@ Eventually, we will need to categorize, but for now leaving in the order added.
 2. Neither `createdAt` nor `updatedAt` should be null. When creating an entity, set `updatedAt = createdAt`.
    Rationale: We always know the last update by looking at `updatedAt`.
    We look at `createdAt` only when we need the creation timestamp explicitly.
+3. The facility that owns a search method is the facility that owns the returned entity.
+   E.g. if we want to search for articles using an author, the search method (e.g. `findByAuthor`)
+   goes to the `ArticleService`.
