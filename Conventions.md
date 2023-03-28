@@ -13,6 +13,15 @@
 
 # Naming conventions
 
+## Packages
+
+1. All prefixed by the project prefix, `realworld`.
+2. Common code, i.e. code used or potentially used by many modules, can go directly under the project package (`realworld`)
+   or under a package name appropriate for the implemented functionality. E.g. classes under `realworld.jpa` implement
+   reusable, JPA-related functionality.
+3. Each bounded context gets its own package under the project prefix (e.g. `realworld.article` or `realworld.user`).
+   Create appropriate sub-packages.
+
 ## Data objects
 
 1. Give the entity the name of the domain with the `-Entity` suffix, e.g. `UserEntity`
