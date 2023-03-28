@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import realworld.EntityDoesNotExistException;
 import realworld.NameAndId;
 import realworld.SearchResult;
@@ -44,13 +46,14 @@ import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
 import realworld.article.model.ArticleUpdateData;
 import realworld.article.model.ImmutableArticleSearchCriteria;
+import realworld.persistence.jpa.JpaValueHelper;
 import realworld.test.jpa.JpaDaoExtension;
 import realworld.test.liquibase.LiquibaseExtension;
 
 /**
  * Tests for the {@link ArticleDaoImpl}.
  */
-@ExtendWith({LiquibaseExtension.class, JpaDaoExtension.class})
+@ExtendWith({LiquibaseExtension.class, JpaDaoExtension.class, MockitoExtension.class})
 @EnabledIfSystemProperty(named = "database-test.active", matches = "true")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ArticleDaoImplTest {
@@ -73,6 +76,9 @@ public class ArticleDaoImplTest {
 	private static final String UPDATED_TITLE = "Updated Title";
 	private static final String UPDATED_BODY = "Updated Body";
 
+	@Mock
+	private JpaValueHelper valueHelper;
+
 	private EntityManager em;
 	private Statistics statistics;
 	private ArticleDaoImpl sut;
@@ -81,7 +87,7 @@ public class ArticleDaoImplTest {
 	void init(EntityManager em, Statistics statistics) {
 		this.em = em;
 		this.statistics = statistics;
-		sut = new ArticleDaoImpl(em);
+		sut = new ArticleDaoImpl(em, valueHelper);
 	}
 
 	@AfterEach

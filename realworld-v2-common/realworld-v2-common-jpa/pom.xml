@@ -29,6 +29,11 @@
 		<!-- PROJECT -->
 		<dependency>
 			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>realworld.example</groupId>
 			<artifactId>realworld-v2-common-types</artifactId>
 			<version>${project.version}</version>
 		</dependency>

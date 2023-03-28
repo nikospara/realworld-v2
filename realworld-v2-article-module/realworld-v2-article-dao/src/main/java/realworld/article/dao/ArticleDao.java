@@ -10,6 +10,8 @@ import realworld.article.model.ArticleCreationData;
 import realworld.article.model.ArticleSearchCriteria;
 import realworld.article.model.ArticleSearchResult;
 import realworld.article.model.ArticleUpdateData;
+import realworld.article.model.v1.ArticleUpsertData;
+import realworld.model.common.v1.AuthorId;
 
 /**
  * DAO interface for the Article entity.
@@ -28,11 +30,22 @@ public interface ArticleDao {
 	 * Create a new article (and related entities).
 	 *
 	 * @param creationData The article creation data
-	 * @param creationDate The date to set as creation date
 	 * @param slug         The slug to use
+	 * @param creationDate The date to set as creation date
 	 * @return The id of the new article
 	 */
 	String create(ArticleCreationData creationData, String slug, LocalDateTime creationDate);
+
+	/**
+	 * Create a new article (and related entities).
+	 *
+	 * @param data         The article creation data
+	 * @param slug         The slug to use
+	 * @param authorId     The author id to set
+	 * @param creationDate The date to set as creation date
+	 * @return The id of the new article
+	 */
+	String create(ArticleUpsertData data, String slug, AuthorId authorId, LocalDateTime creationDate);
 
 	/**
 	 * Update an article (and related entities).

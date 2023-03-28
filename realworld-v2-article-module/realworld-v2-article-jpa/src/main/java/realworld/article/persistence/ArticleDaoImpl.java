@@ -33,6 +33,10 @@ import realworld.article.model.ArticleSearchResult;
 import realworld.article.model.ArticleUpdateData;
 import realworld.article.model.ImmutableArticleBase;
 import realworld.article.model.ImmutableArticleSearchResult;
+import realworld.article.model.v1.ArticleUpsertData;
+import realworld.article.model.v1.Tag;
+import realworld.model.common.v1.AuthorId;
+import realworld.persistence.jpa.JpaValueHelper;
 
 /**
  * JPA implementation of the {@link ArticleDao}.
@@ -41,6 +45,7 @@ import realworld.article.model.ImmutableArticleSearchResult;
 public class ArticleDaoImpl implements ArticleDao {
 
 	private EntityManager em;
+	private JpaValueHelper valueHelper;
 
 	/**
 	 * Default constructor for the frameworks.
@@ -56,8 +61,9 @@ public class ArticleDaoImpl implements ArticleDao {
 	 * @param em The entity manager
 	 */
 	@Inject
-	public ArticleDaoImpl(EntityManager em) {
+	public ArticleDaoImpl(EntityManager em, JpaValueHelper valueHelper) {
 		this.em = em;
+		this.valueHelper = valueHelper;
 	}
 
 	@Override
@@ -89,6 +95,43 @@ public class ArticleDaoImpl implements ArticleDao {
 			em.persist(body);
 		}
 		return a.getId();
+	}
+
+	@Override
+	public String create(ArticleUpsertData data, String slug, AuthorId authorId, LocalDateTime creationDate) {
+		ArticleEntity a = new ArticleEntity();
+		a.setId(UUID.randomUUID().toString());
+		String title = valueHelper.transform(data.getTitle());
+		a.setTitle(title);
+		a.setSlug(slug);
+		String description = valueHelper.transform(data.getDescription());
+		a.setDescription(description);
+		a.setCreatedAt(creationDate);
+//		a.setUpdatedAt(creationDate);
+		String stringAuthorId = valueHelper.transform(authorId);
+		a.setAuthorId(stringAuthorId);
+		handleTagSet(a, data.getTags());
+		em.persist(a);
+		if( data.getArticleBody() != null && data.getArticleBody().getBody() != null ) {
+			String bodyAsString = valueHelper.transform(data.getArticleBody().getBody());
+			ArticleBodyEntity body = new ArticleBodyEntity();
+			body.setBody(bodyAsString);
+			body.setArticle(a);
+			em.persist(body);
+		}
+		return a.getId();
+	}
+
+	private void handleTagSet(ArticleEntity article, Set<Tag> tags) {
+		if( tags != null ) {
+			Set<TagEntity> dbtags = tags.stream().map(tag -> findDbTag(tag).orElseGet(() -> new TagEntity(tag.getName()))).collect(Collectors.toSet());
+			article.setTags(dbtags);
+		}
+	}
+
+	private Optional<TagEntity> findDbTag(Tag tag) {
+		String tagId = valueHelper.transform(tag.getId());
+		return Optional.ofNullable(em.find(TagEntity.class, tagId));
 	}
 
 	@Override

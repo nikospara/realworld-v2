@@ -24,5 +24,6 @@
 		<module>realworld-v2-common-web</module>
 		<module>realworld-v2-common-json</module>
 		<module>realworld-v2-common-quarkustestutils</module>
+		<module>realworld-v2-common-model</module>
 	</modules>
 </project>

@@ -16,6 +16,11 @@
 
 	<dependencies>
 		<!-- SPECS -->
+		<!--
+			TODO: Rethink if the domain should have this dependency.
+			THINKING: Validation definitely applies to the DTOs that are arguments to the business methods.
+			But it is not inappropriate for the domain entities themselves to have validation. Let's see.
+		-->
 		<dependency>
 			<groupId>jakarta.validation</groupId>
 			<artifactId>jakarta.validation-api</artifactId>
@@ -24,11 +29,23 @@
 		<!-- PROJECT -->
 		<dependency>
 			<groupId>realworld.example</groupId>
+			<artifactId>realworld-v2-common-model</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<!--
+			TODO: Maybe I need to rethink the role of the common-types module
+		-->
+		<dependency>
+			<groupId>realworld.example</groupId>
 			<artifactId>realworld-v2-common-types</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
 		<!--  OTHER -->
+		<!--
+			THINKING: This should probably go away. It is not needed since the
+			`model` module represents the _domain_ in a DDD.
+		-->
 		<dependency>
 			<groupId>org.immutables</groupId>
 			<artifactId>value</artifactId>

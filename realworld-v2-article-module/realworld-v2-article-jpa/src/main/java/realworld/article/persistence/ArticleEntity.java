@@ -45,7 +45,7 @@ public class ArticleEntity {
 	@JoinTable(
 			name = "RWL_ARTICLE_ART_TAG",
 			joinColumns = @JoinColumn(name = "article_id", nullable = false),
-			inverseJoinColumns = @JoinColumn(name = "tag_name", nullable = false)
+			inverseJoinColumns = @JoinColumn(name = "tag_id", nullable = false)
 	)
 	private Set<TagEntity> tags = new HashSet<>();
 
