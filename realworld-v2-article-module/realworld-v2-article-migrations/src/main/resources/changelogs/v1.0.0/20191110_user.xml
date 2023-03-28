@@ -13,7 +13,7 @@
 		</createTable>
 
 		<createIndex
-				indexName="RWL_USER_NAME"
+				indexName="IDX_RWL_USR_USER_USERNAME"
 				tableName="RWL_USER"
 				unique="true"
 		>
