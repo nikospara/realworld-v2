@@ -39,10 +39,18 @@ package that contains all controllers for all different sections/bounded context
 
 	With this approach we achieve separation of concerns (the user on behalf of which a method is run and the user
 	actually calling the method).
-6. The architecture package keeps a reference implementation of the domain model. The documentation of the model
-exists as Javadocs on this implementation. Other packages may reuse any class from the architecture package they like
-or, if they need a view of an entity with less properties, they may implement the subset they need in their own code.
+6. The architecture module keeps a reference implementation of the domain model. The documentation of the model
+exists as Javadocs on this implementation. Other modules may reuse any class from the architecture module they like
+or, if they need a view of an entity with fewer properties, they may implement the subset they need in their own code.
 
 	*Rationale:* Single place to document the model, a single point of reference and single point of responsibility.
 	Flexibility of object structure - the full model is there for anyone to use, but modules can choose to implement
 	views of the entities as they see fit.
+
+	1. The architecture module uses "Package By Layer" instead of "Package By Feature", which we prefer.
+
+		*Rationale:* One purpose of the architecture module is to provide a centralized view of the model and
+		the operations of the application. Packaging all the domain models together in the `model` package accomplishes
+		this. And we get a package with just the domain models, not all the value types. If we packaged by feature,
+		we would have e.g. the `Article`, `ArticleBody` and `ArticleId` in a single package, `Comment` and others in
+		another package and we would lose the overview of the model structure.
